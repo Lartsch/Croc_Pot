@@ -1,7 +1,7 @@
 # Title:         Croc_Pot Payload
 # Description:   Start Croc_pot bash script
 # Author:        Spywill
-# Version:       1.0.1
+# Version:       1.0.2
 # Category:      Key Croc
 #
 #
@@ -170,7 +170,7 @@ raspberrypi)
           *)
            Q ALT F2
            sleep 1
-           Q STRING "mate-terminal"
+           Q STRING "xterm"
            Q ENTER
            sleep 1
            Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/"
