@@ -2,10 +2,13 @@
 
 ## INTRODUCTION :
   - This project is developed for the HAK5 KeyCroc (Still in development and testing)
-    - Croc_Pot_Payload.txt
-    - 
-    - Croc_Pot.sh
-    - 
+
+    - **Croc_Pot_Payload.txt**
+    - Will start OS detection scan to see what OS the keycroc is pluged into (usb), collect some data off the target pc, automatically start Croc_Pot
+
+    - **Croc_Pot.sh**
+    - This project is to automate some commands for the keycroc for quicker setup, install payloads, remotely connect to keycroc, nmap tcpdump target pc scan, edited files on your keycroc, send e-mail from your keycroc, SSH to hak5 gear, run hak5 cloud C2 on keycroc, status of your keycroc, and more 
+
 * **TESTED ON**
   - Windows 10
   - Raspberry pi 4 with gnome-terminal installed
