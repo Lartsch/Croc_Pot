@@ -1,5 +1,17 @@
 # Croc_Pot
 
+## INSTALLATION :
+* Two file to this script
+  - Will need to enter arming mode on your keycroc to install files.
+  - First file is called Croc_Pot.sh Place this in the KeyCroc tools folder.
+  - Second file is called Croc_Pot_Payload.txt Place this in the KeyCroc payload folder.
+  - Edited the Croc_Pot_Payload.txt file for your keycroc passwd. default is (hak5croc)
+  - Ensure your KeyCroc is connected (wifi) to the same local network as the target pc
+
+## STARTING CROC_POT :
+  - First way to start Croc_Pot.sh is ssh into your keycroc and type **/root/udisk/tools/Croc_Pot.sh**.
+  - Second way to start Croc_Pot.sh is type in anywhere **crocpot** this will start Croc_Pot.sh script automatically.
+  - It is recommended to start Croc_Pot.sh script with typing in **crocpot** as this payload will collect some data off the target pc. Some info that it will collect will be Target ip,mac,pc name,user name,SSID and passwd, This info will be used in the Croc_Pot.sh script.
 
 ## SSH MENU :
 ### CREATE PUBLIC AND PRIVATE KEY
