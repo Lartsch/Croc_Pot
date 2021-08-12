@@ -1,5 +1,17 @@
 # Croc_Pot
 
+## INTRODUCTION :
+  - This project is developed for the HAK5 KeyCroc
+    - Croc_Pot_Payload.txt
+    - 
+    - Croc_Pot.sh
+    - 
+* **TESTED ON**
+  - Windows 10
+  - Raspberry pi 4 with gnome-terminal installed
+  - linux parrot os
+  - Sorry no support for MAC OS
+
 ## INSTALLATION :
 
 * Two file to this script
@@ -15,7 +27,7 @@
   - Second way to start Croc_Pot.sh is type in anywhere **crocpot** this will start Croc_Pot.sh script automatically.
   - It is recommended to start Croc_Pot.sh script with typing in **crocpot** as this payload will collect some data off the target pc. Some of the info that it will collect will be Target pc (ip address, current user name, pc host name, ssid and passwd, mac address), This info will be used in the Croc_Pot.sh script. **NOTE** When running **crocpot** scan takes about 30-40 sec to start because of OS detection then the script will start.
 
-# SSH MENU :
+## SSH MENU :
 
 ### SSH TO HAK5 GEAR
  * Ensure all hak5 gear is connected to the same local network as your keycroc
