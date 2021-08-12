@@ -42,3 +42,10 @@
    - Now do an ssh connection request from your machine to your own machine at port 7000:
    - **ssh username@localhost -p 7000**
    - Here, though it may seem like you are doing ssh on localhost but your request would be forwarded to remote host. So, you should use your account ? username ? on remote server and when prompted for password, enter the corresponding password.
+
+### Screenshot
+![Screenshot from 2021-08-12 07-54-07](https://user-images.githubusercontent.com/71735542/129192585-d0933663-748a-4000-9102-6e1ceb4a851c.png)
+![Screenshot from 2021-08-12 07-57-38](https://user-images.githubusercontent.com/71735542/129192913-8b880ee7-31f3-41ba-ac6b-59188e594460.png)
+![Screenshot from 2021-08-12 08-00-12](https://user-images.githubusercontent.com/71735542/129193161-60bea2b4-99f5-4781-8a8c-dbd7d4b3d27f.png)
+![Screenshot from 2021-08-12 08-03-59](https://user-images.githubusercontent.com/71735542/129193656-fbfcbc3c-207b-4555-be22-32a66cbe9aea.png)
+
