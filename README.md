@@ -16,8 +16,8 @@
 
 * Two file to this script
   - Will need to enter arming mode on your keycroc to install files.
-  - First file is called Croc_Pot.sh Place this in the KeyCroc tools folder.
-  - Second file is called Croc_Pot_Payload.txt Place this in the KeyCroc payload folder.
+  - First file is called **Croc_Pot.sh** Place this in the KeyCroc tools folder.
+  - Second file is called **Croc_Pot_Payload.txt** Place this in the KeyCroc payload folder.
   - Edited the Croc_Pot_Payload.txt file for your keycroc passwd. default is (hak5croc)
   - Ensure your KeyCroc is connected (wifi) to the same local network as the target pc
 
@@ -25,14 +25,14 @@
 
   - First way to start Croc_Pot.sh is ssh into your keycroc and type **/root/udisk/tools/Croc_Pot.sh**.
   - Second way to start Croc_Pot.sh is type in anywhere **crocpot** this will start Croc_Pot.sh script automatically.
-  - It is recommended to start Croc_Pot.sh script with typing in **crocpot** as this payload will collect some data off the target pc. Some of the info that it will collect will be Target pc (ip address, current user name, pc host name, ssid and passwd, mac address), This info will be used in the Croc_Pot.sh script. **NOTE** When running **crocpot** scan takes about 30-40 sec to start because of OS detection then the script will start.
+  - It is recommended to start Croc_Pot.sh script with typing in **crocpot** as this payload will collect some data off the target pc. Some of the info that it will collect will be Target pc (ip address, current user name, pc host name, ssid and passwd, mac address), This info will be used in the Croc_Pot.sh script. **NOTE** When running **crocpot** scan takes about 30-40 sec to start because of OS detection then Croc_Pot will start.
 
 ## SSH MENU :
 
 ### SSH TO HAK5 GEAR
  * Ensure all hak5 gear is connected to the same local network as your keycroc
    - Recommended to setup ssh PUBLIC AND PRIVATE KEY to each of your hak5 gear, SSH to your gear Without Password
-   - SSH keycroc to Bash Bunny setup, first ensure your bash bunny has internet connection and connected to the same pc as your Keycroc, (bash bunny internet setup can be found at docs.hak5.org), Croc_Pot.sh will create a payload for your bash bunny this file will be saved on your keycroc at tools/Croc_Pot/Bunny_Payload_Shell then copy this file to one of the switch on your bash bunny this is to start Reverse SSH Tunnel.
+   - SSH keycroc to Bash Bunny setup, first ensure your bash bunny has internet connection and connected to the same pc as your Keycroc, (bash bunny internet setup can be found at docs.hak5.org), Croc_Pot.sh will create a payload for your bash bunny, this file will be saved on your keycroc at tools/Croc_Pot/Bunny_Payload_Shell then copy this file to one of the payload switches on your bash bunny this is to start Reverse SSH Tunnel to keycroc.
 
 ### CREATE PUBLIC AND PRIVATE KEY
 * Perform SSH Login Without Password Using ssh-keygen & ssh-copy-id
