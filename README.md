@@ -1,7 +1,7 @@
 # Croc_Pot
 
 ## INTRODUCTION :
-  - This project is developed for the HAK5 KeyCroc
+  - This project is developed for the HAK5 KeyCroc (Still in development and testing)
     - Croc_Pot_Payload.txt
     - 
     - Croc_Pot.sh
