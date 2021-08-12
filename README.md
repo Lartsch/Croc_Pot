@@ -1,7 +1,7 @@
 # Croc_Pot
 
 ## INTRODUCTION :
-  - This project is developed for the HAK5 KeyCroc (Still in development and testing)
+  - This project is developed for the HAK5 KeyCroc (Croc_Pot in development and testing)
 
 * **Croc_Pot_Payload.txt**
   - Will start OS detection scan to see what OS the keycroc is pluged into (usb), collect some data off the target pc, automatically start Croc_Pot
