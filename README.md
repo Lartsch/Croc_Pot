@@ -16,8 +16,8 @@
 
 * Two file to this script
   - Will need to enter arming mode on your keycroc to install files.
-  - First file is called **Croc_Pot.sh** Place this in the KeyCroc tools folder.
-  - Second file is called **Croc_Pot_Payload.txt** Place this in the KeyCroc payload folder.
+  - First file is called **Croc_Pot.sh** Place this in the KeyCroc **tools folder**.
+  - Second file is called **Croc_Pot_Payload.txt** Place this in the KeyCroc **payload folder**.
   - Edited the Croc_Pot_Payload.txt file for your keycroc passwd. default is (hak5croc)
   - Ensure your KeyCroc is connected (wifi) to the same local network as the target pc
 
