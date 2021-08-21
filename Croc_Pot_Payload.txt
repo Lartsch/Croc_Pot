@@ -3,7 +3,7 @@
 #                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.0.9
+# Version:       1.1
 # Category:      Key Croc
 #
 #
@@ -11,6 +11,7 @@ MATCH crocpot
 #
 CROC_PW=hak5croc      #<-----Edit KEYCROC_PASSWD_HERE
 PC_PW=LINUX           #<-----Edit LINUX-PC_PASSWD_HERE
+echo "${CROC_PW}" >> /tmp/CPW.txt
 #
 CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
 cat > ${CROC_OS}
