@@ -14,7 +14,7 @@ PC_PW=LINUX           #<-----Edit LINUX-PC_PASSWD_HERE
 echo "${CROC_PW}" >> /tmp/CPW.txt
 #
 CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
-cat "" > ${CROC_OS}
+echo > ${CROC_OS}
 rm /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
 ATTACKMODE AUTO_ETHERNET
 LED ATTACK
