@@ -9,8 +9,8 @@
 #
 MATCH crocpot
 #
-CROC_PW=hak5croc      #<-----Edit KEYCROC_PASSWD_HERE
-PC_PW=LINUX           #<-----Edit LINUX-PC_PASSWD_HERE
+CROC_PW=hak5croc
+PC_PW=LINUX
 echo "${CROC_PW}" > /tmp/CPW.txt
 #
 CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
@@ -19,9 +19,10 @@ rm /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shar
 ATTACKMODE AUTO_ETHERNET
 LED ATTACK
 GET TARGET_OS
-GET TARGET_IP
+GET TARGET_IP 
 GET HOST_IP
 GET TARGET_HOSTNAME
+echo TARGET_IP = $TARGET_IP, TARGET_HOSTNAME = $TARGET_HOSTNAME, HOST_IP = $HOST_IP
 case $TARGET_OS in
     WINDOWS)
            LED R
