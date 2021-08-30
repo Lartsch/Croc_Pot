@@ -5,7 +5,7 @@
 
 * **Croc_Pot_Payload.txt**
   - Will start OS detection scan to see what OS the keycroc is pluged into (usb), collect some data off the target pc, automatically start an SSH session with connected target pc (wifi) and start Croc_Pot script
-  - Ensure your keycroc is connected to the target pc wifi first before running **crocpot** If you do not have the target pc wifi credentials Croc_Pot has a payload to get you online (payload called getonline) working on windows in development for linux version
+  - Ensure your keycroc is connected to the target pc wifi first before running **crocpot** If you do not have the target pc wifi credentials Croc_Pot has a payload to get you online (payload called getonline working on windows and Raspberry pi in development for linux version)
 
 * **Croc_Pot.sh**
   - This project is to automate some commands for the keycroc for quicker setup, install payloads, remotely connect to keycroc, nmap tcpdump target pc scan, edited files on your keycroc, send e-mail from your keycroc, SSH to hak5 gear, run hak5 cloud C2 on keycroc, status of your keycroc, and more 
@@ -46,10 +46,10 @@
   - jsmith@local-host$ **ssh-keygen**
   - [Press enter key]
  * Step 2: Copy the public key to remote-host using ssh-copy-id
-   - jsmith@local-host$ **ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host-ip**
+   - jsmith@local-host$ **ssh-copy-id -i ~/.ssh/id_rsa.pub username@remote-host-ip**
    - jsmith@remote-host's password:
  * Step 3: Login to remote-host without entering the password
-   -jsmith@local-host$ **ssh remote-host-ip**
+   -jsmith@local-host$ **ssh username@remote-host-ip**
  * The above 3 simple steps should get the job done in most cases.
  
  ### Setup Reverse SSH Tunnel
