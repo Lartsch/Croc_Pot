@@ -42,7 +42,7 @@
    - Croc_Pot in some of ssh options will automatically accept the SSH servers fingerprint and add it to the known hosts file we can pass the StrictHostKeyChecking no option to SSH. Example ssh -o "StrictHostKeyChecking no" HOST@IP
    - **NOTE:** Automatically accepting the SSH fingerprint effectively bypasses the security put in place by SSH. You should be careful using this, especially on untrusted networks, including the public internet.
 
-### SSH TO HAK5 GEAR
+ * **SSH TO HAK5 GEAR**
  * Ensure all hak5 gear is connected to the same local network as your keycroc
    - Recommended to setup ssh PUBLIC AND PRIVATE KEY to each of your hak5 gear, SSH to your gear Without Password
    - SSH keycroc to Bash Bunny setup, first ensure your bash bunny has internet connection and connected to the same pc as your Keycroc, (bash bunny internet setup can be found at docs.hak5.org), Croc_Pot.sh will create a payload for your bash bunny, this file will be saved on your keycroc at tools/Croc_Pot/Bunny_Payload_Shell then copy this file to one of the payload switches on your bash bunny this is to start Reverse SSH Tunnel to keycroc.
