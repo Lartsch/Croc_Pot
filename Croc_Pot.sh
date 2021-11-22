@@ -5,7 +5,7 @@
 # Description:   Send E-mail, Status of keycroc, Basic Nmap, TCPdump, Install payload,
 #                SSH to HAK5 gear, Reverse ssh tunnel, and more
 # Author:        Spywill
-# Version:       1.6.0
+# Version:       1.6.1
 # Category:      Key Croc
 ##
 ##
@@ -72,8 +72,8 @@ function croc_title() {
 #----Test internet connection
 ##
 internet_test() {
-	ping -q -c 1 -w 1 "8.8.8.8" &>"/dev/null"
-if [[ "${?}" -ne 0 ]]; then
+	ping -c 1 -w 1 "8.8.8.8" &>"/dev/null"
+if [[ $? -ne 0 ]]; then
 	echo -ne "${red}Offline"
 elif [[ "${#args[@]}" -eq 0 ]]; then
 	echo -ne "${green}Online "
@@ -96,7 +96,7 @@ fi
 ${red}${LINE_A}${clear}\e[40m»${clear}${red}KEYCROC${clear}\e[40m-${clear}${red}HAK${clear}\e[40m${array[0]} ${clear}\e[40m«${clear}${red}---------${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(internet_test)         ${clear}
 ${red}   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(OS_CHECK)$(FILL_IN)${clear}
 ${red}   DATE OF SCAN${clear}\e[40m $(date +%b-%d-%y---%r)${clear}\e[41;38;5;232mΩ${clear}${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
-${red}${LINE_A}${clear}\e[40;92m»CROC_POT«${red}--${clear}${yellow}VER:1.6.0${red}---${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+${red}${LINE_A}${clear}\e[40;92m»CROC_POT«${red}--${clear}${yellow}VER:1.6.1${red}---${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"
 }
 ##
@@ -175,7 +175,8 @@ case $r_a in
 	apt -y install ${1} ;;
 [nN] | [nN][oO])
 	echo -ne "\n$(ColorYellow 'Maybe next time')\n"
-	${4} ;;
+	${4}
+	clear ;;
 *)
 	invalid_entry ; ${3} ;;
 esac
@@ -412,7 +413,6 @@ MenuEnd
 ##
 python_email() {
 	rm ${PYTHON_MAIL} 2> /dev/null
-	sleep 1
 	echo -ne "import smtplib\nfrom email.mime.text import MIMEText\nfrom email.mime.multipart import MIMEMultipart\n
 from email.mime.base import MIMEBase\nfrom email import encoders\nimport os.path\n\nemail = '$(sed -n 2p ${USER_CR})'\npassword = '$(sed -n 3p ${USER_CR})'\nsend_to_email = '$(sed -n 4p ${USER_CR})'\n
 subject = 'CROC_MAIL'\nmessage = '${r_a}${MY_MESS_A}'\n${FILE_A_B} ${FILE_I_B}\n
@@ -420,14 +420,13 @@ msg = MIMEMultipart()\nmsg['From'] = email\nmsg['To'] = send_to_email\nmsg['Subj
 ${FILE_B_B}\n${FILE_C_B}\n${FILE_D_B}\n${FILE_E_B}\n${FILE_F_B}\n${FILE_G_B}\n
 ${FILE_H_B}\nserver = smtplib.SMTP('$(sed -n 1p ${USER_CR})', 587)\nserver.starttls()\nserver.login(email, password)\n
 text = msg.as_string()\nserver.sendmail(email, send_to_email, text)\nserver.quit()" >> ${PYTHON_MAIL}
-	sleep 1
 	python ${PYTHON_MAIL}
 }
 ##
 #----Mail check for existing email
 ##
 if [ -e "${USER_CR}" ]; then
-echo -ne "${yellow}EXISTING E-MAIL${clear} ${green}$(sed -n 2p ${USER_CR})${clear}\n"
+echo -ne "${yellow}EXISTING E-MAIL: ${clear}${green}$(sed -n 2p ${USER_CR})${clear}\n"
 read_all USE EXISTING E-MAIL CREDENTIALS Y/N AND PRESS [ENTER]
 case $r_a in
 [yY] | [yY][eE][sS])
@@ -440,7 +439,7 @@ case $r_a in
 	invalid_entry ; croc_mail ;;
 esac
 else
-	echo -ne "\n${LINE_}\e[5m$(ColorRed 'NO EXISTING E-MAIL CREDENTIALS WERE FOUND PLEASE ENTER E-MAIL CREDENTIALS')${LINE_}\n\n"
+	echo -ne "\n\e[5m$(ColorRed 'NO EXISTING E-MAIL CREDENTIALS WERE FOUND PLEASE ENTER E-MAIL CREDENTIALS')\n\n"
 	user_smtp
 	user_email_set
 fi
@@ -4126,11 +4125,11 @@ MenuEnd
 omg_cable() {
 	clear
 	local omg_v=/root/udisk/tools/Croc_Pot/OMG_WIFI.txt
-	echo -ne "$(Info_Screen '-Connected KeyCroc to O.MG wifi access point
--# 1 connect keycroc to O.MG wifi access point
+	echo -ne "$(Info_Screen '-# 1 connect keycroc to O.MG wifi access point
 -# 2 Start O.MG web UI ensure keycroc is connected to O.MG AP first
 -# 3 O.MG Github web page
--# 4 Create payload to connect Quickly to O.MG wifi access point')\n\n"
+-# 4 Create payload to connect Quickly to O.MG wifi access point
+-# 5 Scan local network for O.MG cable')\n\n"
 ##
 #----O.MG connect keycroc to O.MG wifi access point
 ##
@@ -4254,6 +4253,48 @@ case $r_a in
 esac
 }
 ##
+#----O.MG check local network for O.MG cable
+##
+omg_check() {
+	clear
+	echo -ne "$(Info_Screen '-Check local network for O.MG cable
+-Ensure O.MG is connected to same local network as Keycroc')\n\n"
+##
+#----Ping entire network 
+##
+	read_all SCAN FOR O.MG CABLE Y/N AND PRESS [ENTER]
+case $r_a in
+[yY] | [yY][eE][sS])
+	local t_ip=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " " | sed -r 's/.{1}$//')
+	for omg in {1..254} ;do (ping -c 1 -w 1 $t_ip$omg >/dev/null && echo "$t_ip$omg" &) ;done
+	arp -a | sed -n 's/\(OMG\)/\1/p'
+	local omg_ip=$(arp -a | sed -n 's/\(OMG\)/\1/p' | awk '{print $2}' | sed 's/[(),]//g')
+	if [[ "${omg_ip}" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
+		ping -q -c 1 -w 1 ${omg_ip} &>/dev/null 2>&1
+		if [[ $? -ne 0 ]]; then
+			echo -ne "${red}No O.MG cable detected${clear}"
+		elif [[ "${#args[@]}" -eq 0 ]]; then
+			echo -ne "${yellow}O.MG cable IP:${clear}${green}${omg_ip}${clear}\n"
+			read_all START O.MG WEB UI Y/N AND PRESS [ENTER]
+			case $r_a in
+			[yY] | [yY][eE][sS])
+			start_web http://${omg_ip} ;;
+			[nN] | [nN][oO])
+			echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
+			*)
+			invalid_entry ; omg_check ;;
+			esac
+		fi
+	else
+		echo -ne "${red}No O.MG cable detected${clear}"
+	fi ;;
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
+*) 
+	invalid_entry ; omg_check ;;
+esac
+}
+##
 #----O.MG cable Menu
 ##
 MenuTitle O.MG CABLE MENU
@@ -4261,14 +4302,16 @@ MenuColor 1 KEYCROC TO O.MG WIFI ; echo -ne " ${clear}\n"
 MenuColor 2 START O.MG WEB UI ; echo -ne "    ${clear}\n"
 MenuColor 3 O.MG GITHUB PAGE ; echo -ne "     ${clear}\n"
 MenuColor 4 O.MG AP PAYLOAD ; echo -ne "      ${clear}\n"
-MenuColor 5 RETURN TO MAIN MENU ; echo -ne "  ${clear}\n"
+MenuColor 5 O.MG LOCAL NETWORK ; echo -ne "   ${clear}\n"
+MenuColor 6 RETURN TO MAIN MENU ; echo -ne "  ${clear}\n"
 MenuEnd
 	case $m_a in
 	1) omg_wifi ; omg_cable ;;
 	2) omg_web ; omg_cable ;;
 	3) start_web https://github.com/O-MG ; omg_cable ;;
 	4) omg_quick_connect ;;
-	5) main_menu ;;
+	5) omg_check ; omg_cable ;;
+	6) main_menu ;;
 	0) exit 0 ;;
 	[bB]) menu_B ;;
 	*) invalid_entry ; omg_cable ;;
@@ -4345,10 +4388,12 @@ cpu_check() {
 }
 tcp_check() {
 	clear
+	install_package speedtest-cli SPEEDTEST-CLI tcp_check
 	echo -ne "\n$(ColorYellow 'Network/connections on') ${server_name} is:\n"
 	netstat -l ; echo ${LINE} ; netstat -r ; echo ${LINE} ; netstat -tunlp ; echo ${LINE} ; iw dev wlan0 scan ; echo ${LINE}
 	iw dev wlan0 scan | egrep "signal:|SSID:" | sed -e "s/\tsignal: //" -e "s/\tSSID: //" | awk '{ORS = (NR % 2 == 0)? "\n" : " "; print}' | sort ; echo ${LINE}
-	arp -a -e -v ; echo ${LINE} ; ss -p -a ; echo ${LINE} ; /sbin/ifconfig -a ; echo ${LINE}
+	arp -a -e -v ; echo ${LINE} ; ss -p -a ; echo ${LINE} ; /sbin/ifconfig -a ; echo ${LINE} ; curl -i ipinfo.io ; curl -i freegeoip.net/json/ ; echo ${LINE}
+	speedtest ; echo ${LINE} #; echo ${LINE} ; curl --verbose 'https://www.google.com/'
 }
 kernel_check() {
 	clear
@@ -4375,7 +4420,7 @@ IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(ifconf
 INTERFACE: $(ip route show default | awk '/default/ {print $5}')\nMODE: $(cat /tmp/mode)\nSSH: root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nDNS: $(sed -n -e 4p /etc/resolv.conf)\nDNS: $(sed -n -e 5p /etc/resolv.conf)\nDISPLAY ARP: $(ip n)\n${LINE}\nROUTE TALBE: $(ip r)\nNETWORK:\n$(ifconfig -a)\n${LINE}\nSYSTEM UPTIME: $(uptime)\n
 SYSTEM INFO: $(uname -a)\n${LINE}\nUSB DEVICES:\n$(usb-devices)\n${LINE}\nBASH VERSION:\n$(apt-cache show bash)\n${LINE}\nLINUX VERSION:\n$(cat /etc/os-release)\n${LINE}\nSSH KEY:\n$(ls -al ~/.ssh)\n$(cat ~/.ssh/id_rsa.pub)\n${LINE}\n
 MEMORY USED:\n$(free -m)\n$(cat /proc/meminfo)\n${LINE}\nSHOW PARTITION FORMAT:\n$(lsblk -a)\n${LINE}\nSHOW DISK USAGE:\n$(df -TH)\n\t${LINE_A}>MORE DETAIL<${LINE_A}\n$(fdisk -l)\n${LINE}\nCHECK USER LOGIN:\n$(lastlog)\n${LINE}\nCURRENT PROCESS:\n$(ps aux)\n${LINE}\nCPU INFORMATION:\n$(more /proc/cpuinfo)\n$(lscpu | grep MHz)\n${LINE}\nCHECK PORT:\n$(netstat -tulpn)\n
-${LINE}\nRUNNING SERVICES:\n$(service --status-all)\n${LINE}\nINSTALLED PACKAGES:\n$(dpkg-query -l)\n${LINE}\nIDENTIFIER (UUID):\n$(blkid)\n${LINE}\nDIRECTORIES:\n$(ls -la -r /etc /var /root /tmp /usr /sys /bin /sbin)\n${LINE}\nDISPLAY TREE:\n$(pstree)\n${LINE}\nSHELL OPTIONS:\n$(shopt)\n${LINE}\n" >> ${LOOT_INFO}
+${LINE}\nRUNNING SERVICES:\n$(service --status-all)\n${LINE}\nINSTALLED PACKAGES:\n$(dpkg-query -l)\n${LINE}\nIDENTIFIER (UUID):\n$(blkid)\n${LINE}\nDIRECTORIES:\n$(ls -la -r /etc /var /root /tmp /usr /sys /bin /sbin)\n${LINE}\nDISPLAY TREE:\n$(pstree)\n${LINE}\nSHELL OPTIONS:\n$(shopt)\n${LINE}\ncurl -i ipinfo.io\ncurl -i freegeoip.net/json/\n${LINE}" >> ${LOOT_INFO}
 	cat ${LOOT_INFO}
 }
 ##
@@ -4716,22 +4761,42 @@ function ssh_menu() {
 # Validate IP v4 or v6 address and start ssh to hak5 device
 #
 ip_check_ssh() {
-if [[ "${r_a}" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
-	ssh root@${r_a}
+ping -c1 -w1 ${1} &>/dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+	ping -c1 -w1 ${2} &>/dev/null 2>&1
+	if [[ $? -ne 0 ]]; then
+		echo -ne "\e[5m$(ColorRed 'Can not start SSH connect on:')${2}${clear}"
+	elif [[ "${#args[@]}" -eq 0 ]]; then
+		ssh root@${2}
+	fi
+elif [[ "${#args[@]}" -eq 0 ]]; then
+		ssh root@${1}
 else
-	echo -ne "\e[5m$(ColorRed 'USING DEFAULT IP')${1}"
-	ssh root@${1}
+		echo -ne "\e[5m$(ColorRed 'Can not start SSH connect on:')${1}${clear}"
 fi
 }
 ##
 #----SSH check devices for connection
 ##
 check_device() {
-if ping -q -c 1 -w 1 ${1} &>/dev/null 2>&1; then
-	echo -ne "${yellow}${2} ${3} ${clear}${green}ONLINE IP:${1} ${clear}${4} ${5}"
-else
-	echo -ne "${yellow}${2} ${3} ${clear}${red}NOT CONNECTED OR CAN'T BE REACHED ${clear}"
+ping -c 1 -w 1 ${1} &>/dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+	ping -c 1 -w 1 ${DEFAULT_IP} &>/dev/null 2>&1
+	if [[ $? -ne 0 ]]; then
+		sleep 0.1
+	elif [[ "${#args[@]}" -eq 0 ]]; then
+		echo -ne "${yellow}${@:2}${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -c 1 -w 1 ${DEFAULT_IP} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
+	fi
+elif [[ "${#args[@]}" -eq 0 ]]; then
+	echo -ne "${yellow}${@:2}${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -c 1 -w 1 ${1} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
 fi 2> /dev/null
+}
+##
+#----SSH check default ip
+##
+default_ip() {
+	unset DEFAULT_IP
+	DEFAULT_IP=${1}
 }
 ##
 #----SSH shark jack get ip from Croc_Pot_Payload
@@ -4740,56 +4805,57 @@ shark_check() {
 	local SHARK_IP=/root/udisk/tools/Croc_Pot/shark_ip.txt
 if [ -e ${SHARK_IP} ]; then
 	if [ "$(sed -n '1p' ${SHARK_IP})" != "" ]; then
-		IP_F=$(sed -n '1p' ${SHARK_IP})
+	default_ip $(sed -n '1p' ${SHARK_IP})
 else
-		IP_F=172.16.24.1
+	default_ip 172.16.24.1
 	fi
 fi 2> /dev/null
-}
-##
-#----SSH owl get ip from mac
-##
-owl_check() {
-	local OWL_IP=$(arp -a | sed -ne '/00:00:00:00:00:00/p' | sed -e 's/.*(\(.*\)).*/\1/')  #place Owl mac here
-if [[ "${OWL_IP}" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
-	IP_O=${OWL_IP}
-else
-	IP_O=172.16.56.1
-fi
-}
-##
-#----SSH get public ip
-##
-public_ip() {
-	echo -ne "${yellow}Public ip:${clear}${green}$(curl -s --connect-timeout 2 --max-time 2 https://checkip.amazonaws.com) ${clear}"
 }
 ##
 #----SSH check port 22 open or closed
 ##
 port_check() {
 nc -z -v -w 1 ${1} 22 &>/dev/null 2>&1
-if [[ "$?" -ne 0 ]]; then
-	echo -ne "${yellow} Port:${clear}${red}22 closed${clear}\n"
+if [[ $? -ne 0 ]]; then
+	nc -z -v -w 1 ${DEFAULT_IP} 22 &>/dev/null 2>&1
+	if [[ $? -ne 0 ]]; then
+		echo -ne "${yellow}Port:${clear}${red}22 closed${clear}\n"
+		unset DEFAULT_IP
+	elif [[ "${#args[@]}" -eq 0 ]]; then
+		echo -ne "${yellow}Port:${clear}${green}22 open${clear}\n"
+		unset DEFAULT_IP
+	fi
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "${yellow} Port:${clear}${green}22 open${clear}\n"
+	echo -ne "${yellow}Port:${clear}${green}22 open${clear}\n"
 fi 2> /dev/null
 }
 ##
 #----SSH get mac addresses
 ##
 get_mac () {
-	echo -ne "${yellow}MAC:${clear}${green}$(arp -n ${1} | awk '/'${1}'/{print $3}' | sed -e 's/HWaddress//g') ${clear}"
-}
-squirrel_mac() {
-if [ -e "/root/udisk/tools/Croc_Pot/squirrel_mac.txt" ]; then
-	echo -ne "${yellow}MAC:${clear}${green}$(sed -n 1p /root/udisk/tools/Croc_Pot/squirrel_mac.txt) ${clear}"
+arp -n ${1} &>/dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+	if [[ "${save_mac}" =~ ^([[:xdigit:]][[:xdigit:]]:){5}[[:xdigit:]][[:xdigit:]]$ ]]; then
+		echo -ne "${yellow} MAC:${clear}${green}${save_mac}${clear}"
+		unset save_mac
+	else
+		sleep 0.1
+	fi
+elif [[ "${#args[@]}" -eq 0 ]]; then
+	echo -ne "${yellow} MAC:${clear}${green}$(arp ${1} | awk '{print $3}' | sed -e 's/HWaddress//g' | sed '/^[[:space:]]*$/d')"
 fi 2> /dev/null
 }
-turtle_mac() {
-if [ -e "/root/udisk/tools/Croc_Pot/turtle_mac.txt" ]; then
-	echo -ne "${yellow}MAC:${clear}${green}$(sed -n 1p /root/udisk/tools/Croc_Pot/turtle_mac.txt) ${clear}"
+##
+#----SSH check for saved mac address
+##
+saved_mac() {
+if [ -e "${1}" ]; then
+	save_mac=$(sed -n ${2} ${1})
 fi 2> /dev/null
 }
+##
+#----SSH check for saved bash bunny mac address
+##
 bunny_mac() {
 if [ "$(OS_CHECK)" = WINDOWS ]; then
 	sed -i 's/-/:/g' /root/udisk/tools/Croc_Pot/bunny_mac.txt
@@ -4800,7 +4866,7 @@ fi 2> /dev/null
 if [[ "$(sed -n 1p /root/udisk/tools/Croc_Pot/bunny_mac.txt)" =~ ^([[:xdigit:]][[:xdigit:]]:){5}[[:xdigit:]][[:xdigit:]]$ ]]; then
 	echo -ne "${yellow}BASH BUNNY:${clear}${green} ONLINE IP: 172.16.64.1${clear}${yellow} MAC:${clear}${green} ${bunny_v}${clear}\n"
 else
-	echo -ne "${yellow}BASH BUNNY:${clear}${red} NOT CONNECTED OR CAN'T BE REACHED${clear}\n"
+	sleep 0.1
 fi 2> /dev/null
 }
 ##
@@ -4810,19 +4876,30 @@ if [ -e "/root/udisk/tools/Croc_Pot/saved_shell.txt" ]; then
 	remote_vps=$(sed -n 1p /root/udisk/tools/Croc_Pot/saved_shell.txt)
 fi 2> /dev/null
 ##
+#----SSH check current SSID
+##
+ssid_check() {
+	local ss_id=$(iw dev wlan0 scan | egrep "signal:|SSID:" | sed -e "s/\tsignal: //" -e "s/\tSSID: //" | awk '{ORS = (NR % 2 == 0)? "\n" : " "; print}' | sed -n '/'$(sed -n -e 's/^WIFI_SSID //p' /root/udisk/config.txt)'/p')
+	local gateway=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " ")
+	local mask=$(/sbin/ifconfig wlan0 | awk '/Mask:/{ print $4;}' | sed 's/Mask:/'\\${yellow}NetMask:\\${clear}\\${green}'/g')
+	echo -ne "${yellow}SSID:${clear}${green}${ss_id}${clear}${yellow} GATEWAY IP:${clear}${green}${gateway} ${clear}${mask}${clear}\n"
+}
+##
 #----SSH display info screen
 ##
 	echo -ne "$(Info_Screen '-SSH into HAK5 gear & TARGET PC
 -Reverse ssh tunnel, Create SSH Public/Private Key
 -Ensure devices are connected to the same local network As keycroc')\n"
-check_device $(os_ip) TARGET PC: $(public_ip) ; port_check $(os_ip)
-check_device 172.16.42.1 WIFI PINEAPPLE: $(get_mac "172.16.42.1") ; port_check 172.16.42.1
-check_device 172.16.32.1 PACKET SQUIRREL: $(squirrel_mac) ; port_check 172.16.32.1
-check_device 172.16.84.1 LAN TURTLE: $(turtle_mac) ; port_check 172.16.84.1
-shark_check ; check_device ${IP_F} SHARK JACK: $(get_mac) ${IP_F} ; port_check ${IP_F}
+local croc_mac=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)
+check_device $(os_ip) TARGET PC:
+ssid_check
+echo -ne "${yellow}Public ip:${clear}${green}$(curl -s --connect-timeout 2 --max-time 2 https://checkip.amazonaws.com)${clear}\n" ; check_device ${remote_vps} REMOTE VPS: | sed 's/MAC://g' | sed 's/--//g'
+check_device croc KEY CROC: | sed 's/--/'$croc_mac'/g'
+default_ip 172.16.42.1 ; check_device mk7 WIFI PINEAPPLE:
+saved_mac /root/udisk/tools/Croc_Pot/squirrel_mac.txt 1p ; default_ip 172.16.32.1 ; check_device squirrel PACKET SQUIRREL:
+saved_mac /root/udisk/tools/Croc_Pot/turtle_mac.txt 1p ; default_ip 172.16.84.1 ; check_device turtle LAN TURTLE:
+saved_mac /root/udisk/tools/Croc_Pot/shark_ip.txt 2p ; shark_check ; check_device shark SHARK JACK:
 bunny_mac
-check_device ${remote_vps} REMOTE VPS: ; port_check ${remote_vps}
-#owl_check ; check_device ${IP_O} OWL : $(get_mac "${IP_O}") ; port_check ${IP_O}
 echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 ##
 #----SSH keycroc to target pc
@@ -4874,7 +4951,7 @@ MenuColor 2 PINEAPPLE WEB ; echo -ne "       ${clear}\n"
 MenuColor 3 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
 MenuEnd
 	case $m_a in
-	1) read_all ENTER WIFI PINEAPPLE IP FOR SSH AND PRESS [ENTER] ; ip_check_ssh 172.16.42.1 ; ssh_menu ;;
+	1) ip_check_ssh mk7 172.16.42.1 ; ssh_menu ;;
 	2) start_web http://172.16.42.1:1471 ; ssh_menu ;;
 	3) main_menu ;;
 	0) exit 0 ;;
@@ -4886,29 +4963,26 @@ MenuEnd
 #----SSH to packet squirrel
 ##
 ssh_squirrel() {
-	read_all ENTER PACKET SQUIRREL IP FOR SSH AND PRESS [ENTER]
-	ip_check_ssh 172.16.32.1
+	ip_check_ssh squirrel 172.16.32.1
 }
 ##
 #----SSH to lan turtle
 ##
 ssh_turtle() {
-	read_all ENTER LAN TURTLE IP FOR SSH AND PRESS [ENTER]
-	ip_check_ssh 172.16.84.1
-}
-##
-#----SSH to signal owl
-##
-ssh_owl() {
-	read_all ENTER SIGNAL OWL IP FOR SSH AND PRESS [ENTER]
-	ip_check_ssh ${IP_O}
+	ip_check_ssh turtle 172.16.84.1
 }
 ##
 #----SSH to shark jack
 ##
 ssh_shark() {
-	read_all ENTER SHARK JACK IP FOR SSH AND PRESS [ENTER]
-	ip_check_ssh ${IP_F}
+	local SHARK_IP=/root/udisk/tools/Croc_Pot/shark_ip.txt
+if [ -e ${SHARK_IP} ]; then
+	if [[ "$(sed -n '1p' ${SHARK_IP})" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
+		ip_check_ssh $(sed -n '1p' ${SHARK_IP}) shark
+else
+		ip_check_ssh shark 172.16.24.1
+	fi
+fi 2> /dev/null
 }
 ##
 #----SSH to bash bunny
@@ -5431,13 +5505,13 @@ esac
 ## 
 	LED B
 echo -ne "\n" ; MenuTitle CROC POT SSH MENU | tr '\n' '\t' ; echo -ne "\n"
-echo -ne "\t\t" ; MenuColor 1 SSH TARGET PC | tr -d '\t' ; echo -ne "   ${clear}" ; MenuColor 8 SIGNAL OWL | tr -d '\t' ; echo -ne "           ${clear}\n"
-echo -ne "\t\t" ; MenuColor 2 SSH USER INPUT | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 9 SHARK JACK | tr -d '\t' ; echo -ne "           ${clear}\n"
-echo -ne "\t\t" ; MenuColor 3 ENABLE_SSH | tr -d '\t' ; echo -ne "      ${clear}" ; MenuColor 10 BASH BUNNY | tr -d '\t' ; echo -ne "          ${clear}\n"
-echo -ne "\t\t" ; MenuColor 4 DISABLE_SSH | tr -d '\t' ; echo -ne "     ${clear}" ; MenuColor 11 REVERSE SHELL | tr -d '\t' ; echo -ne "       ${clear}\n"
-echo -ne "\t\t" ; MenuColor 5 WIFI PINEAPPLE | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 12 PUBLIC/PRIVATE KEY | tr -d '\t' ; echo -ne "  ${clear}\n"
-echo -ne "\t\t" ; MenuColor 6 PACKET SQUIRREL | tr -d '\t' ; echo -ne " ${clear}" ; MenuColor 13 REMOVE SSH_KEYGEN | tr -d '\t' ; echo -ne "   ${clear}\n"
-echo -ne "\t\t" ; MenuColor 7 LAN TURTLE | tr -d '\t' ; echo -ne "      ${clear}" ; MenuColor 14 RETURN TO MAIN MENU | tr -d '\t' ; echo -ne " ${clear}\n"
+echo -ne "\t\t" ; MenuColor 1 SSH TARGET PC | tr -d '\t' ; echo -ne "   ${clear}" ; MenuColor 7 LAN TURTLE | tr -d '\t' ; echo -ne "          ${clear}\n"
+echo -ne "\t\t" ; MenuColor 2 SSH USER INPUT | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 8 SHARK JACK | tr -d '\t' ; echo -ne "          ${clear}\n"
+echo -ne "\t\t" ; MenuColor 3 ENABLE_SSH | tr -d '\t' ; echo -ne "      ${clear}" ; MenuColor 9 BASH BUNNY | tr -d '\t' ; echo -ne "          ${clear}\n"
+echo -ne "\t\t" ; MenuColor 4 DISABLE_SSH | tr -d '\t' ; echo -ne "     ${clear}" ; MenuColor 10 REVERSE SHELL | tr -d '\t' ; echo -ne "      ${clear}\n"
+echo -ne "\t\t" ; MenuColor 5 WIFI PINEAPPLE | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 11 PUBLIC/PRIVATE KEY | tr -d '\t' ; echo -ne " ${clear}\n"
+echo -ne "\t\t" ; MenuColor 6 PACKET SQUIRREL | tr -d '\t' ; echo -ne " ${clear}" ; MenuColor 12 REMOVE SSH_KEYGEN | tr -d '\t' ; echo -ne "  ${clear}\n"
+MenuColor 13 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
 MenuEnd
 	case $m_a in
 	1) pc_ssh ; ssh_menu ;;
@@ -5447,13 +5521,12 @@ MenuEnd
 	5) ssh_pineapple ; ssh_menu ;;
 	6) ssh_squirrel ; ssh_menu ;;
 	7) ssh_turtle ; ssh_menu ;;
-	8) ssh_owl ; ssh_menu ;;
-	9) ssh_shark ; ssh_menu ;;
-	10) ssh_bunny ; ssh_menu ;;
-	11) croc_reverse_shell ; ssh_menu ;;
-	12) ssh_keygen ; ssh_menu ;;
-	13) remove_sshkey ; ssh_menu ;;
-	14) main_menu ;;
+	8) ssh_shark ; ssh_menu ;;
+	9) ssh_bunny ; ssh_menu ;;
+	10) croc_reverse_shell ; ssh_menu ;;
+	11) ssh_keygen ; ssh_menu ;;
+	12) remove_sshkey ; ssh_menu ;;
+	13) main_menu ;;
 	0) exit 0 ;;
 	[bB]) main_menu ;;
 	*) invalid_entry ; ssh_menu ;;
@@ -5551,10 +5624,10 @@ remove_croc_pot() {
 	echo -ne "$(ColorRed 'ARE YOU SURE TO REMOVE CROC_POT TYPE YES OR NO AND PRESS [ENTER]:')"; read CROC_POT_REMOVE
 case $CROC_POT_REMOVE in
 [yY] | [yY][eE][sS])
-	apt -y remove unzip openvpn mc nmon sshpass screenfetch whois dnsutils sslscan
+	apt -y remove unzip openvpn mc nmon sshpass screenfetch whois dnsutils sslscan speedtest-cli
 	rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot/Bunny_Payload_Shell /root/udisk/tools/Croc_Pot
 	rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service /root/udisk/payloads/Getonline_Linux.txt
-	rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt
+	rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt /root/udisk/payloads/Croc_Bite.txt.txt
 	rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
 	rm /root/udisk/payloads/Getonline_Raspberry.txt /root/udisk/payloads/Quick_Start_C2.txt
 	rm /root/udisk/payloads/Quick_start_Croc_Pot.txt /root/udisk/payloads/Getonline_Windows.txt
