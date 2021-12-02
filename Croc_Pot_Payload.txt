@@ -3,7 +3,7 @@
 #                This will collect some data off target PC (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.3.4
+# Version:       1.3.5
 # Category:      Key Croc
 
 MATCH crocpot
@@ -120,7 +120,8 @@ WINDOWS)
 	#---> Edit with sed to remove powershell output "r" endlines & sed return only readable character & replace "-" with ":"
 	$(sed -i 's/\r//g' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
 	$(sed -i $'s/[^[:print:]\t]//g' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
-	$(sed -i 's/-/:/g' /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt )
+	$(sed -i '0,/./s/^.//' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
+	$(sed -i 's/-/:/g' /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
 	#---> Starting Croc_Pot
 	Q STRING "/root/udisk/tools/Croc_Pot.sh"
 	Q ENTER ;;
